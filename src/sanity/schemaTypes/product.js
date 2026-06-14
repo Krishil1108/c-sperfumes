@@ -1,102 +1,242 @@
-export const productType = {
+import { defineField, defineType } from 'sanity';
+
+export const productType = defineType({
   name: 'product',
   title: 'Perfume Product',
   type: 'document',
+  icon: () => '🌸',
+  groups: [
+    { name: 'identity', title: '📦 Identity & Pricing', default: true },
+    { name: 'media', title: '🖼️ Media & Gallery' },
+    { name: 'attributes', title: '🧪 Attributes & Notes' },
+    { name: 'merchandising', title: '🏷️ Merchandising & Flags' },
+    { name: 'stl', title: '📍 Shop The Look' },
+  ],
   fields: [
-    {
+    // ── IDENTITY & PRICING ──────────────────────────────────────────────
+    defineField({
       name: 'title',
-      title: 'Title',
+      title: 'Product Title',
       type: 'string',
-      validation: Rule => Rule.required(),
-    },
-    {
+      group: 'identity',
+      validation: Rule => Rule.required().min(3).max(200),
+      description: 'Full display name of the product.',
+    }),
+    defineField({
       name: 'slug',
-      title: 'Slug',
+      title: 'URL Slug',
       type: 'slug',
-      options: {
-        source: 'title',
-        maxLength: 96,
-      },
+      group: 'identity',
+      options: { source: 'title', maxLength: 120 },
       validation: Rule => Rule.required(),
-    },
-    {
+      description: 'Auto-generated from title. Used in product URLs.',
+    }),
+    defineField({
       name: 'description',
-      title: 'Description',
+      title: 'Product Description',
       type: 'text',
-    },
-    {
+      group: 'identity',
+      rows: 5,
+      description: 'Full product description shown on the detail page.',
+    }),
+    defineField({
+      name: 'brand',
+      title: 'Brand',
+      type: 'string',
+      group: 'identity',
+      options: {
+        list: [
+          { title: 'Aura Bella', value: 'Aura Bella' },
+          { title: 'Dior', value: 'Dior' },
+          { title: 'Chanel', value: 'Chanel' },
+          { title: 'Armaf', value: 'Armaf' },
+          { title: 'Afnan', value: 'Afnan' },
+          { title: 'Mancera', value: 'Mancera' },
+        ],
+      },
+      description: 'Designer brand or house.',
+    }),
+    defineField({
       name: 'category',
       title: 'Category',
       type: 'string',
+      group: 'identity',
       initialValue: 'Luxury Perfume',
-    },
-    {
-      name: 'notes',
-      title: 'Scent Notes',
-      type: 'array',
-      of: [{ type: 'string' }],
-    },
-    {
+      description: 'Internal category / fulfillment channel.',
+    }),
+    defineField({
       name: 'price',
-      title: 'Base Price (Original)',
+      title: 'Original MRP (₹)',
       type: 'number',
-      validation: Rule => Rule.required(),
-    },
-    {
+      group: 'identity',
+      validation: Rule => Rule.required().positive(),
+    }),
+    defineField({
       name: 'salePrice',
-      title: 'Sale Price',
+      title: 'Sale Price (₹)',
       type: 'number',
-      validation: Rule => Rule.required(),
-    },
-    {
+      group: 'identity',
+      validation: Rule => Rule.required().positive(),
+    }),
+    defineField({
       name: 'discount',
-      title: 'Discount Percentage',
+      title: 'Discount %',
       type: 'number',
-    },
-    {
-      name: 'rating',
-      title: 'Rating',
-      type: 'number',
-      initialValue: 4.5,
-    },
-    {
-      name: 'reviewsCount',
-      title: 'Reviews Count',
-      type: 'number',
+      group: 'identity',
       initialValue: 0,
-    },
-    {
+      validation: Rule => Rule.min(0).max(100),
+    }),
+
+    // ── MEDIA ──────────────────────────────────────────────────────────
+    defineField({
       name: 'image',
       title: 'Primary Product Image URL',
       type: 'url',
-      description: 'URL to primary product card image (external or local fallback)',
-    },
-    {
+      group: 'media',
+      description: 'Main product card image (CDN or external URL).',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'images',
       title: 'Gallery Image URLs',
       type: 'array',
+      group: 'media',
       of: [{ type: 'url' }],
-    },
-    {
+      description: 'Additional gallery images shown on detail page.',
+    }),
+
+    // ── ATTRIBUTES & NOTES ─────────────────────────────────────────────
+    defineField({
+      name: 'concentration',
+      title: 'Concentration',
+      type: 'string',
+      group: 'attributes',
+      options: {
+        list: [
+          { title: 'Extrait De Parfum', value: 'Extrait De Parfum' },
+          { title: 'Eau De Parfum (EDP)', value: 'Eau De Parfum (EDP)' },
+          { title: 'Eau De Toilette (EDT)', value: 'Eau De Toilette (EDT)' },
+          { title: 'Bathing Bar', value: 'Bathing Bar' },
+          { title: 'Body Mist', value: 'Body Mist' },
+        ],
+      },
+      description: 'Perfume concentration type.',
+    }),
+    defineField({
+      name: 'gender',
+      title: 'Gender',
+      type: 'string',
+      group: 'attributes',
+      options: {
+        list: [
+          { title: 'Men', value: 'Men' },
+          { title: 'Women', value: 'Women' },
+          { title: 'Unisex', value: 'Unisex' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'Unisex',
+    }),
+    defineField({
+      name: 'notes',
+      title: 'Scent Notes / Accords',
+      type: 'array',
+      group: 'attributes',
+      of: [{ type: 'string' }],
+      options: {
+        list: [
+          'Citrus', 'Bergamot', 'Mandarin', 'Lemon', 'Grapefruit',
+          'Floral', 'Rose', 'Jasmine', 'Orchid', 'Lily', 'Violet',
+          'Woody', 'Oud', 'Sandalwood', 'Cedarwood', 'Patchouli',
+          'Sweet', 'Vanilla', 'Musk', 'Amber', 'Caramel',
+          'Aquatic', 'Fresh', 'Sea Breeze',
+          'Spicy', 'Pepper', 'Cardamom', 'Cinnamon', 'Saffron',
+          'Earthy', 'Vetiver', 'Moss', 'Leather',
+        ],
+      },
+      description: 'Top/heart/base note accords (select from list or type custom).',
+    }),
+    defineField({
+      name: 'rating',
+      title: 'Average Rating (0–5)',
+      type: 'number',
+      group: 'attributes',
+      initialValue: 4.5,
+      validation: Rule => Rule.min(0).max(5),
+    }),
+    defineField({
+      name: 'reviewsCount',
+      title: 'Total Reviews Count',
+      type: 'number',
+      group: 'attributes',
+      initialValue: 0,
+      validation: Rule => Rule.min(0),
+    }),
+
+    // ── MERCHANDISING & FLAGS ──────────────────────────────────────────
+    defineField({
+      name: 'inStock',
+      title: 'In Stock',
+      type: 'boolean',
+      group: 'merchandising',
+      initialValue: true,
+      description: 'Toggle to mark as sold out.',
+    }),
+    defineField({
       name: 'isBestseller',
-      title: 'Bestseller Badge',
+      title: '🏆 Bestseller Badge',
       type: 'boolean',
+      group: 'merchandising',
       initialValue: false,
-    },
-    {
+      description: 'Show this in the Bestsellers tab on the homepage.',
+    }),
+    defineField({
       name: 'isNewArrival',
-      title: 'New Arrival Badge',
+      title: '✨ New Arrival Badge',
       type: 'boolean',
+      group: 'merchandising',
       initialValue: false,
-    },
-    {
+      description: 'Show this in the New Arrivals tab on the homepage.',
+    }),
+
+    // ── SHOP THE LOOK ──────────────────────────────────────────────────
+    defineField({
       name: 'hotspot',
-      title: 'Shop The Look Hotspot Coordinate',
+      title: 'Shop-The-Look Hotspot Position',
       type: 'object',
+      group: 'stl',
+      description: 'Pin position on the lifestyle image (percentage from top-left).',
       fields: [
-        { name: 'x', title: 'X Coordinate % (0-100)', type: 'number' },
-        { name: 'y', title: 'Y Coordinate % (0-100)', type: 'number' }
-      ]
-    }
-  ]
-};
+        defineField({ name: 'x', title: 'X Position % (left→right)', type: 'number', validation: Rule => Rule.min(0).max(100) }),
+        defineField({ name: 'y', title: 'Y Position % (top→bottom)', type: 'number', validation: Rule => Rule.min(0).max(100) }),
+      ],
+    }),
+  ],
+
+  preview: {
+    select: {
+      title: 'title',
+      brand: 'brand',
+      media: 'image',
+      inStock: 'inStock',
+      isBestseller: 'isBestseller',
+    },
+    prepare({ title, brand, inStock, isBestseller }) {
+      const flags = [
+        !inStock ? '🔴 OOS' : '🟢 In Stock',
+        isBestseller ? '🏆' : '',
+      ].filter(Boolean).join(' ');
+      return {
+        title: title,
+        subtitle: `${brand || 'Unknown Brand'} · ${flags}`,
+      };
+    },
+  },
+
+  orderings: [
+    { title: 'Title A→Z', name: 'titleAsc', by: [{ field: 'title', direction: 'asc' }] },
+    { title: 'Price: Low→High', name: 'priceLow', by: [{ field: 'salePrice', direction: 'asc' }] },
+    { title: 'Price: High→Low', name: 'priceHigh', by: [{ field: 'salePrice', direction: 'desc' }] },
+    { title: 'Top Rated', name: 'ratingDesc', by: [{ field: 'rating', direction: 'desc' }] },
+  ],
+});

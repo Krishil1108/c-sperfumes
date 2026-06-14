@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useCart } from '../lib/CartContext';
-import { Star, ShoppingCart, Grid, LayoutGrid, X } from 'lucide-react';
+import { Star, ShoppingCart, Grid, LayoutGrid, X, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -26,7 +26,8 @@ function ShopContent({ products }) {
   const [stockOnly, setStockOnly] = useState(false);
   const [sortBy, setSortBy] = useState('bestselling');
   const [gridCols, setGridCols] = useState(4);
-  const [activeTab, setActiveTab] = useState(null); // 'bestsellers' or 'new-arrivals' from URL
+  const [activeTab, setActiveTab] = useState(null);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Parse query parameters on load
   useEffect(() => {
@@ -105,98 +106,108 @@ function ShopContent({ products }) {
     return b.rating - a.rating;
   });
 
-  return (
-    <div className="shop-layout">
-      {/* 1. Sidebar Filters */}
-      <aside className="sidebar-filter" aria-label="Filters Panel">
-        {/* Brand Filter */}
-        <div className="filter-section">
-          <h3 className="filter-section-title">Designer Brand</h3>
-          <div className="filter-group">
-            {brandsList.map(brand => (
-              <label className="checkbox-label" key={brand}>
-                <input 
-                  type="checkbox" 
-                  checked={selectedBrands.includes(brand)}
-                  onChange={() => handleBrandChange(brand)}
-                />
-                <span>{brand}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+  const activeFiltersCount = selectedBrands.length + selectedGenders.length + selectedConcentrations.length + (maxPrice < maxProductPrice ? 1 : 0) + (stockOnly ? 1 : 0);
 
-        {/* Gender Filter */}
-        <div className="filter-section">
-          <h3 className="filter-section-title">Gender Scent</h3>
-          <div className="filter-group">
-            {gendersList.map(gender => (
-              <label className="checkbox-label" key={gender}>
-                <input 
-                  type="checkbox" 
-                  checked={selectedGenders.includes(gender)}
-                  onChange={() => handleGenderChange(gender)}
-                />
-                <span>{gender}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Concentration Filter */}
-        <div className="filter-section">
-          <h3 className="filter-section-title">Concentration</h3>
-          <div className="filter-group">
-            {concentrationsList.map(conc => (
-              <label className="checkbox-label" key={conc}>
-                <input 
-                  type="checkbox" 
-                  checked={selectedConcentrations.includes(conc)}
-                  onChange={() => handleConcentrationChange(conc)}
-                />
-                <span>{conc}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Price Filter */}
-        <div className="filter-section">
-          <h3 className="filter-section-title">Max Budget</h3>
-          <div className="price-range-wrapper">
-            <input 
-              type="range" 
-              className="price-slider"
-              min={199}
-              max={maxProductPrice}
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-            />
-            <div className="price-inputs">
-              <span>₹199</span>
-              <span style={{ color: 'var(--color-accent)' }}>₹{maxPrice}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Availability Filter */}
-        <div className="filter-section">
-          <h3 className="filter-section-title">Availability</h3>
-          <div className="filter-group">
-            <label className="checkbox-label">
-              <input 
-                type="checkbox" 
-                checked={stockOnly}
-                onChange={() => setStockOnly(prev => !prev)}
-              />
-              <span>In Stock Only</span>
+  const FilterPanelContent = () => (
+    <>
+      {/* Brand Filter */}
+      <div className="filter-section">
+        <h3 className="filter-section-title">Designer Brand</h3>
+        <div className="filter-group">
+          {brandsList.map(brand => (
+            <label className="checkbox-label" key={brand}>
+              <input type="checkbox" checked={selectedBrands.includes(brand)} onChange={() => handleBrandChange(brand)} />
+              <span>{brand}</span>
             </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Gender Filter */}
+      <div className="filter-section">
+        <h3 className="filter-section-title">Gender Scent</h3>
+        <div className="filter-group">
+          {gendersList.map(gender => (
+            <label className="checkbox-label" key={gender}>
+              <input type="checkbox" checked={selectedGenders.includes(gender)} onChange={() => handleGenderChange(gender)} />
+              <span>{gender}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Concentration Filter */}
+      <div className="filter-section">
+        <h3 className="filter-section-title">Concentration</h3>
+        <div className="filter-group">
+          {concentrationsList.map(conc => (
+            <label className="checkbox-label" key={conc}>
+              <input type="checkbox" checked={selectedConcentrations.includes(conc)} onChange={() => handleConcentrationChange(conc)} />
+              <span>{conc}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Price Filter */}
+      <div className="filter-section">
+        <h3 className="filter-section-title">Max Budget</h3>
+        <div className="price-range-wrapper">
+          <input type="range" className="price-slider" min={199} max={maxProductPrice} value={maxPrice} onChange={(e) => setMaxPrice(parseInt(e.target.value))} />
+          <div className="price-inputs">
+            <span>₹199</span>
+            <span style={{ color: 'var(--color-accent)' }}>₹{maxPrice}</span>
           </div>
         </div>
+      </div>
+
+      {/* Availability Filter */}
+      <div className="filter-section">
+        <h3 className="filter-section-title">Availability</h3>
+        <div className="filter-group">
+          <label className="checkbox-label">
+            <input type="checkbox" checked={stockOnly} onChange={() => setStockOnly(prev => !prev)} />
+            <span>In Stock Only</span>
+          </label>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+    {/* Mobile Filter Drawer */}
+    <div className={`mobile-filter-overlay ${mobileFilterOpen ? 'active' : ''}`} onClick={() => setMobileFilterOpen(false)} />
+    <div className={`mobile-filter-panel ${mobileFilterOpen ? 'active' : ''}`}>
+      <div className="mobile-filter-header">
+        <h2 className="mobile-filter-title">Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}</h2>
+        <button className="icon-btn" onClick={() => setMobileFilterOpen(false)} aria-label="Close filters"><X size={22} /></button>
+      </div>
+      <div className="mobile-filter-body">
+        <FilterPanelContent />
+        <button className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }} onClick={() => setMobileFilterOpen(false)}>
+          Show {filteredProducts?.length ?? products.length} Results
+        </button>
+        {activeFiltersCount > 0 && (
+          <button className="clear-all-btn" style={{ display: 'block', margin: '12px auto 0', textAlign: 'center' }} onClick={() => { clearAllFilters(); setMobileFilterOpen(false); }}>Clear All Filters</button>
+        )}
+      </div>
+    </div>
+
+    <div className="shop-layout">
+      {/* 1. Sidebar Filters — desktop only */}
+      <aside className="sidebar-filter" aria-label="Filters Panel">
+        <FilterPanelContent />
       </aside>
 
       {/* 2. Main Product Catalog Section */}
       <section style={{ display: 'flex', flexDirection: 'column' }} aria-label="Product Listings">
+        {/* Mobile Filter Toggle */}
+        <button className="mobile-filter-toggle" onClick={() => setMobileFilterOpen(true)} aria-label="Open Filters">
+          <SlidersHorizontal size={18} />
+          Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+        </button>
+
         {/* Top Control Bar */}
         <div className="catalog-control-bar">
           <span className="results-count">
@@ -375,6 +386,7 @@ function ShopContent({ products }) {
         )}
       </section>
     </div>
+    </>
   );
 }
 

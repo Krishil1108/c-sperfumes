@@ -3,10 +3,13 @@ import { CartProvider } from '../lib/CartContext';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
+import BottomNav from '../components/BottomNav';
 
 export const metadata = {
   title: 'Aura Bella | Luxury Organic Perfumes & Cologne Store',
   description: 'Shop Aura Bella, a premium organic perfume boutique selling long-lasting oud collections, fresh aquatic notes, floral extracts, and custom gift sets.',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  themeColor: '#121212',
 };
 
 export default function RootLayout({ children }) {
@@ -18,6 +21,7 @@ export default function RootLayout({ children }) {
           <main>{children}</main>
           <Footer />
           <CartDrawer />
+          <BottomNav />
         </CartProvider>
       </body>
     </html>

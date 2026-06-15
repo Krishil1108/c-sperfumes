@@ -157,10 +157,6 @@ export default function Header({ settings }) {
           {/* Logo */}
           <Link href="/" className="logo">
             <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
-            <div>
-              <span>{settings?.brandName || "ISHAYA LUXURY"}</span>
-              <span className="logo-sub">{settings?.brandSubtitle || "Perfumes"}</span>
-            </div>
           </Link>
 
           {/* Desktop Nav */}
@@ -270,10 +266,6 @@ export default function Header({ settings }) {
         <div className="mobile-drawer-header">
           <Link href="/" className="logo" onClick={() => setMobileMenuOpen(false)}>
             <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
-            <div>
-              <span>{settings?.brandName || "ISHAYA LUXURY"}</span>
-              <span className="logo-sub">{settings?.brandSubtitle || "Perfumes"}</span>
-            </div>
           </Link>
           <button className="icon-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close Menu">
             <X size={24} />

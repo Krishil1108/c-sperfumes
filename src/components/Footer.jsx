@@ -28,10 +28,6 @@ export default function Footer({ settings }) {
           <div className="footer-brand-col">
             <Link href="/" className="logo">
               <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
-              <div>
-                <span>{settings?.brandName || "ISHAYA LUXURY"}</span>
-                <span className="logo-sub">{settings?.brandSubtitle || "Perfumes"}</span>
-              </div>
             </Link>
             <p className="footer-desc">
               {settings?.footerDesc || "Curating high-end organic perfumes formulated with authentic essential oils, natural botanical extracts, and premium luxury craftsmanship."}

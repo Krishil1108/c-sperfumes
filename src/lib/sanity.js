@@ -42,7 +42,7 @@ const PRODUCT_FIELDS = `
   rating,
   reviewsCount,
   "image": coalesce(imageUpload.asset->url, image),
-  "images": coalesce(imagesUploads[].asset->url, images),
+  "images": select(count(imagesUploads[defined(asset)]) > 0 => imagesUploads[defined(asset)].asset->url, images),
   inStock,
   isBestseller,
   isNewArrival,

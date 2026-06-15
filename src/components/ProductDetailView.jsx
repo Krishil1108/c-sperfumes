@@ -21,9 +21,9 @@ export default function ProductDetailView({ product }) {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   // Gallery images list (ensures fallback gallery is filled)
-  const imagesList = product.images && product.images.length > 0 
-    ? product.images 
-    : [product.image];
+  const imagesList = (product.images && product.images.filter(Boolean).length > 0)
+    ? product.images.filter(Boolean)
+    : (product.image ? [product.image] : []);
 
   const handleAddCart = () => {
     addToCart(product, quantity);

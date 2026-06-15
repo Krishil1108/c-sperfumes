@@ -21,15 +21,19 @@ const TESTIMONIALS = [
   }
 ];
 
-export default function TestimonialsWrapper() {
+export default function TestimonialsWrapper({ settings }) {
+  const testimonials = settings?.testimonials && settings.testimonials.length > 0
+    ? settings.testimonials
+    : TESTIMONIALS;
+
   const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % TESTIMONIALS.length);
+      setActiveIdx((prev) => (prev + 1) % testimonials.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [testimonials]);
 
   return (
     <section className="section-padding testimonials" aria-label="Customer Reviews">
@@ -40,9 +44,9 @@ export default function TestimonialsWrapper() {
         </div>
 
         <div className="testimonial-carousel">
-          {TESTIMONIALS.map((t, idx) => (
+          {testimonials.map((t, idx) => (
             <div 
-              key={t.id} 
+              key={t.id || idx} 
               className={`testimonial-slide ${idx === activeIdx ? 'active' : ''}`}
             >
               <div className="testimonial-stars">

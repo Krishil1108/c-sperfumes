@@ -1,5 +1,5 @@
 import React from 'react';
-import { getPerfumes } from '../lib/sanity';
+import { getPerfumes, getSiteSettings } from '../lib/sanity';
 import HeroSlider from '../components/HeroSlider';
 import TabbedProducts from '../components/TabbedProducts';
 import ShopTheLook from '../components/ShopTheLook';
@@ -63,11 +63,24 @@ const WHY_US = [
 
 export default async function HomePage() {
   const products = await getPerfumes();
+  const settings = await getSiteSettings();
+
+  const categories = settings?.scentCategories && settings.scentCategories.length > 0
+    ? settings.scentCategories
+    : SCENT_CATEGORIES;
+
+  const whyUs = settings?.whyChooseUs && settings.whyChooseUs.length > 0
+    ? settings.whyChooseUs
+    : WHY_US;
+
+  const promiseSubtitle = settings?.brandName
+    ? `The ${settings.brandName} Promise`
+    : "The Ishaya Luxury Perfume Promise";
 
   return (
     <div>
       {/* Hero Slider */}
-      <HeroSlider />
+      <HeroSlider settings={settings} />
 
       {/* Trust Badges */}
       <section className="trust-badges-bar">
@@ -85,7 +98,7 @@ export default async function HomePage() {
       <TabbedProducts products={products} />
 
       {/* Shop the Look */}
-      <ShopTheLook products={products} />
+      <ShopTheLook products={products} settings={settings} />
 
       {/* Fragrance Categories */}
       <section className="section-padding" id="categories">
@@ -99,9 +112,9 @@ export default async function HomePage() {
           </div>
 
           <div className="scent-categories-grid">
-            {SCENT_CATEGORIES.map((cat, idx) => (
-              <Link href={cat.href} key={idx} className="scent-category-card">
-                <img src={cat.img} alt={cat.name} className="scent-category-img" />
+            {categories.map((cat, idx) => (
+              <Link href={cat.href || "/shop"} key={idx} className="scent-category-card">
+                <img src={cat.image} alt={cat.name} className="scent-category-img" />
                 <div className="scent-category-overlay">
                   <span className="scent-category-emoji">{cat.emoji}</span>
                   <h3 className="scent-category-name">{cat.name}</h3>
@@ -115,17 +128,17 @@ export default async function HomePage() {
       </section>
 
       {/* Customer Testimonials */}
-      <TestimonialsWrapper />
+      <TestimonialsWrapper settings={settings} />
 
       {/* Why Choose Us */}
       <section className="section-padding" style={{ backgroundColor: 'var(--color-bg-alt)', borderTop: '1px solid var(--color-border)' }}>
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">The Ishaya Luxury Perfume Promise</span>
+            <span className="section-subtitle">{promiseSubtitle}</span>
             <h2 className="section-title">Why Choose Us</h2>
           </div>
           <div className="why-us-grid">
-            {WHY_US.map((item, idx) => (
+            {whyUs.map((item, idx) => (
               <div className="why-us-item" key={idx}>
                 <span className="why-us-emoji">{item.emoji}</span>
                 <div>

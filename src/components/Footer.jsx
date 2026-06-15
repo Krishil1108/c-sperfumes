@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Sparkles, Send, Instagram, Facebook, Youtube, Twitter } from 'lucide-react';
 import Link from 'next/link';
 
-export default function Footer() {
+export default function Footer({ settings }) {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -17,32 +17,36 @@ export default function Footer() {
     }
   };
 
+  const trustItems = settings?.footerTrustItems && settings.footerTrustItems.length > 0
+    ? settings.footerTrustItems
+    : ["✓ 100% Organic Extracts", "✓ Long-Lasting Sillage", "✓ Cruelty-Free & Vegan", "✓ Made in India with Love"];
+
   return (
     <footer className="premium-footer">
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand-col">
             <Link href="/" className="logo">
-              <img src="/logo.png" alt="Ishaya Luxury Perfume" className="logo-img" />
+              <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
               <div>
-                <span>ISHAYA LUXURY</span>
-                <span className="logo-sub">Perfumes</span>
+                <span>{settings?.brandName || "ISHAYA LUXURY"}</span>
+                <span className="logo-sub">{settings?.brandSubtitle || "Perfumes"}</span>
               </div>
             </Link>
             <p className="footer-desc">
-              Curating high-end organic perfumes formulated with authentic essential oils, natural botanical extracts, and premium luxury craftsmanship.
+              {settings?.footerDesc || "Curating high-end organic perfumes formulated with authentic essential oils, natural botanical extracts, and premium luxury craftsmanship."}
             </p>
             <div className="footer-socials">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Instagram">
+              <a href={settings?.footerInstagram || "https://instagram.com"} target="_blank" rel="noreferrer" className="social-icon" aria-label="Instagram">
                 <Instagram size={18} />
               </a>
-              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Facebook">
+              <a href={settings?.footerFacebook || "https://facebook.com"} target="_blank" rel="noreferrer" className="social-icon" aria-label="Facebook">
                 <Facebook size={18} />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Youtube">
+              <a href={settings?.footerYoutube || "https://youtube.com"} target="_blank" rel="noreferrer" className="social-icon" aria-label="Youtube">
                 <Youtube size={18} />
               </a>
-              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="social-icon" aria-label="Twitter">
+              <a href={settings?.footerTwitter || "https://twitter.com"} target="_blank" rel="noreferrer" className="social-icon" aria-label="Twitter">
                 <Twitter size={18} />
               </a>
             </div>
@@ -71,7 +75,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="footer-title">Join Ishaya VIP</h3>
+            <h3 className="footer-title">{settings?.brandName ? `Join ${settings.brandName.split(" ")[0]} VIP` : "Join Ishaya VIP"}</h3>
             <p className="footer-desc" style={{ fontSize: '13px', color: '#afafaf' }}>
               Subscribe to unlock 15% off your first luxury fragrance order and receive weekly scent pairing articles.
             </p>
@@ -100,22 +104,15 @@ export default function Footer() {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'center', paddingBottom: '40px', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#afafaf' }}>
-            <span style={{ color: 'var(--color-accent)', fontWeight: 'bold' }}>✓</span> 100% Organic Extracts
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#afafaf' }}>
-            <span style={{ color: 'var(--color-accent)', fontWeight: 'bold' }}>✓</span> Long-Lasting Sillage
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#afafaf' }}>
-            <span style={{ color: 'var(--color-accent)', fontWeight: 'bold' }}>✓</span> Cruelty-Free & Vegan
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#afafaf' }}>
-            <span style={{ color: 'var(--color-accent)', fontWeight: 'bold' }}>✓</span> Made in India with Love
-          </div>
+          {trustItems.map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#afafaf' }}>
+              <span style={{ color: 'var(--color-accent)', fontWeight: 'bold' }}>✓</span> {item.replace("✓ ", "")}
+            </div>
+          ))}
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Ishaya Luxury Perfumes. All Rights Reserved. Built as a high-fidelity replica store.</p>
+          <p>{settings?.footerCopyright || `© ${new Date().getFullYear()} Ishaya Luxury Perfumes. All Rights Reserved. Built as a high-fidelity replica store.`}</p>
         </div>
       </div>
     </footer>

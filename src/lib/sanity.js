@@ -41,8 +41,8 @@ const PRODUCT_FIELDS = `
   discount,
   rating,
   reviewsCount,
-  image,
-  images,
+  "image": coalesce(imageUpload.asset->url, image),
+  "images": coalesce(imagesUploads[].asset->url, images),
   inStock,
   isBestseller,
   isNewArrival,
@@ -81,5 +81,30 @@ export async function getPerfumeBySlug(slug) {
   } catch (err) {
     console.error(`Sanity query failed for slug ${slug}, falling back to Mock Database:`, err);
     return mockProducts.find(p => p.slug === slug) || null;
+  }
+}
+
+export async function getSiteSettings() {
+  if (isDemoMode || !client) {
+    return null;
+  }
+  try {
+    const query = `*[_type == "siteSettings"][0] {
+      ...,
+      "logo": logoUpload.asset->url,
+      heroSlides[] {
+        ...,
+        "image": coalesce(imageUpload.asset->url, imageUrl)
+      },
+      scentCategories[] {
+        ...,
+        "image": coalesce(imageUpload.asset->url, imageUrl)
+      },
+      "shopTheLookImage": coalesce(shopTheLookImageUpload.asset->url, shopTheLookImageUrl)
+    }`;
+    return await client.fetch(query);
+  } catch (err) {
+    console.error('Failed to fetch site settings, using defaults:', err);
+    return null;
   }
 }

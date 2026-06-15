@@ -19,6 +19,15 @@ export default defineConfig({
           .title('Ishaya Luxury CMS')
           .items([
             S.listItem()
+              .title('⚙️ Site Settings')
+              .child(
+                S.document()
+                  .schemaType('siteSettings')
+                  .documentId('siteSettings')
+                  .title('Site Settings')
+              ),
+            S.divider(),
+            S.listItem()
               .title('🌸 All Products')
               .schemaType('product')
               .child(

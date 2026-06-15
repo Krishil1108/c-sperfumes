@@ -5,7 +5,7 @@ import { useCart } from '../lib/CartContext';
 import { Star, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ShopTheLook({ products }) {
+export default function ShopTheLook({ products, settings }) {
   // We'll select 3 beautiful products to associate with hotspots
   const hotspotProducts = products.slice(0, 3);
   
@@ -20,6 +20,7 @@ export default function ShopTheLook({ products }) {
   const { addToCart } = useCart();
   
   const activeProduct = hotspotProducts[activeIdx] || products[0];
+  const stlImage = settings?.shopTheLookImage || "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80";
 
   return (
     <section className="section-padding shop-the-look">
@@ -32,7 +33,7 @@ export default function ShopTheLook({ products }) {
         <div className="stl-container">
           <div className="stl-visualizer">
             <img 
-              src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1200&q=80" 
+              src={stlImage} 
               alt="Shop the Scent Portrait" 
               className="stl-image"
             />

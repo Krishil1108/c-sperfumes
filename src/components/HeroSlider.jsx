@@ -34,22 +34,26 @@ const HERO_SLIDES = [
   }
 ];
 
-export default function HeroSlider() {
+export default function HeroSlider({ settings }) {
+  const slides = settings?.heroSlides && settings.heroSlides.length > 0
+    ? settings.heroSlides
+    : HERO_SLIDES;
+
   const [activeIdx, setActiveIdx] = useState(0);
 
   // Auto-advance slides
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIdx((prev) => (prev + 1) % HERO_SLIDES.length);
+      setActiveIdx((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides]);
 
   return (
     <section className="hero-section" aria-label="Hero Campaigns">
-      {HERO_SLIDES.map((slide, idx) => (
+      {slides.map((slide, idx) => (
         <div 
-          key={slide.id} 
+          key={slide.id || idx} 
           className={`hero-slide ${idx === activeIdx ? 'active' : ''}`}
         >
           <img 
@@ -63,7 +67,7 @@ export default function HeroSlider() {
               <span className="hero-tagline">{slide.tagline}</span>
               <h1 className="hero-title">{slide.title}</h1>
               <p className="hero-desc">{slide.desc}</p>
-              <Link href={slide.link} className="btn-primary">
+              <Link href={slide.link || "/#bestsellers"} className="btn-primary">
                 <span>{slide.btnText}</span>
                 <ArrowRight size={16} />
               </Link>
@@ -73,7 +77,7 @@ export default function HeroSlider() {
       ))}
 
       <div className="hero-nav-dots">
-        {HERO_SLIDES.map((_, idx) => (
+        {slides.map((_, idx) => (
           <button 
             key={idx}
             className={`hero-dot ${idx === activeIdx ? 'active' : ''}`}

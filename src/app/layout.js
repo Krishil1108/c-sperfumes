@@ -5,6 +5,8 @@ import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
 import BottomNav from '../components/BottomNav';
 
+import { getSiteSettings } from '../lib/sanity';
+
 export const metadata = {
   title: 'Ishaya Luxury Perfume | Luxury Organic Perfumes & Cologne Store',
   description: 'Shop Ishaya Luxury Perfume, a premium organic perfume boutique selling long-lasting oud collections, fresh aquatic notes, floral extracts, and custom gift sets.',
@@ -12,14 +14,16 @@ export const metadata = {
   themeColor: '#121212',
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const settings = await getSiteSettings();
+
   return (
     <html lang="en">
       <body>
         <CartProvider>
-          <Header />
+          <Header settings={settings} />
           <main>{children}</main>
-          <Footer />
+          <Footer settings={settings} />
           <CartDrawer />
           <BottomNav />
         </CartProvider>

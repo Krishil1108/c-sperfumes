@@ -21,19 +21,27 @@ const SEARCH_PLACEHOLDERS = [
   "Search for Woody..."
 ];
 
-export default function Header() {
+export default function Header({ settings }) {
   const { cartCount, setIsCartOpen } = useCart();
   const router = useRouter();
   const pathname = usePathname();
+
+  // Settings parsing with fallbacks
+  const announcements = settings?.announcements && settings.announcements.length > 0
+    ? settings.announcements
+    : ANNOUNCEMENTS;
+  const searchPlaceholders = settings?.searchPlaceholders && settings.searchPlaceholders.length > 0
+    ? settings.searchPlaceholders
+    : SEARCH_PLACEHOLDERS;
 
   // Announcement Rotator
   const [announcementIdx, setAnnouncementIdx] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnnouncementIdx((prev) => (prev + 1) % ANNOUNCEMENTS.length);
+      setAnnouncementIdx((prev) => (prev + 1) % announcements.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [announcements]);
 
   // Search Placeholder Animator
   const [placeholder, setPlaceholder] = useState("");
@@ -42,7 +50,7 @@ export default function Header() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const currentText = SEARCH_PLACEHOLDERS[phIdx];
+    const currentText = searchPlaceholders[phIdx];
     let typingSpeed = isDeleting ? 40 : 100;
 
     if (!isDeleting && charIdx === currentText.length) {
@@ -50,7 +58,7 @@ export default function Header() {
       setIsDeleting(true);
     } else if (isDeleting && charIdx === 0) {
       setIsDeleting(false);
-      setPhIdx((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+      setPhIdx((prev) => (prev + 1) % searchPlaceholders.length);
       typingSpeed = 500;
     }
 
@@ -64,7 +72,7 @@ export default function Header() {
     }, typingSpeed);
 
     return () => clearTimeout(timeout);
-  }, [charIdx, isDeleting, phIdx]);
+  }, [charIdx, isDeleting, phIdx, searchPlaceholders]);
 
   // Search Live Suggestions
   const [searchQuery, setSearchQuery] = useState("");
@@ -132,7 +140,7 @@ export default function Header() {
     <>
       {/* Announcement Bar */}
       <div className="announcement-bar">
-        <span className="announcement-text" key={announcementIdx}>{ANNOUNCEMENTS[announcementIdx]}</span>
+        <span className="announcement-text" key={announcementIdx}>{announcements[announcementIdx]}</span>
       </div>
 
       <header className="main-header">
@@ -148,10 +156,10 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="logo">
-            <img src="/logo.png" alt="Ishaya Luxury Perfume" className="logo-img" />
+            <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
             <div>
-              <span>ISHAYA LUXURY</span>
-              <span className="logo-sub">Perfumes</span>
+              <span>{settings?.brandName || "ISHAYA LUXURY"}</span>
+              <span className="logo-sub">{settings?.brandSubtitle || "Perfumes"}</span>
             </div>
           </Link>
 
@@ -261,10 +269,10 @@ export default function Header() {
       <div className={`mobile-drawer ${mobileMenuOpen ? 'active' : ''}`}>
         <div className="mobile-drawer-header">
           <Link href="/" className="logo" onClick={() => setMobileMenuOpen(false)}>
-            <img src="/logo.png" alt="Ishaya Luxury Perfume" className="logo-img" />
+            <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
             <div>
-              <span>ISHAYA LUXURY</span>
-              <span className="logo-sub">Perfumes</span>
+              <span>{settings?.brandName || "ISHAYA LUXURY"}</span>
+              <span className="logo-sub">{settings?.brandSubtitle || "Perfumes"}</span>
             </div>
           </Link>
           <button className="icon-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close Menu">

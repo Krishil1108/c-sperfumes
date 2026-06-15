@@ -89,20 +89,35 @@ export const productType = defineType({
 
     // ── MEDIA ──────────────────────────────────────────────────────────
     defineField({
+      name: 'imageUpload',
+      title: 'Primary Product Image Upload',
+      type: 'image',
+      group: 'media',
+      options: { hotspot: true },
+      description: 'Upload primary display image. Recommended size: 1000x1000 px (1:1 square ratio).',
+    }),
+    defineField({
       name: 'image',
-      title: 'Primary Product Image URL',
+      title: 'Primary Product Image URL Fallback',
       type: 'url',
       group: 'media',
-      description: 'Main product card image (CDN or external URL).',
-      validation: Rule => Rule.required(),
+      description: 'Alternative: Paste external image URL (if not uploading a file).',
+    }),
+    defineField({
+      name: 'imagesUploads',
+      title: 'Gallery Images Uploads',
+      type: 'array',
+      group: 'media',
+      of: [{ type: 'image', options: { hotspot: true } }],
+      description: 'Upload additional gallery images. Recommended size: 1000x1000 px (1:1 square ratio).',
     }),
     defineField({
       name: 'images',
-      title: 'Gallery Image URLs',
+      title: 'Gallery Image URLs Fallback',
       type: 'array',
       group: 'media',
       of: [{ type: 'url' }],
-      description: 'Additional gallery images shown on detail page.',
+      description: 'Alternative: Paste external gallery URLs.',
     }),
 
     // ── ATTRIBUTES & NOTES ─────────────────────────────────────────────

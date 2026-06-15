@@ -212,5 +212,34 @@ export const siteSettingsType = defineType({
       of: [{ type: 'string' }],
       description: 'Checkmarks listed right above the footer copyright info.',
     }),
+
+    // ── WHATSAPP INTEGRATION ──────────────────────────────────────────────
+    defineField({
+      name: 'whatsappNumber',
+      title: 'WhatsApp Contact Number',
+      type: 'string',
+      initialValue: '+919876543210',
+      description: 'WhatsApp number of the administrator (with country code, e.g., +919876543210).',
+    }),
+    defineField({
+      name: 'whatsappWelcome',
+      title: 'WhatsApp Welcome Greeting',
+      type: 'string',
+      initialValue: 'Hello! Welcome to Ishaya Luxury Perfumes. How can we assist you today?',
+      description: 'The greeting text displayed inside the chat popup.',
+    }),
+    defineField({
+      name: 'whatsappQuestions',
+      title: 'WhatsApp Predefined Questions',
+      type: 'array',
+      of: [{ type: 'string' }],
+      initialValue: [
+        'Help me find the right fragrance for me!',
+        'Is cash on delivery (COD) available?',
+        'How can I track my perfume order?',
+        'Are your perfumes long-lasting?'
+      ],
+      description: 'Quick clickable options for the user to prefill their chat message (3-4 questions).',
+    }),
   ],
 });

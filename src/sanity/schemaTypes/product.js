@@ -46,7 +46,7 @@ export const productType = defineType({
       group: 'identity',
       options: {
         list: [
-          { title: 'Aura Bella', value: 'Aura Bella' },
+          { title: 'Ishaya Luxury Perfume', value: 'Ishaya Luxury Perfume' },
           { title: 'Dior', value: 'Dior' },
           { title: 'Chanel', value: 'Chanel' },
           { title: 'Armaf', value: 'Armaf' },

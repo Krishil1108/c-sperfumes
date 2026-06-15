@@ -45,7 +45,7 @@ async function scrapeProducts() {
       }
 
       // 1. Assign Premium Designer Brand
-      let brand = "Aura Bella";
+      let brand = "Ishaya Luxury Perfume";
       const titleLower = p.title.toLowerCase();
       if (titleLower.includes("sauvage") || titleLower.includes("joker") || idx % 6 === 0) {
         brand = "Dior";

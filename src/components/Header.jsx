@@ -148,10 +148,10 @@ export default function Header() {
 
           {/* Logo */}
           <Link href="/" className="logo">
-            <Sparkles className="logo-icon" fill="#c5a880" size={24} />
+            <img src="/logo.png" alt="Ishaya Luxury Perfume" className="logo-img" />
             <div>
-              <span>AURA BELLA</span>
-              <span className="logo-sub">Luxury Scents</span>
+              <span>ISHAYA LUXURY</span>
+              <span className="logo-sub">Perfumes</span>
             </div>
           </Link>
 
@@ -261,10 +261,10 @@ export default function Header() {
       <div className={`mobile-drawer ${mobileMenuOpen ? 'active' : ''}`}>
         <div className="mobile-drawer-header">
           <Link href="/" className="logo" onClick={() => setMobileMenuOpen(false)}>
-            <Sparkles fill="#c5a880" size={22} />
+            <img src="/logo.png" alt="Ishaya Luxury Perfume" className="logo-img" />
             <div>
-              <span>AURA BELLA</span>
-              <span className="logo-sub">Luxury Scents</span>
+              <span>ISHAYA LUXURY</span>
+              <span className="logo-sub">Perfumes</span>
             </div>
           </Link>
           <button className="icon-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close Menu">

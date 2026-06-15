@@ -6,8 +6,8 @@ import CartDrawer from '../components/CartDrawer';
 import BottomNav from '../components/BottomNav';
 
 export const metadata = {
-  title: 'Aura Bella | Luxury Organic Perfumes & Cologne Store',
-  description: 'Shop Aura Bella, a premium organic perfume boutique selling long-lasting oud collections, fresh aquatic notes, floral extracts, and custom gift sets.',
+  title: 'Ishaya Luxury Perfume | Luxury Organic Perfumes & Cologne Store',
+  description: 'Shop Ishaya Luxury Perfume, a premium organic perfume boutique selling long-lasting oud collections, fresh aquatic notes, floral extracts, and custom gift sets.',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
   themeColor: '#121212',
 };

@@ -1,5 +1,5 @@
 /**
- * Sanity Data Import Script — Aura Bella
+ * Sanity Data Import Script — Ishaya Luxury Perfume
  * =========================================
  * Pushes all products from mockProducts.json into Sanity CMS
  * 
@@ -62,7 +62,7 @@ const client = createClient({
 const dataPath = join(__dirname, '..', 'data', 'mockProducts.json');
 const products = JSON.parse(readFileSync(dataPath, 'utf-8'));
 
-console.log(`\n🌸 Aura Bella — Sanity Import Tool`);
+console.log(`\n✨ Ishaya Luxury — Sanity Import Tool`);
 console.log(`📦 Project: ${PROJECT_ID} | Dataset: ${DATASET}`);
 console.log(`🔑 Token: ${TOKEN.substring(0, 10)}...${TOKEN.slice(-6)}`);
 console.log(`🔢 Products to import: ${products.length}\n`);
@@ -75,7 +75,7 @@ function buildSanityDoc(product) {
     title: product.title,
     slug: { _type: 'slug', current: product.slug },
     description: product.description || '',
-    brand: product.brand || 'Aura Bella',
+    brand: product.brand || 'Ishaya Luxury Perfume',
     category: product.category || 'Luxury Perfume',
     concentration: product.concentration || 'Eau De Parfum (EDP)',
     gender: product.gender || 'Unisex',

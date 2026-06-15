@@ -8,15 +8,15 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 
 export default defineConfig({
   basePath: '/studio',
-  name: 'aura_bella_studio',
-  title: '🌸 Aura Bella — Admin Studio',
+  name: 'ishaya_luxury_studio',
+  title: '✨ Ishaya Luxury — Admin Studio',
   projectId,
   dataset,
   plugins: [
     structureTool({
       structure: (S) =>
         S.list()
-          .title('Aura Bella CMS')
+          .title('Ishaya Luxury CMS')
           .items([
             S.listItem()
               .title('🌸 All Products')

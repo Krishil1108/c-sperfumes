@@ -7,8 +7,8 @@ import { Sparkles, Lock, Eye, EyeOff } from 'lucide-react';
 
 // Simple owner-only password gate for Sanity Studio
 // The password is stored as an env var: NEXT_PUBLIC_STUDIO_PASSWORD
-// If no env var is set, defaults to 'aurabella-admin'
-const STUDIO_PASSWORD = process.env.NEXT_PUBLIC_STUDIO_PASSWORD || 'aurabella-admin';
+// If no env var is set, defaults to 'ishaya-admin'
+const STUDIO_PASSWORD = process.env.NEXT_PUBLIC_STUDIO_PASSWORD || 'ishaya-admin';
 
 export default function StudioPage() {
   const [password, setPassword] = useState('');
@@ -56,7 +56,7 @@ export default function StudioPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '8px' }}>
           <Sparkles fill="#c5a880" color="#c5a880" size={28} />
           <span style={{ fontFamily: 'Playfair Display, Georgia, serif', fontSize: '24px', fontWeight: '700', color: '#fff', letterSpacing: '0.05em' }}>
-            AURA BELLA
+            ISHAYA LUXURY
           </span>
         </div>
         <p style={{ fontSize: '11px', color: '#c5a880', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '36px' }}>

@@ -12,7 +12,7 @@ export function CartProvider({ children }) {
   // Load cart items from localStorage on mount
   useEffect(() => {
     setIsMounted(true);
-    const storedCart = localStorage.getItem('aura_bella_cart');
+    const storedCart = localStorage.getItem('ishaya_luxury_cart');
     if (storedCart) {
       try {
         setCartItems(JSON.parse(storedCart));
@@ -25,7 +25,7 @@ export function CartProvider({ children }) {
   // Save cart items to localStorage on change
   useEffect(() => {
     if (isMounted) {
-      localStorage.setItem('aura_bella_cart', JSON.stringify(cartItems));
+      localStorage.setItem('ishaya_luxury_cart', JSON.stringify(cartItems));
     }
   }, [cartItems, isMounted]);
 

@@ -6,7 +6,7 @@ import { Star } from 'lucide-react';
 const TESTIMONIALS = [
   {
     id: 1,
-    text: "Aura Bella Oud is absolutely magical! I sprayed it in the morning and I can still catch hints of sandalwood at 9 PM. Truly premium quality.",
+    text: "Ishaya Luxury Perfume Oud is absolutely magical! I sprayed it in the morning and I can still catch hints of sandalwood at 9 PM. Truly premium quality.",
     author: "Aradhana S. — Verified Buyer"
   },
   {

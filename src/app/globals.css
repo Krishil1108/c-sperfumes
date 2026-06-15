@@ -214,8 +214,16 @@ img {
   .logo { font-size: 19px; }
 }
 
-.logo-icon {
-  color: var(--color-accent);
+.logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .logo-img {
+    height: 26px;
+  }
 }
 
 .logo-sub {

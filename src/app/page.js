@@ -121,7 +121,7 @@ export default async function HomePage() {
       <section className="section-padding" style={{ backgroundColor: 'var(--color-bg-alt)', borderTop: '1px solid var(--color-border)' }}>
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">The Aura Bella Promise</span>
+            <span className="section-subtitle">The Ishaya Luxury Perfume Promise</span>
             <h2 className="section-title">Why Choose Us</h2>
           </div>
           <div className="why-us-grid">

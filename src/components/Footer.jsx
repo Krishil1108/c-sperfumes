@@ -23,10 +23,10 @@ export default function Footer() {
         <div className="footer-top">
           <div className="footer-brand-col">
             <Link href="/" className="logo">
-              <Sparkles className="logo-icon" fill="#c5a880" size={24} />
+              <img src="/logo.png" alt="Ishaya Luxury Perfume" className="logo-img" />
               <div>
-                <span>AURA BELLA</span>
-                <span className="logo-sub">Luxury Scents</span>
+                <span>ISHAYA LUXURY</span>
+                <span className="logo-sub">Perfumes</span>
               </div>
             </Link>
             <p className="footer-desc">
@@ -71,7 +71,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="footer-title">Join Aura VIP</h3>
+            <h3 className="footer-title">Join Ishaya VIP</h3>
             <p className="footer-desc" style={{ fontSize: '13px', color: '#afafaf' }}>
               Subscribe to unlock 15% off your first luxury fragrance order and receive weekly scent pairing articles.
             </p>
@@ -115,7 +115,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© {new Date().getFullYear()} Aura Bella Luxury Perfumes. All Rights Reserved. Built as a high-fidelity replica store.</p>
+          <p>© {new Date().getFullYear()} Ishaya Luxury Perfumes. All Rights Reserved. Built as a high-fidelity replica store.</p>
         </div>
       </div>
     </footer>

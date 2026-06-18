@@ -13,7 +13,7 @@ const SCENT_CATEGORIES = [
     name: 'Woody & Oud',
     description: '12 fragrances',
     emoji: '🌳',
-    img: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80',
     href: '/shop?scent=woody-oud',
     tagline: 'Deep. Earthy. Timeless.'
   },
@@ -21,7 +21,7 @@ const SCENT_CATEGORIES = [
     name: 'Floral Bouquet',
     description: '8 fragrances',
     emoji: '🌸',
-    img: 'https://images.unsplash.com/photo-1496062031256-47a19d8207e7?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1496062031256-47a19d8207e7?auto=format&fit=crop&w=600&q=80',
     href: '/shop?scent=floral',
     tagline: 'Delicate. Romantic. Fresh.'
   },
@@ -29,7 +29,7 @@ const SCENT_CATEGORIES = [
     name: 'Ocean Aquatic',
     description: '6 fragrances',
     emoji: '🌊',
-    img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
     href: '/shop?scent=aquatic',
     tagline: 'Crisp. Breezy. Free.'
   },
@@ -37,7 +37,7 @@ const SCENT_CATEGORIES = [
     name: 'Amber & Musk',
     description: '9 fragrances',
     emoji: '✨',
-    img: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=600&q=80',
     href: '/shop?scent=amber-musk',
     tagline: 'Warm. Sensual. Lingering.'
   }
@@ -77,6 +77,10 @@ export default async function HomePage() {
     ? `The ${settings.brandName} Promise`
     : "The Ishaya Luxury Perfume Promise";
 
+  const scentSubtitle = settings?.scentSubtitle || "Find Your Signature";
+  const scentTitle = settings?.scentTitle || "Shop By Fragrance Family";
+  const scentDescription = settings?.scentDescription || "Each scent family tells a different story. Discover yours.";
+
   return (
     <div>
       {/* Hero Slider */}
@@ -104,10 +108,10 @@ export default async function HomePage() {
       <section className="section-padding" id="categories">
         <div className="container">
           <div className="section-header">
-            <span className="section-subtitle">Find Your Signature</span>
-            <h2 className="section-title">Shop By Fragrance Family</h2>
+            <span className="section-subtitle">{scentSubtitle}</span>
+            <h2 className="section-title">{scentTitle}</h2>
             <p style={{ fontSize: '15px', color: 'var(--color-text-muted)', maxWidth: '480px', margin: '0 auto', lineHeight: '1.65' }}>
-              Each scent family tells a different story. Discover yours.
+              {scentDescription}
             </p>
           </div>
 

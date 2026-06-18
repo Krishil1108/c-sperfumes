@@ -27,6 +27,7 @@ function ShopContent({ products }) {
   const [sortBy, setSortBy] = useState('bestselling');
   const [gridCols, setGridCols] = useState(4);
   const [activeTab, setActiveTab] = useState(null);
+  const [selectedScent, setSelectedScent] = useState(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Parse query parameters on load
@@ -36,6 +37,13 @@ function ShopContent({ products }) {
       setActiveTab(tabParam);
     } else {
       setActiveTab(null);
+    }
+
+    const scentParam = searchParams.get('scent');
+    if (scentParam) {
+      setSelectedScent(scentParam);
+    } else {
+      setSelectedScent(null);
     }
   }, [searchParams]);
 
@@ -65,6 +73,7 @@ function ShopContent({ products }) {
     setMaxPrice(maxProductPrice);
     setStockOnly(false);
     setActiveTab(null);
+    setSelectedScent(null);
   };
 
   // 3. Filter and Sort execution
@@ -72,6 +81,20 @@ function ShopContent({ products }) {
     // URL Tab Filter
     if (activeTab === 'bestsellers' && !product.isBestseller) return false;
     if (activeTab === 'new-arrivals' && !product.isNewArrival) return false;
+
+    // Scent Note Filter (from homepage Scent Families section)
+    if (selectedScent) {
+      const notes = product.notes ? product.notes.map(n => n.toLowerCase()) : [];
+      if (selectedScent === 'woody-oud') {
+        if (!notes.includes('woody') && !notes.includes('oud') && !notes.includes('sandalwood') && !notes.includes('cedarwood') && !notes.includes('patchouli') && !notes.includes('earthy')) return false;
+      } else if (selectedScent === 'floral') {
+        if (!notes.includes('floral') && !notes.includes('rose') && !notes.includes('jasmine') && !notes.includes('orchid') && !notes.includes('lily') && !notes.includes('violet')) return false;
+      } else if (selectedScent === 'aquatic') {
+        if (!notes.includes('aquatic') && !notes.includes('fresh') && !notes.includes('sea breeze')) return false;
+      } else if (selectedScent === 'amber-musk') {
+        if (!notes.includes('amber') && !notes.includes('musk') && !notes.includes('sweet') && !notes.includes('vanilla') && !notes.includes('caramel')) return false;
+      }
+    }
 
     // Brand Filter
     if (selectedBrands.length > 0 && !selectedBrands.includes(product.brand)) return false;
@@ -106,7 +129,7 @@ function ShopContent({ products }) {
     return b.rating - a.rating;
   });
 
-  const activeFiltersCount = selectedBrands.length + selectedGenders.length + selectedConcentrations.length + (maxPrice < maxProductPrice ? 1 : 0) + (stockOnly ? 1 : 0);
+  const activeFiltersCount = selectedBrands.length + selectedGenders.length + selectedConcentrations.length + (maxPrice < maxProductPrice ? 1 : 0) + (stockOnly ? 1 : 0) + (selectedScent ? 1 : 0);
 
   const FilterPanelContent = () => (
     <>
@@ -248,8 +271,16 @@ function ShopContent({ products }) {
         </div>
 
         {/* Active Filters Pills row */}
-        {(selectedBrands.length > 0 || selectedGenders.length > 0 || selectedConcentrations.length > 0 || maxPrice < maxProductPrice || stockOnly || activeTab) && (
+        {(selectedBrands.length > 0 || selectedGenders.length > 0 || selectedConcentrations.length > 0 || maxPrice < maxProductPrice || stockOnly || activeTab || selectedScent) && (
           <div className="active-filters-bar">
+            {selectedScent && (
+              <span className="filter-pill">
+                Scent: {selectedScent === 'woody-oud' ? 'Woody & Oud' : selectedScent === 'amber-musk' ? 'Amber & Musk' : selectedScent}
+                <button className="filter-pill-close" onClick={() => setSelectedScent(null)}>
+                  <X size={12} />
+                </button>
+              </span>
+            )}
             {activeTab && (
               <span className="filter-pill">
                 Tab: {activeTab === 'bestsellers' ? 'Bestsellers' : 'New Arrivals'}

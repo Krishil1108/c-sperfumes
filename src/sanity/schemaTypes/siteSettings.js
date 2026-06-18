@@ -76,6 +76,26 @@ export const siteSettingsType = defineType({
       ]
     }),
 
+    defineField({
+      name: 'scentSubtitle',
+      title: 'Scent Families Section Subtitle',
+      type: 'string',
+      initialValue: 'Find Your Signature',
+    }),
+    defineField({
+      name: 'scentTitle',
+      title: 'Scent Families Section Title',
+      type: 'string',
+      initialValue: 'Shop By Fragrance Family',
+    }),
+    defineField({
+      name: 'scentDescription',
+      title: 'Scent Families Section Description',
+      type: 'text',
+      rows: 2,
+      initialValue: 'Each scent family tells a different story. Discover yours.',
+    }),
+
     // ── SCENT CATEGORIES ──────────────────────────────────────────────────
     defineField({
       name: 'scentCategories',

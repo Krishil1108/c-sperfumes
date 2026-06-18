@@ -215,7 +215,7 @@ img {
 }
 
 .logo-img {
-  height: 58px;
+  height: 100px;
   width: auto;
   object-fit: contain;
   transition: transform var(--transition-fast);
@@ -227,7 +227,7 @@ img {
 
 @media (max-width: 480px) {
   .logo-img {
-    height: 46px;
+    height: 72px;
   }
 }
 
@@ -2324,71 +2324,149 @@ img {
   letter-spacing: 0.04em;
 }
 
-/* ===================== WHY CHOOSE US ===================== */
+/* ===================== WHY CHOOSE US RE-DESIGN ===================== */
+.premium-why-us {
+  background-color: #050505;
+  border-top: 1px solid #1f1f1f;
+  position: relative;
+  overflow: hidden;
+}
+
+.why-us-bg-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, rgba(197, 168, 128, 0.08) 0%, rgba(5, 5, 5, 0) 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.premium-why-us .section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.premium-why-us .glow-text {
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.premium-why-us .text-light {
+  color: #ffffff;
+}
+
+.premium-why-us .text-muted-light {
+  color: #a0a0a0;
+}
+
 .why-us-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 32px;
   text-align: center;
+}
+
+@media (max-width: 900px) {
+  .why-us-grid {
+    gap: 24px;
+  }
 }
 
 @media (max-width: 768px) {
   .why-us-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
-    text-align: left;
+    text-align: center;
   }
 }
 
-.why-us-item {
-  padding: 28px 20px;
-  border-radius: 16px;
-  background-color: var(--color-white);
-  border: 1px solid var(--color-border);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+.why-us-item.glass-card {
+  padding: 40px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), background 0.4s ease, border-color 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.why-us-item:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+.why-us-item.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-@media (max-width: 768px) {
-  .why-us-item {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    padding: 20px 16px;
-  }
+.why-us-item.glass-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(197, 168, 128, 0.3);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(197, 168, 128, 0.1);
+}
+
+.why-us-item.glass-card:hover::before {
+  opacity: 1;
+}
+
+.why-us-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(197, 168, 128, 0.15) 0%, rgba(197, 168, 128, 0.05) 100%);
+  border: 1px solid rgba(197, 168, 128, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.why-us-item.glass-card:hover .why-us-icon-wrapper {
+  transform: scale(1.1) rotate(5deg);
+  background: linear-gradient(135deg, rgba(197, 168, 128, 0.25) 0%, rgba(197, 168, 128, 0.1) 100%);
+  border-color: rgba(197, 168, 128, 0.4);
 }
 
 .why-us-emoji {
   font-size: 32px;
-  margin-bottom: 14px;
-  display: block;
-}
-
-@media (max-width: 768px) {
-  .why-us-emoji {
-    margin-bottom: 0;
-    flex-shrink: 0;
-    font-size: 28px;
-  }
+  line-height: 1;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
 }
 
 .why-us-title {
-  font-size: 16px;
-  margin-bottom: 10px;
+  font-size: 18px;
+  margin-bottom: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
   font-family: var(--font-sans);
-  font-weight: 700;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
 }
 
 .why-us-desc {
-  font-size: 13px;
-  color: var(--color-text-muted);
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.7;
+  position: relative;
+  z-index: 1;
 }
 
 /* ===================== MOBILE FILTER DRAWER ===================== */

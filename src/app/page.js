@@ -135,19 +135,22 @@ export default async function HomePage() {
       <TestimonialsWrapper settings={settings} />
 
       {/* Why Choose Us */}
-      <section className="section-padding" style={{ backgroundColor: 'var(--color-bg-alt)', borderTop: '1px solid var(--color-border)' }}>
-        <div className="container">
+      <section className="section-padding premium-why-us">
+        <div className="why-us-bg-glow"></div>
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <div className="section-header">
-            <span className="section-subtitle">{promiseSubtitle}</span>
-            <h2 className="section-title">Why Choose Us</h2>
+            <span className="section-subtitle glow-text">{promiseSubtitle}</span>
+            <h2 className="section-title text-light">Why Choose Us</h2>
           </div>
           <div className="why-us-grid">
             {whyUs.map((item, idx) => (
-              <div className="why-us-item" key={idx}>
-                <span className="why-us-emoji">{item.emoji}</span>
+              <div className="why-us-item glass-card" key={idx}>
+                <div className="why-us-icon-wrapper">
+                  <span className="why-us-emoji">{item.emoji}</span>
+                </div>
                 <div>
-                  <h3 className="why-us-title">{item.title}</h3>
-                  <p className="why-us-desc">{item.desc}</p>
+                  <h3 className="why-us-title text-light">{item.title}</h3>
+                  <p className="why-us-desc text-muted-light">{item.desc}</p>
                 </div>
               </div>
             ))}

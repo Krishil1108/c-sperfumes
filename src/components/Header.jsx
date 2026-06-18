@@ -156,7 +156,7 @@ export default function Header({ settings }) {
 
           {/* Logo */}
           <Link href="/" className="logo">
-            <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
+            <img src={settings?.logo || "/logo.svg"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
           </Link>
 
           {/* Desktop Nav */}

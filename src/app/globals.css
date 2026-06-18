@@ -188,6 +188,12 @@ img {
   border-bottom-color: transparent;
 }
 
+.header-left-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .header-container {
   height: var(--header-height);
   display: flex;

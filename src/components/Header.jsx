@@ -145,19 +145,21 @@ export default function Header({ settings }) {
 
       <header className="main-header">
         <div className="container header-container">
-          {/* Hamburger — mobile only */}
-          <button
-            className="icon-btn mobile-menu-btn"
-            onClick={() => setMobileMenuOpen(true)}
-            aria-label="Open Navigation Menu"
-          >
-            <Menu size={22} />
-          </button>
+          <div className="header-left-group">
+            {/* Hamburger — mobile only */}
+            <button
+              className="icon-btn mobile-menu-btn"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open Navigation Menu"
+            >
+              <Menu size={22} />
+            </button>
 
-          {/* Logo */}
-          <Link href="/" className="logo">
-            <img src={settings?.logo || "/logo.svg"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
-          </Link>
+            {/* Logo */}
+            <Link href="/" className="logo">
+              <img src={settings?.logo || "/logo.svg"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
+            </Link>
+          </div>
 
           {/* Desktop Nav */}
           <nav className="nav-links desktop-nav">

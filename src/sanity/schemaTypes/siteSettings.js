@@ -139,7 +139,38 @@ export const siteSettingsType = defineType({
           type: 'object',
           title: 'Trust Highlight Card',
           fields: [
-            { name: 'emoji', title: 'Icon Emoji', type: 'string' },
+            {
+              name: 'iconType',
+              title: 'Premium Icon Selection',
+              type: 'string',
+              description: 'Select a premium vector icon to display (e.g. Crown, Flask, Gift Box, Shield, Leaf, Sparkles).',
+              options: {
+                list: [
+                  { title: 'Crown (Luxury)', value: 'crown' },
+                  { title: 'Flask (Botanical Formulas)', value: 'flask' },
+                  { title: 'Gift Box (Royal Packaging)', value: 'gift' },
+                  { title: 'Shield (Trust & Quality)', value: 'shield' },
+                  { title: 'Leaf (Organic & Clean)', value: 'leaf' },
+                  { title: 'Sparkles (Premium Essence)', value: 'sparkles' },
+                  { title: 'Legacy / None (Uses Emoji)', value: 'legacy' }
+                ],
+                layout: 'dropdown'
+              },
+              initialValue: 'legacy'
+            },
+            {
+              name: 'iconUpload',
+              title: 'Custom Vector / Image Icon',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Optional: Upload a custom premium SVG or PNG icon to override standard selectors.'
+            },
+            {
+              name: 'emoji',
+              title: 'Legacy Emoji',
+              type: 'string',
+              description: 'Used as fallback if no Premium Icon is selected or custom icon is uploaded (e.g. 👑, 🧪, 📦).'
+            },
             { name: 'title', title: 'Highlight Title', type: 'string' },
             { name: 'desc', title: 'Detailed Explanation', type: 'text', rows: 2 }
           ]

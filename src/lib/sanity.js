@@ -100,6 +100,10 @@ export async function getSiteSettings() {
         ...,
         "image": coalesce(imageUpload.asset->url, imageUrl)
       },
+      whyChooseUs[] {
+        ...,
+        "iconUploadUrl": iconUpload.asset->url
+      },
       "shopTheLookImage": coalesce(shopTheLookImageUpload.asset->url, shopTheLookImageUrl)
     }`;
     return await client.fetch(query);

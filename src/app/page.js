@@ -5,6 +5,7 @@ import TabbedProducts from '../components/TabbedProducts';
 import ShopTheLook from '../components/ShopTheLook';
 import TestimonialsWrapper from '../components/TestimonialsWrapper';
 import Link from 'next/link';
+import { Crown, FlaskConical, Gift, Shield, Leaf, Sparkles } from 'lucide-react';
 
 export const revalidate = 10;
 
@@ -60,6 +61,39 @@ const WHY_US = [
     desc: 'Every order arrives in a gold-embossed champagne sleeve with a custom greeting card — gift-ready by default.'
   }
 ];
+
+function renderWhyUsIcon(item) {
+  if (item.iconUploadUrl) {
+    return (
+      <img 
+        src={item.iconUploadUrl} 
+        alt={item.title} 
+        className="why-us-custom-icon" 
+      />
+    );
+  }
+
+  const iconName = item.iconType?.toLowerCase() || '';
+  const emoji = item.emoji || '';
+
+  let IconComponent = Sparkles;
+  
+  if (iconName === 'crown' || emoji === '👑') {
+    IconComponent = Crown;
+  } else if (iconName === 'flask' || emoji === '🧪') {
+    IconComponent = FlaskConical;
+  } else if (iconName === 'gift' || emoji === '📦') {
+    IconComponent = Gift;
+  } else if (iconName === 'shield') {
+    IconComponent = Shield;
+  } else if (iconName === 'leaf') {
+    IconComponent = Leaf;
+  } else if (iconName === 'sparkles') {
+    IconComponent = Sparkles;
+  }
+
+  return <IconComponent className="why-us-vector-icon" strokeWidth={1.2} />;
+}
 
 export default async function HomePage() {
   const products = await getPerfumes();
@@ -117,13 +151,18 @@ export default async function HomePage() {
 
           <div className="scent-categories-grid">
             {categories.map((cat, idx) => (
-              <Link href={cat.href || "/shop"} key={idx} className="scent-category-card">
-                <img src={cat.image} alt={cat.name} className="scent-category-img" />
+              <Link href={cat.href || "/shop"} key={idx} className="scent-category-card premium-card">
+                <div className="scent-category-img-wrapper">
+                  <img src={cat.image} alt={cat.name} className="scent-category-img" />
+                </div>
                 <div className="scent-category-overlay">
-                  <span className="scent-category-emoji">{cat.emoji}</span>
-                  <h3 className="scent-category-name">{cat.name}</h3>
-                  <span className="scent-category-desc">{cat.description}</span>
-                  <span className="scent-category-cta">{cat.tagline} →</span>
+                  <div className="scent-category-content">
+                    <span className="scent-category-emoji">{cat.emoji}</span>
+                    <h3 className="scent-category-name">{cat.name}</h3>
+                    <span className="scent-category-desc">{cat.description}</span>
+                    <div className="scent-category-line"></div>
+                    <span className="scent-category-cta">{cat.tagline}</span>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -140,17 +179,17 @@ export default async function HomePage() {
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <div className="section-header">
             <span className="section-subtitle glow-text">{promiseSubtitle}</span>
-            <h2 className="section-title text-light">Why Choose Us</h2>
+            <h2 className="section-title font-serif">Why Choose Us</h2>
           </div>
-          <div className="why-us-grid">
+          <div className="why-us-grid-editorial">
             {whyUs.map((item, idx) => (
-              <div className="why-us-item glass-card" key={idx}>
-                <div className="why-us-icon-wrapper">
-                  <span className="why-us-emoji">{item.emoji}</span>
+              <div className="why-us-editorial-item" key={idx}>
+                <div className="why-us-icon-container">
+                  {renderWhyUsIcon(item)}
                 </div>
-                <div>
-                  <h3 className="why-us-title text-light">{item.title}</h3>
-                  <p className="why-us-desc text-muted-light">{item.desc}</p>
+                <div className="why-us-editorial-content">
+                  <h3 className="why-us-editorial-title font-serif">{item.title}</h3>
+                  <p className="why-us-editorial-desc">{item.desc}</p>
                 </div>
               </div>
             ))}

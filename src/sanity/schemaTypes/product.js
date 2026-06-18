@@ -44,16 +44,6 @@ export const productType = defineType({
       title: 'Brand',
       type: 'string',
       group: 'identity',
-      options: {
-        list: [
-          { title: 'Ishaya Luxury Perfume', value: 'Ishaya Luxury Perfume' },
-          { title: 'Dior', value: 'Dior' },
-          { title: 'Chanel', value: 'Chanel' },
-          { title: 'Armaf', value: 'Armaf' },
-          { title: 'Afnan', value: 'Afnan' },
-          { title: 'Mancera', value: 'Mancera' },
-        ],
-      },
       description: 'Designer brand or house.',
     }),
     defineField({
@@ -126,15 +116,6 @@ export const productType = defineType({
       title: 'Concentration',
       type: 'string',
       group: 'attributes',
-      options: {
-        list: [
-          { title: 'Extrait De Parfum', value: 'Extrait De Parfum' },
-          { title: 'Eau De Parfum (EDP)', value: 'Eau De Parfum (EDP)' },
-          { title: 'Eau De Toilette (EDT)', value: 'Eau De Toilette (EDT)' },
-          { title: 'Bathing Bar', value: 'Bathing Bar' },
-          { title: 'Body Mist', value: 'Body Mist' },
-        ],
-      },
       description: 'Perfume concentration type.',
     }),
     defineField({

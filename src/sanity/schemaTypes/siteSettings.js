@@ -24,7 +24,7 @@ export const siteSettingsType = defineType({
       name: 'logoUpload',
       title: 'Brand Logo Upload',
       type: 'image',
-      description: 'Upload a brand logo file. Recommended size: height 32px (responsive auto width). Supports PNG, SVG, or JPG.',
+      description: 'Upload a brand logo file. Recommended size: height 58px (responsive auto width). Supports PNG, SVG, or JPG.',
     }),
 
     // ── HEADER ────────────────────────────────────────────────────────────

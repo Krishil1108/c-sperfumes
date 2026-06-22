@@ -184,66 +184,101 @@ export default function ProductDetailView({ product }) {
           })}
         </motion.div>
 
-        {/* Cinematic Review Carousel */}
-        <div className="cinematic-reviews mt-20">
-          <h2 className="font-serif text-3xl mb-8">Experiences</h2>
+        {/* Ultra-Premium Reviews Section */}
+        <div className="luxury-reviews-section">
+          <div className="reviews-header">
+            <h2 className="reviews-title">Scent Experiences</h2>
+            <span className="reviews-count">{reviews.length} Entries</span>
+          </div>
           
-          <motion.div ref={carouselRef} className="review-carousel-container overflow-hidden cursor-grab active:cursor-grabbing">
-            <motion.div 
-              drag="x" 
-              dragConstraints={carouselRef} 
-              className="review-carousel-inner flex gap-6"
-            >
-              {reviews.map((rev) => (
-                <div className="cinematic-review-card shrink-0 interactive-hover" key={rev.id}>
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="font-bold text-[var(--color-primary)]">{rev.author}</span>
-                    <span className="text-xs text-[var(--color-text-muted)]">{rev.date}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '2px', marginBottom: '12px' }}>
+          <div className="reviews-list">
+            {reviews.map((rev) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="review-entry" 
+                key={rev.id}
+              >
+                <div className="review-quote-mark">"</div>
+                
+                <p className="review-comment">
+                  {rev.comment}
+                </p>
+                
+                <div className="review-author-block">
+                  <div className="review-stars">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} fill={i < rev.rating ? '#ffb800' : 'none'} color="#ffb800" size={12} />
+                      <Star key={i} fill={i < rev.rating ? '#c5a880' : 'none'} color="#c5a880" size={14} />
                     ))}
                   </div>
-                  <p className="text-sm text-[var(--color-text)] leading-relaxed">{rev.comment}</p>
+                  <div className="review-divider"></div>
+                  <div className="review-meta">
+                    <span className="review-author-name">{rev.author}</span>
+                    <span className="review-date-text">{rev.date}</span>
+                  </div>
                 </div>
-              ))}
-            </motion.div>
-          </motion.div>
+              </motion.div>
+            ))}
+          </div>
 
-          {/* Luxury Review Form */}
-          <div className="luxury-review-form mt-16 p-8 relative overflow-hidden">
-            <div className="luxury-form-bg absolute inset-0 z-0"></div>
-            <div className="relative z-10">
-              <h3 className="font-serif text-2xl mb-6 text-white">Leave your signature</h3>
+          {/* Refined Soft-Tone Review Form */}
+          <div className="luxury-form-container">
+            <div className="luxury-form-bg-blob"></div>
+            
+            <div className="luxury-form-content">
+              <h3 className="form-title">Leave your signature</h3>
+              <p className="form-subtitle">Share your olfactory journey with our community.</p>
+              
               {reviewSubmitted && (
                 <motion.div 
                   initial={{ opacity: 0, y: -10 }} 
                   animate={{ opacity: 1, y: 0 }} 
-                  className="text-[var(--color-accent)] mb-6 font-medium"
+                  className="form-success-msg"
                 >
                   Your experience has been elegantly recorded. Thank you.
                 </motion.div>
               )}
-              <form onSubmit={handleReviewSubmit} className="space-y-6">
-                <div className="flex gap-6">
-                  <div className="flex-1 relative">
-                    <input type="text" className="luxury-input w-full" placeholder="Your Name" value={reviewerName} onChange={(e) => setReviewerName(e.target.value)} required />
+              
+              <form onSubmit={handleReviewSubmit} className="luxury-form">
+                <div className="form-grid-2">
+                  <div className="input-wrapper">
+                    <input 
+                      type="text" 
+                      className="elegant-input" 
+                      placeholder="Your Name" 
+                      value={reviewerName} 
+                      onChange={(e) => setReviewerName(e.target.value)} 
+                      required 
+                    />
                   </div>
-                  <div className="flex-1 relative">
-                    <select className="luxury-input w-full" value={reviewerRating} onChange={(e) => setReviewerRating(e.target.value)}>
+                  <div className="input-wrapper">
+                    <select 
+                      className="elegant-input" 
+                      value={reviewerRating} 
+                      onChange={(e) => setReviewerRating(e.target.value)}
+                    >
                       <option value={5}>5 Stars (Exceptional)</option>
                       <option value={4}>4 Stars (Splendid)</option>
                       <option value={3}>3 Stars (Fair)</option>
                     </select>
                   </div>
                 </div>
-                <div className="relative">
-                  <textarea className="luxury-input w-full h-24" placeholder="Detail your experience..." value={reviewerText} onChange={(e) => setReviewerText(e.target.value)} required />
+                <div className="input-wrapper">
+                  <textarea 
+                    className="elegant-textarea" 
+                    placeholder="Detail your sensory experience..." 
+                    value={reviewerText} 
+                    onChange={(e) => setReviewerText(e.target.value)} 
+                    required 
+                  />
                 </div>
-                <MagneticButton type="submit" className="luxury-submit-btn w-full py-4 text-center">
-                  Submit Review
-                </MagneticButton>
+                <div className="form-submit-wrapper">
+                  <button type="submit" className="elegant-submit-btn">
+                    Submit Experience
+                  </button>
+                </div>
               </form>
             </div>
           </div>

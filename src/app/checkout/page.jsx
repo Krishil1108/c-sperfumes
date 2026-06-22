@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../../lib/CartContext';
-import { ShoppingBag, ArrowLeft, CheckCircle, Gift } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, CheckCircle, Gift, CreditCard, Truck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+// Qfix doesn't use an external script loader like Razorpay. We build a form dynamically instead.
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -28,6 +30,8 @@ export default function CheckoutPage() {
 
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [orderId, setOrderId] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('online');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Protect page: Redirect to home if cart is empty and success is not showing
   useEffect(() => {
@@ -47,15 +51,63 @@ export default function CheckoutPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate form is filled
     if (Object.values(formData).every(val => val.trim().length > 0)) {
-      // Mock order generation ID
-      const generatedId = 'AB-' + Math.floor(100000 + Math.random() * 900000);
-      setOrderId(generatedId);
-      setIsSuccessOpen(true);
-    }
+      if (paymentMethod === 'cod') {
+        const generatedId = 'AB-' + Math.floor(100000 + Math.random() * 900000);
+        setOrderId(generatedId);
+        setIsSuccessOpen(true);
+        return;
+      }
+
+      } else {
+        setIsProcessing(true);
+        try {
+          const response = await fetch('/api/qfix/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              amount: cartTotal,
+              customerName: `${formData.firstName} ${formData.lastName}`,
+              customerEmail: formData.email,
+              customerPhone: formData.phone
+            })
+          });
+          
+          if (!response.ok) throw new Error('Network response was not ok');
+          const formFields = await response.json();
+          
+          if (formFields.error) {
+            alert('Server error generating Qfix payload. Please check your credentials.');
+            setIsProcessing(false);
+            return;
+          }
+
+          // Dynamically create a form and submit it to Qfix endpoint
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = process.env.NEXT_PUBLIC_QFIX_ENDPOINT_URL || 'https://secure.qfixinfo.com/v2/payment';
+          
+          for (const key in formFields) {
+            if (formFields.hasOwnProperty(key)) {
+              const hiddenField = document.createElement('input');
+              hiddenField.type = 'hidden';
+              hiddenField.name = key;
+              hiddenField.value = formFields[key];
+              form.appendChild(hiddenField);
+            }
+          }
+          
+          document.body.appendChild(form);
+          form.submit();
+          
+        } catch (error) {
+          console.error(error);
+          alert('Payment initialization failed');
+          setIsProcessing(false);
+        }
+      }
   };
 
   const handleCloseSuccess = () => {
@@ -168,9 +220,63 @@ export default function CheckoutPage() {
             />
           </div>
 
-          <button type="submit" className="checkout-btn" style={{ marginTop: '12px' }}>
+          <div className="form-group" style={{ marginTop: '16px' }}>
+            <label className="form-label">Payment Method</label>
+            <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
+              
+              <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: paymentMethod === 'upi' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.3s' }}>
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="upi" 
+                  checked={paymentMethod === 'upi'} 
+                  onChange={() => setPaymentMethod('upi')} 
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
+                />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style={{ width: '32px', filter: paymentMethod === 'upi' ? 'none' : 'grayscale(1)' }} />
+                <div style={{ flex: 1 }}>
+                  <span style={{ display: 'block', fontWeight: '600' }}>UPI (GPay, PhonePe, Paytm)</span>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>Fast and secure payment via UPI Apps</span>
+                </div>
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: paymentMethod === 'online' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.3s' }}>
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="online" 
+                  checked={paymentMethod === 'online'} 
+                  onChange={() => setPaymentMethod('online')} 
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
+                />
+                <CreditCard size={24} style={{ color: paymentMethod === 'online' ? 'var(--color-accent)' : 'inherit' }} />
+                <div style={{ flex: 1 }}>
+                  <span style={{ display: 'block', fontWeight: '600' }}>Cards & Netbanking</span>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>Credit Cards, Debit Cards, Net Banking</span>
+                </div>
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: paymentMethod === 'cod' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.3s' }}>
+                <input 
+                  type="radio" 
+                  name="paymentMethod" 
+                  value="cod" 
+                  checked={paymentMethod === 'cod'} 
+                  onChange={() => setPaymentMethod('cod')} 
+                  style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
+                />
+                <Truck size={24} style={{ color: paymentMethod === 'cod' ? 'var(--color-accent)' : 'inherit' }} />
+                <div style={{ flex: 1 }}>
+                  <span style={{ display: 'block', fontWeight: '600' }}>Cash On Delivery</span>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>Pay at your doorstep when receiving the package</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" className="checkout-btn" style={{ marginTop: '12px' }} disabled={isProcessing}>
             <ShoppingBag size={18} />
-            <span>Place Secure Cash On Delivery Order</span>
+            <span>{isProcessing ? 'Processing...' : (paymentMethod === 'online' || paymentMethod === 'upi' ? 'Pay Securely with Qfix' : 'Place Cash On Delivery Order')}</span>
           </button>
         </form>
 
@@ -245,7 +351,7 @@ export default function CheckoutPage() {
               <p style={{ marginBottom: '6px' }}><strong>Order Reference:</strong> {orderId}</p>
               <p style={{ marginBottom: '6px' }}><strong>Delivery Name:</strong> {formData.firstName} {formData.lastName}</p>
               <p style={{ marginBottom: '6px' }}><strong>Estimated Arrival:</strong> 3 - 5 Business Days</p>
-              <p><strong>Payment Method:</strong> Cash On Delivery</p>
+              <p><strong>Payment Method:</strong> {paymentMethod === 'online' ? 'Cards/Netbanking' : paymentMethod === 'upi' ? 'UPI' : 'Cash On Delivery'}</p>
             </div>
             <button onClick={handleCloseSuccess} className="btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
               Continue Shopping

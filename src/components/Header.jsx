@@ -156,7 +156,7 @@ export default function Header({ settings }) {
             </button>
 
             {/* Logo */}
-            <Link href="/" className="logo">
+            <Link href="/" className="logo" style={{ transform: 'scale(1.4) translateX(-15px)' }}>
               <img src={settings?.logo || "/logo.svg"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
             </Link>
           </div>

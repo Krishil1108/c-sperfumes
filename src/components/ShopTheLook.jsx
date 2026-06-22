@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useCart } from '../lib/CartContext';
 import { Star, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ShopTheLook({ products, settings }) {
   // We'll select 3 beautiful products to associate with hotspots
@@ -43,7 +44,7 @@ export default function ShopTheLook({ products, settings }) {
               return (
                 <div 
                   key={p.id}
-                  className={`hotspot-pin ${idx === activeIdx ? 'active' : ''}`}
+                  className={`hotspot-pin interactive-hover ${idx === activeIdx ? 'active' : ''}`}
                   style={{ top: `${coords.y}%`, left: `${coords.x}%` }}
                   onClick={() => setActiveIdx(idx)}
                 >
@@ -56,69 +57,78 @@ export default function ShopTheLook({ products, settings }) {
           </div>
 
           <div className="stl-card-holder">
-            {activeProduct && (
-              <div className="product-card" style={{ width: '100%' }}>
-                {activeProduct.discount > 0 && (
-                  <div className="product-badge sale">{activeProduct.discount}% OFF</div>
-                )}
-                
-                <Link href={`/product/${activeProduct.slug}`} className="product-img-wrapper" style={{ maxHeight: '280px' }}>
-                  <img 
-                    src={activeProduct.image} 
-                    alt={activeProduct.title} 
-                    className="product-img"
-                  />
-                </Link>
-
-                <div className="product-details">
-                  <span style={{ fontSize: '11px', color: 'var(--color-accent)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '8px' }}>
-                    FEATURED SCENT
-                  </span>
-                  <div className="product-notes">
-                    {activeProduct.notes ? activeProduct.notes.join(" • ") : "Luxury Notes"}
-                  </div>
+            <AnimatePresence mode="wait">
+              {activeProduct && (
+                <motion.div 
+                  key={activeProduct.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="product-card group" style={{ width: '100%' }}
+                >
+                  {activeProduct.discount > 0 && (
+                    <div className="product-badge sale">{activeProduct.discount}% OFF</div>
+                  )}
                   
-                  <Link href={`/product/${activeProduct.slug}`}>
-                    <h3 className="product-title" style={{ fontSize: '20px' }}>{activeProduct.title}</h3>
+                  <Link href={`/product/${activeProduct.slug}`} className="product-img-wrapper overflow-hidden" style={{ maxHeight: '280px' }}>
+                    <img 
+                      src={activeProduct.image} 
+                      alt={activeProduct.title} 
+                      className="product-img transition-transform duration-700 group-hover:scale-105"
+                    />
                   </Link>
 
-                  <div className="product-rating">
-                    <div style={{ display: 'flex' }}>
-                      {[...Array(5)].map((_, i) => (
-                        <Star 
-                          key={i} 
-                          className="rating-star" 
-                          fill={i < Math.floor(activeProduct.rating) ? '#ffb800' : 'none'} 
-                          color="#ffb800" 
-                        />
-                      ))}
-                    </div>
-                    <span className="rating-value">{activeProduct.rating}</span>
-                  </div>
-
-                  <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '20px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {activeProduct.description}
-                  </p>
-
-                  <div className="product-footer">
-                    <div className="price-box">
-                      {activeProduct.price > activeProduct.salePrice && (
-                        <span className="original-price">₹{activeProduct.price}</span>
-                      )}
-                      <span className="sale-price">₹{activeProduct.salePrice}</span>
+                  <div className="product-details">
+                    <span style={{ fontSize: '11px', color: 'var(--color-accent)', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '8px' }}>
+                      FEATURED SCENT
+                    </span>
+                    <div className="product-notes">
+                      {activeProduct.notes ? activeProduct.notes.join(" • ") : "Luxury Notes"}
                     </div>
                     
-                    <button 
-                      className="btn-add-cart" 
-                      onClick={() => addToCart(activeProduct)}
-                      aria-label="Add featured product to bag"
-                    >
-                      <ShoppingCart size={16} />
-                    </button>
+                    <Link href={`/product/${activeProduct.slug}`}>
+                      <h3 className="product-title group-hover:text-[var(--color-accent)] transition-colors" style={{ fontSize: '20px' }}>{activeProduct.title}</h3>
+                    </Link>
+
+                    <div className="product-rating">
+                      <div style={{ display: 'flex' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star 
+                            key={i} 
+                            className="rating-star" 
+                            fill={i < Math.floor(activeProduct.rating) ? '#ffb800' : 'none'} 
+                            color="#ffb800" 
+                          />
+                        ))}
+                      </div>
+                      <span className="rating-value">{activeProduct.rating}</span>
+                    </div>
+
+                    <p style={{ fontSize: '13px', color: 'var(--color-text-muted)', marginBottom: '20px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      {activeProduct.description}
+                    </p>
+
+                    <div className="product-footer">
+                      <div className="price-box">
+                        {activeProduct.price > activeProduct.salePrice && (
+                          <span className="original-price">₹{activeProduct.price}</span>
+                        )}
+                        <span className="sale-price">₹{activeProduct.salePrice}</span>
+                      </div>
+                      
+                      <button 
+                        className="btn-add-cart interactive-hover" 
+                        onClick={() => addToCart(activeProduct)}
+                        aria-label="Add featured product to bag"
+                      >
+                        <ShoppingCart size={16} />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>

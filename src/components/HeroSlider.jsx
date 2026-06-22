@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const HERO_SLIDES = [
   {
@@ -49,6 +50,28 @@ export default function HeroSlider({ settings }) {
     return () => clearInterval(timer);
   }, [slides]);
 
+  // Framer motion variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    },
+    exit: { opacity: 0, transition: { duration: 0.5 } }
+  };
+
+  const itemVariants = {
+    hidden: { y: 30, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
+    }
+  };
+
   return (
     <section className="hero-section" aria-label="Hero Campaigns">
       {slides.map((slide, idx) => (
@@ -59,19 +82,36 @@ export default function HeroSlider({ settings }) {
           <img 
             src={slide.image} 
             alt={slide.title} 
-            className="hero-bg-media" 
+            className="hero-bg-media"
+            style={{ 
+              animation: idx === activeIdx ? 'kenBurns 10s ease-out forwards' : 'none',
+              transformOrigin: 'center center'
+            }}
           />
           
           <div className="container">
-            <div className="hero-content">
-              <span className="hero-tagline">{slide.tagline}</span>
-              <h1 className="hero-title">{slide.title}</h1>
-              <p className="hero-desc">{slide.desc}</p>
-              <Link href={slide.link || "/#bestsellers"} className="btn-primary">
-                <span>{slide.btnText}</span>
-                <ArrowRight size={16} />
-              </Link>
-            </div>
+            <AnimatePresence mode="wait">
+              {idx === activeIdx && (
+                <motion.div 
+                  className="hero-content"
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  style={{ animation: 'none' }} // Override global css animation
+                >
+                  <motion.span variants={itemVariants} className="hero-tagline">{slide.tagline}</motion.span>
+                  <motion.h1 variants={itemVariants} className="hero-title">{slide.title}</motion.h1>
+                  <motion.p variants={itemVariants} className="hero-desc">{slide.desc}</motion.p>
+                  <motion.div variants={itemVariants}>
+                    <Link href={slide.link || "/#bestsellers"} className="btn-primary interactive-hover">
+                      <span>{slide.btnText}</span>
+                      <ArrowRight size={16} />
+                    </Link>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       ))}
@@ -80,7 +120,7 @@ export default function HeroSlider({ settings }) {
         {slides.map((_, idx) => (
           <button 
             key={idx}
-            className={`hero-dot ${idx === activeIdx ? 'active' : ''}`}
+            className={`hero-dot interactive-hover ${idx === activeIdx ? 'active' : ''}`}
             onClick={() => setActiveIdx(idx)}
             aria-label={`Go to slide ${idx + 1}`}
           />

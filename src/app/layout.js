@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import CartDrawer from '../components/CartDrawer';
 import BottomNav from '../components/BottomNav';
 import WhatsAppWidget from '../components/WhatsAppWidget';
+import CustomCursor from '../components/CustomCursor';
 
 import { getSiteSettings } from '../lib/sanity';
 
@@ -22,6 +23,7 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <body>
         <CartProvider>
+          <CustomCursor />
           <Header settings={settings} />
           <main>{children}</main>
           <Footer settings={settings} />

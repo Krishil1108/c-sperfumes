@@ -6,6 +6,8 @@ import ShopTheLook from '../components/ShopTheLook';
 import TestimonialsWrapper from '../components/TestimonialsWrapper';
 import Link from 'next/link';
 import { Crown, FlaskConical, Gift, Shield, Leaf, Sparkles } from 'lucide-react';
+import ScrollReveal from '../components/ScrollReveal';
+import InfiniteMarquee from '../components/InfiniteMarquee';
 
 export const revalidate = 10;
 
@@ -60,6 +62,13 @@ const WHY_US = [
     title: 'Royal Gift Packaging',
     desc: 'Every order arrives in a gold-embossed champagne sleeve with a custom greeting card — gift-ready by default.'
   }
+];
+
+const TRUST_BADGES = [
+  "🌿 100% Organic Formula",
+  "🐰 Cruelty-Free & Vegan",
+  "⏳ 12-Hour Long Sillage",
+  "🇮🇳 Crafted in India"
 ];
 
 function renderWhyUsIcon(item) {
@@ -121,77 +130,82 @@ export default async function HomePage() {
       <HeroSlider settings={settings} />
 
       {/* Trust Badges */}
-      <section className="trust-badges-bar">
-        <div className="container">
-          <div className="trust-badges-inner">
-            <div className="trust-badge-item">🌿 100% Organic Formula</div>
-            <div className="trust-badge-item">🐰 Cruelty-Free & Vegan</div>
-            <div className="trust-badge-item">⏳ 12-Hour Long Sillage</div>
-            <div className="trust-badge-item">🇮🇳 Crafted in India</div>
-          </div>
-        </div>
-      </section>
+      <InfiniteMarquee items={TRUST_BADGES} />
 
       {/* Tabbed Products */}
-      <TabbedProducts products={products} />
+      <ScrollReveal yOffset={60}>
+        <TabbedProducts products={products} />
+      </ScrollReveal>
 
       {/* Shop the Look */}
-      <ShopTheLook products={products} settings={settings} />
+      <ScrollReveal yOffset={60}>
+        <ShopTheLook products={products} settings={settings} />
+      </ScrollReveal>
 
       {/* Fragrance Categories */}
       <section className="section-padding" id="categories">
         <div className="container">
-          <div className="section-header">
-            <span className="section-subtitle">{scentSubtitle}</span>
-            <h2 className="section-title">{scentTitle}</h2>
-            <p style={{ fontSize: '15px', color: 'var(--color-text-muted)', maxWidth: '480px', margin: '0 auto', lineHeight: '1.65' }}>
-              {scentDescription}
-            </p>
-          </div>
+          <ScrollReveal delay={0.1}>
+            <div className="section-header">
+              <span className="section-subtitle">{scentSubtitle}</span>
+              <h2 className="section-title">{scentTitle}</h2>
+              <p style={{ fontSize: '15px', color: 'var(--color-text-muted)', maxWidth: '480px', margin: '0 auto', lineHeight: '1.65' }}>
+                {scentDescription}
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="scent-categories-grid">
             {categories.map((cat, idx) => (
-              <Link href={cat.href || "/shop"} key={idx} className="scent-category-card premium-card">
-                <div className="scent-category-img-wrapper">
-                  <img src={cat.image} alt={cat.name} className="scent-category-img" />
-                </div>
-                <div className="scent-category-overlay">
-                  <div className="scent-category-content">
-                    <span className="scent-category-emoji">{cat.emoji}</span>
-                    <h3 className="scent-category-name">{cat.name}</h3>
-                    <span className="scent-category-desc">{cat.description}</span>
-                    <div className="scent-category-line"></div>
-                    <span className="scent-category-cta">{cat.tagline}</span>
+              <ScrollReveal delay={0.1 * idx} key={idx}>
+                <Link href={cat.href || "/shop"} className="scent-category-card premium-card interactive-hover overflow-hidden group">
+                  <div className="scent-category-img-wrapper transition-transform duration-700 ease-out group-hover:scale-110">
+                    <img src={cat.image} alt={cat.name} className="scent-category-img" />
                   </div>
-                </div>
-              </Link>
+                  <div className="scent-category-overlay transition-opacity duration-500 group-hover:bg-black/60">
+                    <div className="scent-category-content">
+                      <span className="scent-category-emoji transition-transform duration-500 group-hover:scale-125">{cat.emoji}</span>
+                      <h3 className="scent-category-name">{cat.name}</h3>
+                      <span className="scent-category-desc text-white/80 group-hover:text-white transition-colors">{cat.description}</span>
+                      <div className="scent-category-line scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                      <span className="scent-category-cta opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">{cat.tagline}</span>
+                    </div>
+                  </div>
+                </Link>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* Customer Testimonials */}
-      <TestimonialsWrapper settings={settings} />
+      <ScrollReveal yOffset={60}>
+        <TestimonialsWrapper settings={settings} />
+      </ScrollReveal>
 
       {/* Why Choose Us */}
       <section className="section-padding premium-why-us">
         <div className="why-us-bg-glow"></div>
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
-          <div className="section-header">
-            <span className="section-subtitle glow-text">{promiseSubtitle}</span>
-            <h2 className="section-title font-serif">Why Choose Us</h2>
-          </div>
+          <ScrollReveal>
+            <div className="section-header">
+              <span className="section-subtitle glow-text">{promiseSubtitle}</span>
+              <h2 className="section-title font-serif">Why Choose Us</h2>
+            </div>
+          </ScrollReveal>
           <div className="why-us-grid-editorial">
             {whyUs.map((item, idx) => (
-              <div className="why-us-editorial-item" key={idx}>
-                <div className="why-us-icon-container">
-                  {renderWhyUsIcon(item)}
+              <ScrollReveal delay={0.15 * idx} key={idx}>
+                <div className="why-us-editorial-item group interactive-hover transition-transform duration-500 hover:-translate-y-2">
+                  <div className="why-us-icon-container group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(197,168,128,0.4)] transition-all duration-500">
+                    {renderWhyUsIcon(item)}
+                  </div>
+                  <div className="why-us-editorial-content">
+                    <h3 className="why-us-editorial-title font-serif">{item.title}</h3>
+                    <p className="why-us-editorial-desc">{item.desc}</p>
+                  </div>
                 </div>
-                <div className="why-us-editorial-content">
-                  <h3 className="why-us-editorial-title font-serif">{item.title}</h3>
-                  <p className="why-us-editorial-desc">{item.desc}</p>
-                </div>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>

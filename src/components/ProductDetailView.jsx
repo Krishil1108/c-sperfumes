@@ -1,29 +1,30 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useCart } from '../lib/CartContext';
 import { Star, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import LivingBottle from './LivingBottle';
+import MagneticButton from './MagneticButton';
 
 export default function ProductDetailView({ product }) {
   const { addToCart } = useCart();
-  const [activeImgIdx, setActiveImgIdx] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeAccordion, setActiveAccordion] = useState('notes');
+  const carouselRef = useRef(null);
 
   // Interactive Reviews state
   const [reviews, setReviews] = useState([
     { id: 1, author: "Meera K.", rating: 5, date: "2 days ago", comment: "Absolutely exquisite! Smells incredibly elegant and expensive. The woody undertones last for over 10 hours." },
-    { id: 2, author: "Aman R.", rating: 4, date: "1 week ago", comment: "Excellent projection. Received three compliments on my first day of wearing it. Highly recommend for evening wear." }
+    { id: 2, author: "Aman R.", rating: 4, date: "1 week ago", comment: "Excellent projection. Received three compliments on my first day of wearing it. Highly recommend for evening wear." },
+    { id: 3, author: "Sarah L.", rating: 5, date: "2 weeks ago", comment: "The packaging alone is worth it. But the scent is another level. Very mature and sophisticated." },
   ]);
   const [reviewerName, setReviewerName] = useState("");
   const [reviewerRating, setReviewerRating] = useState(5);
   const [reviewerText, setReviewerText] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
-  // Gallery images list (ensures fallback gallery is filled)
-  const imagesList = (product.images && product.images.filter(Boolean).length > 0)
-    ? product.images.filter(Boolean)
-    : (product.image ? [product.image] : []);
+  const mainImage = product.images && product.images[0] ? product.images[0] : product.image;
 
   const handleAddCart = () => {
     addToCart(product, quantity);
@@ -52,205 +53,202 @@ export default function ProductDetailView({ product }) {
   };
 
   return (
-    <div className="detail-grid">
-      {/* Product Image Gallery */}
-      <div className="gallery-wrapper">
-        <div className="main-image-holder">
-          <img 
-            src={imagesList[activeImgIdx]} 
-            alt={product.title} 
-            className="main-image" 
-          />
-        </div>
-        {imagesList.length > 1 && (
-          <div className="thumbnails-holder">
-            {imagesList.map((imgUrl, idx) => (
-              <div 
-                key={idx} 
-                className={`thumb-holder ${idx === activeImgIdx ? 'active' : ''}`}
-                onClick={() => setActiveImgIdx(idx)}
-              >
-                <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="thumb-image" />
-              </div>
-            ))}
-          </div>
-        )}
+    <div className="product-page-container">
+      {/* Cinematic Sticky Left Column */}
+      <div className="product-visuals-col">
+        <LivingBottle image={mainImage} alt={product.title} />
       </div>
 
-      {/* Product Details Info */}
-      <div className="detail-info">
-        <span style={{ fontSize: '12px', color: 'var(--color-accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-          {product.category}
-        </span>
-        <h1 className="detail-title">{product.title}</h1>
-        
-        <div className="product-rating">
-          <div style={{ display: 'flex' }}>
-            {[...Array(5)].map((_, i) => (
-              <Star 
-                key={i} 
-                className="rating-star" 
-                fill={i < Math.floor(product.rating) ? '#ffb800' : 'none'} 
-                color="#ffb800" 
-              />
-            ))}
+      {/* Scrolling Right Column */}
+      <div className="product-details-col">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="product-header-block"
+        >
+          <span className="product-category-tag">{product.category}</span>
+          <h1 className="product-main-title font-serif">{product.title}</h1>
+          <div className="title-divider"></div>
+          
+          <div className="product-rating interactive-hover">
+            <div style={{ display: 'flex' }}>
+              {[...Array(5)].map((_, i) => (
+                <Star 
+                  key={i} 
+                  className="rating-star" 
+                  fill={i < Math.floor(product.rating) ? '#ffb800' : 'none'} 
+                  color="#ffb800" 
+                />
+              ))}
+            </div>
+            <span className="rating-value">{product.rating}</span>
+            <span className="rating-count">({product.reviewsCount + reviews.length - 2} Reviews)</span>
           </div>
-          <span className="rating-value">{product.rating}</span>
-          <span className="rating-count">({product.reviewsCount + reviews.length - 2} Customer Reviews)</span>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', margin: '8px 0' }}>
-          <span className="sale-price" style={{ fontSize: '28px' }}>₹{product.salePrice}</span>
-          {product.price > product.salePrice && (
-            <>
-              <span className="original-price" style={{ fontSize: '18px' }}>₹{product.price}</span>
-              <span style={{ color: '#0ca678', fontSize: '14px', fontWeight: '600' }}>({product.discount}% OFF)</span>
-            </>
-          )}
-        </div>
+          <div className="product-price-block">
+            <span className="sale-price">₹{product.salePrice}</span>
+            {product.price > product.salePrice && (
+              <>
+                <span className="original-price">₹{product.price}</span>
+                <span className="discount-tag">({product.discount}% OFF)</span>
+              </>
+            )}
+          </div>
+        </motion.div>
 
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '15px', lineHeight: '1.7' }}>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="product-description-text"
+        >
           {product.description}
-        </p>
+        </motion.p>
 
         {product.notes && (
-          <div style={{ margin: '12px 0' }}>
-            <span style={{ display: 'block', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase', color: 'var(--color-primary)', marginBottom: '8px' }}>
-              Scent Accords & Notes:
-            </span>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="product-notes-block"
+          >
+            <span className="notes-label">Scent Accords & Notes:</span>
             <div className="detail-notes">
               {product.notes.map((note, i) => (
                 <span key={i} className="note-badge">{note}</span>
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
 
-        <div className="qty-selector-wrapper">
-          <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--color-border)', borderRadius: '40px', padding: '6px' }}>
-            <button className="qty-btn" onClick={() => setQuantity(q => Math.max(1, q - 1))} style={{ padding: '4px' }}>
-              -
-            </button>
-            <span className="qty-value" style={{ padding: '0 16px', minWidth: '40px', textAlign: 'center' }}>{quantity}</span>
-            <button className="qty-btn" onClick={() => setQuantity(q => q + 1)} style={{ padding: '4px' }}>
-              +
-            </button>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="product-action-block"
+        >
+          <div className="qty-selector">
+            <button className="qty-btn interactive-hover" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
+            <span className="qty-value">{quantity}</span>
+            <button className="qty-btn interactive-hover" onClick={() => setQuantity(q => q + 1)}>+</button>
           </div>
 
-          <button className="add-cart-large" onClick={handleAddCart}>
-            <ShoppingBag size={18} />
-            <span>Add to Bag</span>
-          </button>
-        </div>
+          <MagneticButton className="add-cart-magnetic" onClick={handleAddCart}>
+            <span className="btn-glow"></span>
+            <ShoppingBag size={20} className="relative z-10" />
+            <span className="relative z-10 font-bold uppercase tracking-widest text-sm">Add to Bag</span>
+          </MagneticButton>
+        </motion.div>
 
-        {/* Product Details Accordion */}
-        <div className="details-accordion">
-          <div className={`accordion-item ${activeAccordion === 'notes' ? 'active' : ''}`}>
-            <button className="accordion-trigger" onClick={() => toggleAccordion('notes')}>
-              <span>Olfactory Profile</span>
-              {activeAccordion === 'notes' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-            <div className="accordion-content">
-              This luxury fragrance opens with intense fresh notes, unfolding into an rich heart accord, and finishes on a deeply satisfying, long-lasting base that radiates hours of warm sillage. 100% natural organic extracts.
-            </div>
-          </div>
+        {/* Animated Accordions */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="details-accordion mt-12"
+        >
+          {['notes', 'apply', 'shipping'].map((section) => {
+            const labels = { notes: "Olfactory Profile", apply: "How To Apply", shipping: "Shipping & Gifting" };
+            const content = {
+              notes: "This luxury fragrance opens with intense fresh notes, unfolding into an rich heart accord, and finishes on a deeply satisfying, long-lasting base that radiates hours of warm sillage. 100% natural organic extracts.",
+              apply: "Spray directly on pulse points: behind the ears, on your collarbones, and on your inner wrists. Do not rub the wrists together, as this breaks down the fragrance molecules, shortening its sillage lifespan.",
+              shipping: "Orders are packaged inside an exquisite gold-embossed champagne cardboard sleeve. Standard delivery takes 3-5 business days. We provide free shipping for all online prepaid orders."
+            };
+            
+            return (
+              <div className="accordion-item" key={section}>
+                <button className="accordion-trigger interactive-hover" onClick={() => toggleAccordion(section)}>
+                  <span>{labels[section]}</span>
+                  <motion.div animate={{ rotate: activeAccordion === section ? 180 : 0 }} transition={{ duration: 0.3 }}>
+                    <ChevronDown size={18} />
+                  </motion.div>
+                </button>
+                <AnimatePresence>
+                  {activeAccordion === section && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: "easeInOut" }}
+                      className="accordion-content-wrapper overflow-hidden"
+                    >
+                      <div className="accordion-content-inner">
+                        {content[section]}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )
+          })}
+        </motion.div>
 
-          <div className={`accordion-item ${activeAccordion === 'apply' ? 'active' : ''}`}>
-            <button className="accordion-trigger" onClick={() => toggleAccordion('apply')}>
-              <span>How To Apply</span>
-              {activeAccordion === 'apply' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-            <div className="accordion-content">
-              Spray directly on pulse points: behind the ears, on your collarbones, and on your inner wrists. Do not rub the wrists together, as this breaks down the fragrance molecules, shortening its sillage lifespan.
-            </div>
-          </div>
-
-          <div className={`accordion-item ${activeAccordion === 'shipping' ? 'active' : ''}`}>
-            <button className="accordion-trigger" onClick={() => toggleAccordion('shipping')}>
-              <span>Shipping & Premium Gifting</span>
-              {activeAccordion === 'shipping' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-            <div className="accordion-content">
-              Orders are packaged inside an exquisite gold-embossed champagne cardboard sleeve. Standard delivery takes 3-5 business days. We provide free shipping for all online prepaid orders.
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews Section */}
-        <div className="reviews-section">
-          <h2>Customer Experience</h2>
+        {/* Cinematic Review Carousel */}
+        <div className="cinematic-reviews mt-20">
+          <h2 className="font-serif text-3xl mb-8">Experiences</h2>
           
-          <div className="review-list">
-            {reviews.map((rev) => (
-              <div className="review-card" key={rev.id}>
-                <div className="review-author-info">
-                  <span className="review-author">{rev.author}</span>
-                  <span className="review-date">{rev.date}</span>
+          <motion.div ref={carouselRef} className="review-carousel-container overflow-hidden cursor-grab active:cursor-grabbing">
+            <motion.div 
+              drag="x" 
+              dragConstraints={carouselRef} 
+              className="review-carousel-inner flex gap-6"
+            >
+              {reviews.map((rev) => (
+                <div className="cinematic-review-card shrink-0 interactive-hover" key={rev.id}>
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="font-bold text-[var(--color-primary)]">{rev.author}</span>
+                    <span className="text-xs text-[var(--color-text-muted)]">{rev.date}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '2px', marginBottom: '12px' }}>
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} fill={i < rev.rating ? '#ffb800' : 'none'} color="#ffb800" size={12} />
+                    ))}
+                  </div>
+                  <p className="text-sm text-[var(--color-text)] leading-relaxed">{rev.comment}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '2px', marginBottom: '8px' }}>
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className="rating-star" 
-                      fill={i < rev.rating ? '#ffb800' : 'none'} 
-                      color="#ffb800" 
-                      size={14}
-                    />
-                  ))}
-                </div>
-                <p className="review-text">{rev.comment}</p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </motion.div>
+          </motion.div>
 
-          {/* Review Submission Form */}
-          <form className="review-form" onSubmit={handleReviewSubmit}>
-            <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>Share Your Experience</h3>
-            {reviewSubmitted && (
-              <div style={{ color: '#0ca678', fontSize: '14px', fontWeight: '600', marginBottom: '16px' }}>
-                Thank you! Your experience has been recorded and added to our logs.
-              </div>
-            )}
-            <div className="checkout-form-grid" style={{ gridTemplateColumns: '1.2fr 0.8fr' }}>
-              <div className="form-group">
-                <label className="form-label">Your Name</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={reviewerName}
-                  onChange={(e) => setReviewerName(e.target.value)}
-                  required 
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Scent Rating</label>
-                <select 
-                  className="form-input" 
-                  value={reviewerRating}
-                  onChange={(e) => setReviewerRating(e.target.value)}
+          {/* Luxury Review Form */}
+          <div className="luxury-review-form mt-16 p-8 relative overflow-hidden">
+            <div className="luxury-form-bg absolute inset-0 z-0"></div>
+            <div className="relative z-10">
+              <h3 className="font-serif text-2xl mb-6 text-white">Leave your signature</h3>
+              {reviewSubmitted && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  className="text-[var(--color-accent)] mb-6 font-medium"
                 >
-                  <option value={5}>5 Stars (Excellent)</option>
-                  <option value={4}>4 Stars (Very Good)</option>
-                  <option value={3}>3 Stars (Average)</option>
-                  <option value={2}>2 Stars (Poor)</option>
-                  <option value={1}>1 Star (Unsatisfactory)</option>
-                </select>
-              </div>
+                  Your experience has been elegantly recorded. Thank you.
+                </motion.div>
+              )}
+              <form onSubmit={handleReviewSubmit} className="space-y-6">
+                <div className="flex gap-6">
+                  <div className="flex-1 relative">
+                    <input type="text" className="luxury-input w-full" placeholder="Your Name" value={reviewerName} onChange={(e) => setReviewerName(e.target.value)} required />
+                  </div>
+                  <div className="flex-1 relative">
+                    <select className="luxury-input w-full" value={reviewerRating} onChange={(e) => setReviewerRating(e.target.value)}>
+                      <option value={5}>5 Stars (Exceptional)</option>
+                      <option value={4}>4 Stars (Splendid)</option>
+                      <option value={3}>3 Stars (Fair)</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="relative">
+                  <textarea className="luxury-input w-full h-24" placeholder="Detail your experience..." value={reviewerText} onChange={(e) => setReviewerText(e.target.value)} required />
+                </div>
+                <MagneticButton type="submit" className="luxury-submit-btn w-full py-4 text-center">
+                  Submit Review
+                </MagneticButton>
+              </form>
             </div>
-            <div className="form-group">
-              <label className="form-label">Review Details</label>
-              <textarea 
-                className="form-textarea" 
-                value={reviewerText}
-                onChange={(e) => setReviewerText(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="btn-primary" style={{ padding: '12px 28px', fontSize: '13px' }}>
-              Submit Scent Review
-            </button>
-          </form>
+          </div>
         </div>
+
       </div>
     </div>
   );

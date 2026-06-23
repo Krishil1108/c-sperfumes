@@ -3135,6 +3135,16 @@ img {
   .product-action-block {
     flex-direction: column;
   }
+  
+  .qty-selector {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .add-cart-magnetic {
+    flex: none;
+    width: 100%;
+  }
 }
 
 .qty-selector {

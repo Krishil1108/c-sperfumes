@@ -3131,22 +3131,6 @@ img {
   margin-bottom: 40px;
 }
 
-@media (max-width: 480px) {
-  .product-action-block {
-    flex-direction: column;
-  }
-  
-  .qty-selector {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .add-cart-magnetic {
-    flex: none;
-    width: 100%;
-  }
-}
-
 .qty-selector {
   display: flex;
   align-items: center;
@@ -3209,6 +3193,23 @@ img {
 
 .add-cart-magnetic:hover .btn-glow {
   transform: translate(-50%, -50%) scale(1);
+}
+
+@media (max-width: 480px) {
+  .product-action-block {
+    flex-direction: column;
+  }
+  
+  .qty-selector {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .add-cart-magnetic {
+    flex: none;
+    width: 100%;
+    min-height: 54px;
+  }
 }
 
 /* Cinematic Reviews */

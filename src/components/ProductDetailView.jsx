@@ -54,19 +54,24 @@ export default function ProductDetailView({ product }) {
 
   return (
     <div className="product-page-container">
-      {/* Cinematic Sticky Left Column */}
-      <div className="product-visuals-col">
-        <LivingBottle image={mainImage} alt={product.title} />
+            {/* Static Bright Left Column with Logo */}
+      <div className="product-visuals-col" style={{ position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', opacity: 0.05, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '90%', pointerEvents: 'none', display: 'flex', justifyContent: 'center' }}>
+          <img src="/logo.png" alt="Brand Logo" style={{ width: '100%', objectFit: 'contain', filter: 'grayscale(100%)' }} />
+        </div>
+        <div className="static-bottle-container" style={{ position: 'relative', zIndex: 10, width: '80%', height: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="living-bottle-aura" style={{ position: 'absolute', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(197, 168, 128, 0.3) 0%, rgba(197, 168, 128, 0) 70%)', borderRadius: '50%', filter: 'blur(35px)', zIndex: 1 }}></div>
+          <img 
+            src={mainImage} 
+            alt={product.title} 
+            style={{ position: 'relative', zIndex: 2, maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.15))' }}
+          />
+        </div>
       </div>
 
       {/* Scrolling Right Column */}
       <div className="product-details-col">
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="product-header-block"
-        >
+        <div className="product-header-block">
           <span className="product-category-tag">{product.category}</span>
           <h1 className="product-main-title font-serif">{product.title}</h1>
           <div className="title-divider"></div>
@@ -95,59 +100,38 @@ export default function ProductDetailView({ product }) {
               </>
             )}
           </div>
-        </motion.div>
+        </div>
 
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="product-description-text"
-        >
+        <p className="product-description-text">
           {product.description}
-        </motion.p>
+        </p>
 
         {product.notes && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="product-notes-block"
-          >
+          <div className="product-notes-block">
             <span className="notes-label">Scent Accords & Notes:</span>
             <div className="detail-notes">
               {product.notes.map((note, i) => (
                 <span key={i} className="note-badge">{note}</span>
               ))}
             </div>
-          </motion.div>
+          </div>
         )}
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="product-action-block"
-        >
+        <div className="product-action-block">
           <div className="qty-selector">
             <button className="qty-btn interactive-hover" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
             <span className="qty-value">{quantity}</span>
             <button className="qty-btn interactive-hover" onClick={() => setQuantity(q => q + 1)}>+</button>
           </div>
 
-          <MagneticButton className="add-cart-magnetic" onClick={handleAddCart}>
-            <span className="btn-glow"></span>
-            <ShoppingBag size={20} className="relative z-10" />
-            <span className="relative z-10 font-bold uppercase tracking-widest text-sm">Add to Bag</span>
-          </MagneticButton>
-        </motion.div>
+                    <button className="add-cart-magnetic" onClick={handleAddCart} style={{ border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', transition: 'background 0.3s', backgroundColor: 'var(--color-primary)', color: 'var(--color-accent)' }}>
+            <ShoppingBag size={20} />
+            <span className="font-bold uppercase tracking-widest text-sm">Add to Bag</span>
+          </button>
+        </div>
 
         {/* Animated Accordions */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="details-accordion mt-12"
-        >
+        <div className="details-accordion mt-12">
           {['notes', 'apply', 'shipping'].map((section) => {
             const labels = { notes: "Olfactory Profile", apply: "How To Apply", shipping: "Shipping & Gifting" };
             const content = {
@@ -160,29 +144,23 @@ export default function ProductDetailView({ product }) {
               <div className="accordion-item" key={section}>
                 <button className="accordion-trigger interactive-hover" onClick={() => toggleAccordion(section)}>
                   <span>{labels[section]}</span>
-                  <motion.div animate={{ rotate: activeAccordion === section ? 180 : 0 }} transition={{ duration: 0.3 }}>
+                  <div>
                     <ChevronDown size={18} />
-                  </motion.div>
+                  </div>
                 </button>
                 <AnimatePresence>
                   {activeAccordion === section && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                      className="accordion-content-wrapper overflow-hidden"
-                    >
+                    <div className="accordion-content-wrapper overflow-hidden">
                       <div className="accordion-content-inner">
                         {content[section]}
                       </div>
-                    </motion.div>
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
             )
           })}
-        </motion.div>
+        </div>
 
         {/* Ultra-Premium Reviews Section */}
         <div className="luxury-reviews-section">
@@ -193,15 +171,8 @@ export default function ProductDetailView({ product }) {
           
           <div className="reviews-list">
             {reviews.map((rev) => (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="review-entry" 
-                key={rev.id}
-              >
-                <div className="review-quote-mark">"</div>
+              <div className="review-entry">
+                <div className="review-quote-mark">&quot;</div>
                 
                 <p className="review-comment">
                   {rev.comment}
@@ -219,7 +190,7 @@ export default function ProductDetailView({ product }) {
                     <span className="review-date-text">{rev.date}</span>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -232,13 +203,9 @@ export default function ProductDetailView({ product }) {
               <p className="form-subtitle">Share your olfactory journey with our community.</p>
               
               {reviewSubmitted && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }} 
-                  animate={{ opacity: 1, y: 0 }} 
-                  className="form-success-msg"
-                >
+                <div className="form-success-msg">
                   Your experience has been elegantly recorded. Thank you.
-                </motion.div>
+                </div>
               )}
               
               <form onSubmit={handleReviewSubmit} className="luxury-form">

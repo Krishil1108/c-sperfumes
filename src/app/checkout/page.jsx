@@ -6,16 +6,29 @@ import { ShoppingBag, ArrowLeft, CheckCircle, Gift, CreditCard, Truck } from 'lu
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
-// Qfix doesn't use an external script loader like Razorpay. We build a form dynamically instead.
+const loadScript = (src) => {
+  return new Promise((resolve) => {
+    // Avoid loading the script multiple times
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { 
-    cartItems, 
-    cartSubtotal, 
-    cartTotal, 
-    cartSavings, 
-    clearCart 
+  const {
+    cartItems,
+    cartSubtotal,
+    cartTotal,
+    cartSavings,
+    clearCart
   } = useCart();
 
   const [formData, setFormData] = useState({
@@ -36,7 +49,6 @@ export default function CheckoutPage() {
   // Protect page: Redirect to home if cart is empty and success is not showing
   useEffect(() => {
     if (cartItems.length === 0 && !isSuccessOpen) {
-      // Small timeout to allow state hydration
       const timer = setTimeout(() => {
         if (cartItems.length === 0 && !isSuccessOpen) {
           router.push('/');
@@ -53,65 +65,117 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (Object.values(formData).every(val => val.trim().length > 0)) {
-      if (paymentMethod === 'cod') {
-        const generatedId = 'AB-' + Math.floor(100000 + Math.random() * 900000);
-        setOrderId(generatedId);
-        setIsSuccessOpen(true);
+
+    const allFilled = Object.values(formData).every(val => val.trim().length > 0);
+    if (!allFilled) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    // --- Cash On Delivery ---
+    if (paymentMethod === 'cod') {
+      const generatedId = 'AB-' + Math.floor(100000 + Math.random() * 900000);
+      setOrderId(generatedId);
+      setIsSuccessOpen(true);
+      return;
+    }
+
+    // --- Online Payment via Razorpay (UPI / Cards / Netbanking) ---
+    setIsProcessing(true);
+    try {
+      // Step 1: Load Razorpay checkout script
+      const scriptLoaded = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+      if (!scriptLoaded) {
+        alert('Razorpay SDK failed to load. Please check your internet connection.');
+        setIsProcessing(false);
         return;
       }
 
-      } else {
-        setIsProcessing(true);
-        try {
-          const response = await fetch('/api/qfix/create-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-              amount: cartTotal,
-              customerName: `${formData.firstName} ${formData.lastName}`,
-              customerEmail: formData.email,
-              customerPhone: formData.phone
-            })
-          });
-          
-          if (!response.ok) throw new Error('Network response was not ok');
-          const formFields = await response.json();
-          
-          if (formFields.error) {
-            alert('Server error generating Qfix payload. Please check your credentials.');
-            setIsProcessing(false);
-            return;
-          }
+      // Step 2: Create order on the backend
+      const orderResponse = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: cartTotal }),
+      });
 
-          // Dynamically create a form and submit it to Qfix endpoint
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = process.env.NEXT_PUBLIC_QFIX_ENDPOINT_URL || 'https://secure.qfixinfo.com/v2/payment';
-          
-          for (const key in formFields) {
-            if (formFields.hasOwnProperty(key)) {
-              const hiddenField = document.createElement('input');
-              hiddenField.type = 'hidden';
-              hiddenField.name = key;
-              hiddenField.value = formFields[key];
-              form.appendChild(hiddenField);
-            }
-          }
-          
-          document.body.appendChild(form);
-          form.submit();
-          
-        } catch (error) {
-          console.error(error);
-          alert('Payment initialization failed');
-          setIsProcessing(false);
-        }
+      if (!orderResponse.ok) {
+        throw new Error('Failed to create Razorpay order on server.');
       }
+      const order = await orderResponse.json();
+
+      if (order.error) {
+        alert('Server error: ' + order.error);
+        setIsProcessing(false);
+        return;
+      }
+
+      // Step 3: Open Razorpay Checkout modal
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Ishaya Luxury Perfumes',
+        description: 'Premium Olfactory Delivery Order',
+        image: '/logo.png',
+        order_id: order.id,
+        handler: async function (response) {
+          // Step 4: Verify payment signature on the backend
+          try {
+            const verifyResponse = await fetch('/api/razorpay/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                customer: formData,
+                items: cartItems,
+                totalAmount: cartTotal,
+                paymentMethod: paymentMethod,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.status === 'success') {
+              const generatedId = 'RP-' + order.id.slice(-6).toUpperCase();
+              setOrderId(generatedId);
+              clearCart();
+              setIsSuccessOpen(true);
+            } else {
+              alert('Payment verification failed. Please contact support.');
+            }
+          } catch (err) {
+            console.error('Verification error:', err);
+            alert('Payment verification error. Please contact support.');
+          }
+        },
+        prefill: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          contact: formData.phone,
+        },
+        theme: {
+          color: '#d4af37',
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessing(false);
+          },
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+    } catch (error) {
+      console.error('Payment initialization error:', error);
+      alert('Payment initialization failed: ' + error.message);
+      setIsProcessing(false);
+    }
   };
 
   const handleCloseSuccess = () => {
-    clearCart(); // Clear cart state
     setIsSuccessOpen(false);
     router.push('/');
   };
@@ -135,102 +199,102 @@ export default function CheckoutPage() {
           
           <div className="form-group">
             <label className="form-label">Email Address</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               name="email"
-              className="form-input" 
+              className="form-input"
               value={formData.email}
               onChange={handleInputChange}
-              required 
+              required
             />
           </div>
 
           <div className="checkout-form-grid">
             <div className="form-group">
               <label className="form-label">First Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="firstName"
-                className="form-input" 
+                className="form-input"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                required 
+                required
               />
             </div>
             <div className="form-group">
               <label className="form-label">Last Name</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="lastName"
-                className="form-input" 
+                className="form-input"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                required 
+                required
               />
             </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Delivery Street Address</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="address"
-              className="form-input" 
+              className="form-input"
               placeholder="Apartment, suite, unit, block number, etc."
               value={formData.address}
               onChange={handleInputChange}
-              required 
+              required
             />
           </div>
 
           <div className="checkout-form-grid">
             <div className="form-group">
               <label className="form-label">City</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="city"
-                className="form-input" 
+                className="form-input"
                 value={formData.city}
                 onChange={handleInputChange}
-                required 
+                required
               />
             </div>
             <div className="form-group">
               <label className="form-label">Postal Pincode</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="postalCode"
-                className="form-input" 
+                className="form-input"
                 value={formData.postalCode}
                 onChange={handleInputChange}
-                required 
+                required
               />
             </div>
           </div>
 
           <div className="form-group">
             <label className="form-label">Phone Number (For Delivery Updates)</label>
-            <input 
-              type="tel" 
+            <input
+              type="tel"
               name="phone"
-              className="form-input" 
+              className="form-input"
               value={formData.phone}
               onChange={handleInputChange}
-              required 
+              required
             />
           </div>
 
           <div className="form-group" style={{ marginTop: '16px' }}>
             <label className="form-label">Payment Method</label>
             <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-              
+
               <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: paymentMethod === 'upi' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.3s' }}>
-                <input 
-                  type="radio" 
-                  name="paymentMethod" 
-                  value="upi" 
-                  checked={paymentMethod === 'upi'} 
-                  onChange={() => setPaymentMethod('upi')} 
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="upi"
+                  checked={paymentMethod === 'upi'}
+                  onChange={() => setPaymentMethod('upi')}
                   style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
                 />
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style={{ width: '32px', filter: paymentMethod === 'upi' ? 'none' : 'grayscale(1)' }} />
@@ -241,28 +305,28 @@ export default function CheckoutPage() {
               </label>
 
               <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: paymentMethod === 'online' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.3s' }}>
-                <input 
-                  type="radio" 
-                  name="paymentMethod" 
-                  value="online" 
-                  checked={paymentMethod === 'online'} 
-                  onChange={() => setPaymentMethod('online')} 
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="online"
+                  checked={paymentMethod === 'online'}
+                  onChange={() => setPaymentMethod('online')}
                   style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
                 />
                 <CreditCard size={24} style={{ color: paymentMethod === 'online' ? 'var(--color-accent)' : 'inherit' }} />
                 <div style={{ flex: 1 }}>
-                  <span style={{ display: 'block', fontWeight: '600' }}>Cards & Netbanking</span>
+                  <span style={{ display: 'block', fontWeight: '600' }}>Cards &amp; Netbanking</span>
                   <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>Credit Cards, Debit Cards, Net Banking</span>
                 </div>
               </label>
 
               <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', border: paymentMethod === 'cod' ? '2px solid var(--color-accent)' : '1px solid var(--color-border)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.3s' }}>
-                <input 
-                  type="radio" 
-                  name="paymentMethod" 
-                  value="cod" 
-                  checked={paymentMethod === 'cod'} 
-                  onChange={() => setPaymentMethod('cod')} 
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value="cod"
+                  checked={paymentMethod === 'cod'}
+                  onChange={() => setPaymentMethod('cod')}
                   style={{ width: '18px', height: '18px', accentColor: 'var(--color-accent)' }}
                 />
                 <Truck size={24} style={{ color: paymentMethod === 'cod' ? 'var(--color-accent)' : 'inherit' }} />
@@ -276,7 +340,7 @@ export default function CheckoutPage() {
 
           <button type="submit" className="checkout-btn" style={{ marginTop: '12px' }} disabled={isProcessing}>
             <ShoppingBag size={18} />
-            <span>{isProcessing ? 'Processing...' : (paymentMethod === 'online' || paymentMethod === 'upi' ? 'Pay Securely with Qfix' : 'Place Cash On Delivery Order')}</span>
+            <span>{isProcessing ? 'Processing...' : (paymentMethod === 'online' || paymentMethod === 'upi' ? 'Pay Securely with Razorpay' : 'Place Cash On Delivery Order')}</span>
           </button>
         </form>
 
@@ -288,10 +352,10 @@ export default function CheckoutPage() {
             {cartItems.map((item) => (
               <div key={item.id} style={{ display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                  <img 
-                    src={item.image} 
-                    alt={item.title} 
-                    style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--color-border)' }} 
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '4px', border: '1px solid var(--color-border)' }}
                   />
                   <div>
                     <p style={{ fontSize: '14px', fontWeight: '500' }}>{item.title}</p>

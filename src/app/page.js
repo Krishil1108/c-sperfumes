@@ -40,7 +40,7 @@ const SCENT_CATEGORIES = [
     name: 'Amber & Musk',
     description: '9 fragrances',
     emoji: '✨',
-    image: 'https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1594035910387-fea47714263f?auto=format&fit=crop&w=600&q=80',
     href: '/shop?scent=amber-musk',
     tagline: 'Warm. Sensual. Lingering.'
   }

@@ -1,20 +1,14 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 export async function sendOrderConfirmationEmail(order) {
   try {
-    // We require EMAIL_USER and EMAIL_PASS (App Password) in .env.local
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn('Email credentials not configured. Skipping email notification.');
+    // We require RESEND_API_KEY in .env.local
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('RESEND_API_KEY not configured. Skipping email notification.');
       return false;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const itemsHtml = order.items.map(item => `
       <tr>
@@ -23,8 +17,13 @@ export async function sendOrderConfirmationEmail(order) {
       </tr>
     `).join('');
 
-    const mailOptions = {
-      from: `"Ishaya Luxury" <${process.env.EMAIL_USER}>`,
+    // Resend requires a verified domain to send FROM. 
+    // If you haven't verified a domain yet, you can only send TO the email address you registered Resend with,
+    // and you MUST use 'onboarding@resend.dev' as the FROM address during testing.
+    const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'onboarding@resend.dev';
+
+    const { data, error } = await resend.emails.send({
+      from: `Ishaya Luxury <${fromAddress}>`,
       to: order.email,
       subject: `Order Confirmation - ${order.orderId}`,
       html: `
@@ -61,13 +60,17 @@ export async function sendOrderConfirmationEmail(order) {
           </p>
         </div>
       `,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Order confirmation email sent: ' + info.messageId);
+    if (error) {
+      console.error('Failed to send Resend email:', error);
+      return false;
+    }
+
+    console.log('Order confirmation email sent via Resend: ' + data.id);
     return true;
   } catch (error) {
-    console.error('Failed to send order confirmation email:', error);
+    console.error('Fatal error sending Resend email:', error);
     return false;
   }
 }

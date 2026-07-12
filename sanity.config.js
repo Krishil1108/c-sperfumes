@@ -28,6 +28,15 @@ export default defineConfig({
               ),
             S.divider(),
             S.listItem()
+              .title('📦 All Orders')
+              .schemaType('order')
+              .child(
+                S.documentList()
+                  .title('All Orders')
+                  .filter('_type == "order"')
+              ),
+            S.divider(),
+            S.listItem()
               .title('🌸 All Products')
               .schemaType('product')
               .child(

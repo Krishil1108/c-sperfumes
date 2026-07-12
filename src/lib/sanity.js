@@ -112,3 +112,25 @@ export async function getSiteSettings() {
     return null;
   }
 }
+
+export async function getOrders() {
+  if (isDemoMode || !client) {
+    return [];
+  }
+  try {
+    const query = `*[_type == "order"] | order(_createdAt desc) {
+      _id,
+      orderId,
+      customerName,
+      email,
+      phone,
+      totalAmount,
+      paymentStatus,
+      _createdAt
+    }`;
+    return await client.fetch(query);
+  } catch (err) {
+    console.error('Failed to fetch orders:', err);
+    return [];
+  }
+}

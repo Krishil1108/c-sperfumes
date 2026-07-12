@@ -27,8 +27,11 @@ export async function sendOrderConfirmationEmail(order) {
       to: order.email,
       subject: `Order Confirmation - ${order.orderId}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-          <h2 style="color: #bfa15f; text-align: center;">Thank You For Your Order!</h2>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; border: 1px solid #eaeaea; border-radius: 8px; padding: 20px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://www.ishayaluxury.com/perfume-icon.png" alt="Ishaya Luxury" style="max-height: 80px; width: auto;" />
+          </div>
+          <h2 style="color: #bfa15f; text-align: center; margin-top: 0;">Thank You For Your Order!</h2>
           <p>Hi ${order.customerName},</p>
           <p>We've received your order <strong>${order.orderId}</strong> and are getting it ready for shipment.</p>
           

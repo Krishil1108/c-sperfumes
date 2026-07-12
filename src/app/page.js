@@ -24,7 +24,7 @@ const SCENT_CATEGORIES = [
     name: 'Floral Bouquet',
     description: '8 fragrances',
     emoji: '🌸',
-    image: 'https://images.unsplash.com/photo-1496062031256-47a19d8207e7?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.unsplash.com/photo-1595425970377-c9703c48657a?auto=format&fit=crop&w=600&q=80',
     href: '/shop?scent=floral',
     tagline: 'Delicate. Romantic. Fresh.'
   },

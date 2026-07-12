@@ -24,7 +24,7 @@ const SCENT_CATEGORIES = [
     name: 'Floral Bouquet',
     description: '8 fragrances',
     emoji: '🌸',
-    image: 'https://images.unsplash.com/photo-1595425970377-c9703c48657a?auto=format&fit=crop&w=600&q=80',
+    image: 'https://images.pexels.com/photos/931166/pexels-photo-931166.jpeg?auto=compress&cs=tinysrgb&w=600',
     href: '/shop?scent=floral',
     tagline: 'Delicate. Romantic. Fresh.'
   },
@@ -40,7 +40,7 @@ const SCENT_CATEGORIES = [
     name: 'Amber & Musk',
     description: '9 fragrances',
     emoji: '✨',
-    image: 'https://images.unsplash.com/photo-1594035910387-fea47714263f?auto=format&fit=crop&w=600&q=80',
+    image: '/amber-musk.jpg',
     href: '/shop?scent=amber-musk',
     tagline: 'Warm. Sensual. Lingering.'
   }

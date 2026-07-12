@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import { createClient } from '@sanity/client';
+import { sendOrderConfirmationEmail } from '@/lib/sendEmail';
+import { sendOrderConfirmationWhatsApp } from '@/lib/sendWhatsApp';
 
 export async function POST(req) {
   try {
@@ -60,6 +62,12 @@ export async function POST(req) {
 
       await sanityClient.create(newOrder);
       console.log('Order securely saved to Sanity database.');
+
+      // Trigger notifications asynchronously so we don't block the API response
+      Promise.allSettled([
+        sendOrderConfirmationEmail(newOrder),
+        sendOrderConfirmationWhatsApp(newOrder)
+      ]).then(() => console.log('Notifications processed.'));
     }
 
     return NextResponse.json({

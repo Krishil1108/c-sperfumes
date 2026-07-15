@@ -56,9 +56,6 @@ export default function ProductDetailView({ product }) {
     <div className="product-page-container">
             {/* Static Bright Left Column with Logo */}
       <div className="product-visuals-col" style={{ position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', opacity: 0.05, top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '90%', pointerEvents: 'none', display: 'flex', justifyContent: 'center' }}>
-          <img src="/logo.png" alt="Brand Logo" style={{ width: '100%', objectFit: 'contain', filter: 'grayscale(100%)', mixBlendMode: 'screen' }} />
-        </div>
         <div className="static-bottle-container" style={{ position: 'relative', zIndex: 10, width: '80%', height: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="living-bottle-aura" style={{ position: 'absolute', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(197, 168, 128, 0.3) 0%, rgba(197, 168, 128, 0) 70%)', borderRadius: '50%', filter: 'blur(35px)', zIndex: 1 }}></div>
           <img 

@@ -6,6 +6,7 @@ import { Star, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LivingBottle from './LivingBottle';
 import MagneticButton from './MagneticButton';
+import { getOptimizedImageUrl } from '../lib/image';
 
 export default function ProductDetailView({ product }) {
   const { addToCart } = useCart();
@@ -59,7 +60,7 @@ export default function ProductDetailView({ product }) {
         <div className="static-bottle-container" style={{ position: 'relative', zIndex: 10, width: '80%', height: '80%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="living-bottle-aura" style={{ position: 'absolute', width: '350px', height: '350px', background: 'radial-gradient(circle, rgba(197, 168, 128, 0.3) 0%, rgba(197, 168, 128, 0) 70%)', borderRadius: '50%', filter: 'blur(35px)', zIndex: 1 }}></div>
           <img 
-            src={mainImage} 
+            src={getOptimizedImageUrl(mainImage, 800)} 
             alt={product.title} 
             style={{ position: 'relative', zIndex: 2, maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', mixBlendMode: 'multiply' }}
           />

@@ -5,6 +5,7 @@ import { useCart } from '../lib/CartContext';
 import { Star, ShoppingCart, Grid, LayoutGrid, X, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { getOptimizedImageUrl } from '../lib/image';
 
 function ShopContent({ products }) {
   const { addToCart } = useCart();
@@ -362,7 +363,7 @@ function ShopContent({ products }) {
                 
                 <Link href={`/product/${product.slug}`} className="product-img-wrapper">
                   <img 
-                    src={product.image} 
+                    src={getOptimizedImageUrl(product.image, 400)} 
                     alt={product.title} 
                     className="product-img" 
                   />

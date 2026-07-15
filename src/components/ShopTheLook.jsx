@@ -5,6 +5,7 @@ import { useCart } from '../lib/CartContext';
 import { Star, ShoppingCart, X } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getOptimizedImageUrl } from '../lib/image';
 
 export default function ShopTheLook({ products, settings }) {
   // We'll select 3 beautiful products to associate with hotspots
@@ -34,7 +35,7 @@ export default function ShopTheLook({ products, settings }) {
         <div className="stl-container">
           <div className="stl-visualizer">
             <img 
-              src={stlImage} 
+              src={getOptimizedImageUrl(stlImage, 1200)} 
               alt="Shop the Scent Portrait" 
               className="stl-image"
             />
@@ -76,7 +77,7 @@ export default function ShopTheLook({ products, settings }) {
                   
                   <Link href={`/product/${activeProduct.slug}`} className="product-img-wrapper overflow-hidden" style={{ maxHeight: '280px' }}>
                     <img 
-                      src={activeProduct.image} 
+                      src={getOptimizedImageUrl(activeProduct.image, 500)} 
                       alt={activeProduct.title} 
                       className="product-img transition-transform duration-700 group-hover:scale-105"
                     />

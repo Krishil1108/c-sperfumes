@@ -5,6 +5,7 @@ import { useCart } from '../lib/CartContext';
 import { Star, ShoppingCart, X } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getOptimizedImageUrl } from '../lib/image';
 
 export default function TabbedProducts({ products }) {
   const [activeTab, setActiveTab] = useState('bestsellers');
@@ -60,7 +61,7 @@ export default function TabbedProducts({ products }) {
                 
                 <Link href={`/product/${product.slug}`} className="product-img-wrapper overflow-hidden">
                   <img 
-                    src={product.image} 
+                    src={getOptimizedImageUrl(product.image, 400)} 
                     alt={product.title} 
                     className="product-img transition-transform duration-700 group-hover:scale-105" 
                   />

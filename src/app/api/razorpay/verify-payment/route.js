@@ -52,6 +52,7 @@ export async function POST(req) {
           title: item.title,
           quantity: item.quantity,
           price: item.salePrice || item.price,
+          image: item.image || (item.images && item.images.length > 0 ? item.images[0] : ''),
         })),
         totalAmount: totalAmount,
         paymentMethod: paymentMethod || 'online',

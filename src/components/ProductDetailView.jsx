@@ -118,16 +118,33 @@ export default function ProductDetailView({ product }) {
         )}
 
         <div className="product-action-block">
-          <div className="qty-selector">
-            <button className="qty-btn interactive-hover" onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</button>
-            <span className="qty-value">{quantity}</span>
-            <button className="qty-btn interactive-hover" onClick={() => setQuantity(q => q + 1)}>+</button>
+          <div className="qty-selector" style={{ opacity: product.inStock === false ? 0.5 : 1 }}>
+            <button 
+              className="qty-btn interactive-hover" 
+              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              disabled={product.inStock === false}
+              style={{ cursor: product.inStock === false ? 'not-allowed' : 'pointer' }}
+            >-</button>
+            <span className="qty-value">{product.inStock === false ? 0 : quantity}</span>
+            <button 
+              className="qty-btn interactive-hover" 
+              onClick={() => setQuantity(q => q + 1)}
+              disabled={product.inStock === false}
+              style={{ cursor: product.inStock === false ? 'not-allowed' : 'pointer' }}
+            >+</button>
           </div>
 
-                    <button className="add-cart-magnetic" onClick={handleAddCart} style={{ border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', transition: 'background 0.3s', backgroundColor: 'var(--color-primary)', color: 'var(--color-accent)' }}>
-            <ShoppingBag size={20} />
-            <span className="font-bold uppercase tracking-widest text-sm">Add to Bag</span>
-          </button>
+          {product.inStock !== false ? (
+            <button className="add-cart-magnetic" onClick={handleAddCart} style={{ border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', transition: 'background 0.3s', backgroundColor: 'var(--color-primary)', color: 'var(--color-accent)' }}>
+              <ShoppingBag size={20} />
+              <span className="font-bold uppercase tracking-widest text-sm">Add to Bag</span>
+            </button>
+          ) : (
+            <button className="add-cart-magnetic" disabled style={{ border: 'none', cursor: 'not-allowed', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', transition: 'background 0.3s', backgroundColor: 'var(--color-border)', color: 'var(--color-text-muted)' }}>
+              <ShoppingBag size={20} />
+              <span className="font-bold uppercase tracking-widest text-sm">Sold Out</span>
+            </button>
+          )}
         </div>
 
         {/* Animated Accordions */}

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '../lib/CartContext';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, X } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -65,9 +65,12 @@ export default function ShopTheLook({ products, settings }) {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="product-card group" style={{ width: '100%' }}
+                  className={`product-card group ${activeProduct.inStock === false ? 'sold-out' : ''}`} style={{ width: '100%' }}
                 >
-                  {activeProduct.discount > 0 && (
+                  {activeProduct.inStock === false && (
+                    <div className="out-of-stock-label">Sold Out</div>
+                  )}
+                  {activeProduct.discount > 0 && activeProduct.inStock !== false && (
                     <div className="product-badge sale">{activeProduct.discount}% OFF</div>
                   )}
                   
@@ -117,13 +120,24 @@ export default function ShopTheLook({ products, settings }) {
                         <span className="sale-price">₹{activeProduct.salePrice}</span>
                       </div>
                       
-                      <button 
-                        className="btn-add-cart interactive-hover" 
-                        onClick={() => addToCart(activeProduct)}
-                        aria-label="Add featured product to bag"
-                      >
-                        <ShoppingCart size={16} />
-                      </button>
+                      {activeProduct.inStock !== false ? (
+                        <button 
+                          className="btn-add-cart interactive-hover" 
+                          onClick={() => addToCart(activeProduct)}
+                          aria-label="Add featured product to bag"
+                        >
+                          <ShoppingCart size={16} />
+                        </button>
+                      ) : (
+                        <button 
+                          className="btn-add-cart" 
+                          style={{ backgroundColor: 'var(--color-border)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }}
+                          disabled
+                          aria-label={`${activeProduct.title} Sold Out`}
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>

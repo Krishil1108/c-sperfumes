@@ -30,6 +30,10 @@ export function CartProvider({ children }) {
   }, [cartItems, isMounted]);
 
   const addToCart = (product, quantity = 1) => {
+    if (product.inStock === false) {
+      console.warn(`Attempted to add out-of-stock product to cart: ${product.title}`);
+      return;
+    }
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       if (existingItem) {

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '../lib/CartContext';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, X } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -48,10 +48,13 @@ export default function TabbedProducts({ products }) {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.3 }}
-                className="product-card group interactive-hover transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(197,168,128,0.15)]" 
+                className={`product-card group interactive-hover transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(197,168,128,0.15)] ${product.inStock === false ? 'sold-out' : ''}`} 
                 key={product.id}
               >
-                {product.discount > 0 && (
+                {product.inStock === false && (
+                  <div className="out-of-stock-label">Sold Out</div>
+                )}
+                {product.discount > 0 && product.inStock !== false && (
                   <div className="product-badge sale">{product.discount}% OFF</div>
                 )}
                 
@@ -95,13 +98,24 @@ export default function TabbedProducts({ products }) {
                       <span className="sale-price">₹{product.salePrice}</span>
                     </div>
                     
-                    <button 
-                      className="btn-add-cart interactive-hover" 
-                      onClick={() => addToCart(product)}
-                      aria-label={`Add ${product.title} to bag`}
-                    >
-                      <ShoppingCart size={16} />
-                    </button>
+                    {product.inStock !== false ? (
+                      <button 
+                        className="btn-add-cart interactive-hover" 
+                        onClick={() => addToCart(product)}
+                        aria-label={`Add ${product.title} to bag`}
+                      >
+                        <ShoppingCart size={16} />
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn-add-cart" 
+                        style={{ backgroundColor: 'var(--color-border)', cursor: 'not-allowed', color: 'var(--color-text-muted)' }}
+                        disabled
+                        aria-label={`${product.title} Sold Out`}
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </motion.div>

@@ -1,19 +1,30 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
-export default function MetaPixel() {
+function PixelTracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
+    // Skip tracking on initial load, because the inline script handles it
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+    
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'PageView');
     }
   }, [pathname, searchParams]);
 
+  return null;
+}
+
+export default function MetaPixel() {
   return (
     <>
       <Script
@@ -34,6 +45,18 @@ export default function MetaPixel() {
           `,
         }}
       />
+      <Suspense fallback={null}>
+        <PixelTracker />
+      </Suspense>
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style={{ display: 'none' }}
+          src="https://www.facebook.com/tr?id=2101635734035143&ev=PageView&noscript=1"
+          alt=""
+        />
+      </noscript>
     </>
   );
 }

@@ -46,13 +46,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('online');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // OTP Verification States
-  const [otp, setOtp] = useState('');
-  const [isOtpSent, setIsOtpSent] = useState(false);
-  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
-  const [isSendingOtp, setIsSendingOtp] = useState(false);
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
-  const [otpError, setOtpError] = useState('');
+  // OTP Verification Removed
 
   const hasTrackedCheckoutRef = useRef(false);
 
@@ -83,74 +77,9 @@ export default function CheckoutPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Reset verification if phone changes
-    if (name === 'phone') {
-      setIsPhoneVerified(false);
-      setIsOtpSent(false);
-      setOtp('');
-      setOtpError('');
-    }
   };
 
-  const handleSendOtp = async () => {
-    if (!formData.phone || formData.phone.length < 10) {
-      setOtpError('Please enter a valid phone number first.');
-      return;
-    }
-    
-    setIsSendingOtp(true);
-    setOtpError('');
-    try {
-      const res = await fetch('/api/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: formData.phone })
-      });
-      const data = await res.json();
-      
-      if (res.ok && data.success) {
-        setIsOtpSent(true);
-      } else {
-        setOtpError(data.error || 'Failed to send OTP.');
-      }
-    } catch (err) {
-      console.error(err);
-      setOtpError('Failed to send OTP. Please try again.');
-    } finally {
-      setIsSendingOtp(false);
-    }
-  };
 
-  const handleVerifyOtp = async () => {
-    if (!otp) {
-      setOtpError('Please enter the OTP.');
-      return;
-    }
-
-    setIsVerifyingOtp(true);
-    setOtpError('');
-    try {
-      const res = await fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: formData.phone, otp })
-      });
-      const data = await res.json();
-      
-      if (res.ok && data.success) {
-        setIsPhoneVerified(true);
-        setIsOtpSent(false); // Hide OTP input once verified
-      } else {
-        setOtpError(data.error || 'Invalid OTP.');
-      }
-    } catch (err) {
-      console.error(err);
-      setOtpError('Failed to verify OTP. Please try again.');
-    } finally {
-      setIsVerifyingOtp(false);
-    }
-  };
 
 
   const handleSubmit = async (e) => {
@@ -162,10 +91,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!isPhoneVerified) {
-      alert('Please verify your phone number using OTP before placing the order.');
-      return;
-    }
+
 
 
     // --- Cash On Delivery ---
@@ -388,75 +314,14 @@ export default function CheckoutPage() {
 
           <div className="form-group">
             <label className="form-label">Phone Number (For Delivery Updates)</label>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <input
-                type="tel"
-                name="phone"
-                className="form-input"
-                value={formData.phone}
-                onChange={handleInputChange}
-                disabled={isPhoneVerified}
-                required
-                style={{ flex: 1 }}
-              />
-              {!isPhoneVerified && (
-                <button 
-                  type="button" 
-                  onClick={handleSendOtp} 
-                  disabled={isSendingOtp || formData.phone.length < 10}
-                  style={{
-                    padding: '0 16px',
-                    backgroundColor: 'var(--color-bg-alt)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '4px',
-                    cursor: (isSendingOtp || formData.phone.length < 10) ? 'not-allowed' : 'pointer',
-                    fontWeight: '500',
-                    color: 'var(--color-text)',
-                    minWidth: '100px'
-                  }}
-                >
-                  {isSendingOtp ? 'Sending...' : (isOtpSent ? 'Resend' : 'Verify')}
-                </button>
-              )}
-              {isPhoneVerified && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#0ca678', padding: '0 16px', fontWeight: '500' }}>
-                  <CheckCircle size={18} /> Verified
-                </div>
-              )}
-            </div>
-            {otpError && <p style={{ color: '#fa5252', fontSize: '13px', marginTop: '6px' }}>{otpError}</p>}
-            
-            {isOtpSent && !isPhoneVerified && (
-              <div style={{ marginTop: '12px', padding: '16px', backgroundColor: 'var(--color-bg-alt)', borderRadius: '6px', border: '1px solid var(--color-border)' }}>
-                <label className="form-label">Enter OTP Sent to {formData.phone}</label>
-                <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                  <input
-                    type="text"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    placeholder="Enter 6-digit OTP (Mock: 123456)"
-                    maxLength={6}
-                    style={{ flex: 1, padding: '10px 12px', borderRadius: '4px', border: '1px solid var(--color-border)', backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={handleVerifyOtp}
-                    disabled={isVerifyingOtp || !otp}
-                    style={{
-                      padding: '0 16px',
-                      backgroundColor: 'var(--color-accent)',
-                      color: 'var(--color-bg)',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: (isVerifyingOtp || !otp) ? 'not-allowed' : 'pointer',
-                      fontWeight: '500'
-                    }}
-                  >
-                    {isVerifyingOtp ? 'Verifying...' : 'Confirm'}
-                  </button>
-                </div>
-              </div>
-            )}
+            <input
+              type="tel"
+              name="phone"
+              className="form-input"
+              value={formData.phone}
+              onChange={handleInputChange}
+              required
+            />
           </div>
 
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useCart } from '../lib/CartContext';
 import { Star, ShoppingBag, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,6 +26,18 @@ export default function ProductDetailView({ product }) {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const mainImage = product.images && product.images[0] ? product.images[0] : product.image;
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'ViewContent', {
+        content_ids: [product.id || product._id || product.slug],
+        content_name: product.title,
+        content_category: product.category,
+        currency: 'INR',
+        value: product.salePrice
+      });
+    }
+  }, [product]);
 
   const handleAddCart = () => {
     addToCart(product, quantity);

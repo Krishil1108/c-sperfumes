@@ -6,6 +6,7 @@ import CartDrawer from '../components/CartDrawer';
 import BottomNav from '../components/BottomNav';
 import WhatsAppWidget from '../components/WhatsAppWidget';
 import CustomCursor from '../components/CustomCursor';
+import MetaPixel from '../components/MetaPixel';
 
 import { getSiteSettings } from '../lib/sanity';
 
@@ -22,6 +23,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <MetaPixel />
         <CartProvider>
           <CustomCursor />
           <Header settings={settings} />

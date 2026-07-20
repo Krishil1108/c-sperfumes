@@ -45,6 +45,16 @@ export function CartProvider({ children }) {
       }
       return [...prevItems, { ...product, quantity }];
     });
+    
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'AddToCart', {
+        content_ids: [product.id || product._id],
+        content_name: product.title,
+        currency: 'INR',
+        value: product.salePrice
+      });
+    }
+    
     setIsCartOpen(true); // Automatically slide open the cart drawer when adding an item!
   };
 

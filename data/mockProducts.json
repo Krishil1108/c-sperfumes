@@ -19,11 +19,10 @@
     "discount": 0,
     "rating": 4.2,
     "reviewsCount": 124,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/NightFever-00.jpg?v=1728281818",
+    "image": "/images/perfume_sleek_1784660046118.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/NightFever-00.jpg?v=1728281818",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/NightFever-02.jpg?v=1728281818",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/NightFever-03.jpg?v=1728281818"
+      "/images/perfume_sleek_1784660046118.png",
+      "/images/perfume_vintage_1784660057925.png"
     ],
     "isBestseller": true,
     "isNewArrival": false,
@@ -40,7 +39,7 @@
     "gender": "Men",
     "inStock": true,
     "slug": "perfumed-bathing-bar-soaps-for-men-6-x-100g",
-    "description": "Your bathing experience just got a 3x upgrade! Introducing the all-new Ishaya Luxury Perfume Perfumed Bathing Soap for Men, feel the freshness and luxury in every wash. Inspired by your favourite perfume notes like White Oud, CEO Man, and SKAI Aquatic, these soaps leave a lasting impression, keeping you fresh a...",
+    "description": "Your bathing experience just got a 3x upgrade! Introducing the all-new C&S Perfumes Perfumed Bathing Soap for Men, feel the freshness and luxury in every wash. Inspired by your favourite perfume notes like White Oud, CEO Man, and SKAI Aquatic, these soaps leave a lasting impression, keeping you fresh a...",
     "category": "Bathing Bar",
     "notes": [
       "Citrus",
@@ -52,11 +51,10 @@
     "discount": 30,
     "rating": 4.3,
     "reviewsCount": 161,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_48.jpg?v=1770189470",
+    "image": "/images/perfume_vintage_1784660057925.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_48.jpg?v=1770189470",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_57ae3702-b802-4d56-9882-7642ba6c3b65.jpg?v=1767959036",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_3ab8521d-ba8a-42f2-ae55-45e8d9395714.jpg?v=1767959036"
+      "/images/perfume_vintage_1784660057925.png",
+      "/images/perfume_modern_1784660067627.png"
     ],
     "isBestseller": true,
     "isNewArrival": false,
@@ -85,11 +83,10 @@
     "discount": 0,
     "rating": 4.4,
     "reviewsCount": 198,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_c86f9da0-56c4-42db-9873-589d92d6a659.jpg?v=1768200744",
+    "image": "/images/perfume_modern_1784660067627.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_c86f9da0-56c4-42db-9873-589d92d6a659.jpg?v=1768200744",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_023802e7-be4d-4e9a-afc1-c557a7f78992.jpg?v=1768200744",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_4d619f9f-110b-43b1-bf5e-1f549e5c5f1c.jpg?v=1768200744"
+      "/images/perfume_modern_1784660067627.png",
+      "/images/perfume_elegant_1784660079140.png"
     ],
     "isBestseller": true,
     "isNewArrival": false,
@@ -118,11 +115,10 @@
     "discount": 0,
     "rating": 4.5,
     "reviewsCount": 235,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_34.jpg?v=1762855613",
+    "image": "/images/perfume_elegant_1784660079140.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_34.jpg?v=1762855613",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_29.jpg?v=1762855613",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_24_e2f7053f-ebda-4654-af6e-536df55a9041.jpg?v=1762855613"
+      "/images/perfume_elegant_1784660079140.png",
+      "/images/perfume_gold_1784661624207.png"
     ],
     "isBestseller": true,
     "isNewArrival": false,
@@ -151,11 +147,10 @@
     "discount": 0,
     "rating": 4.6,
     "reviewsCount": 272,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_33.jpg?v=1762839915",
+    "image": "/images/perfume_gold_1784661624207.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_33.jpg?v=1762839915",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_28.jpg?v=1762839915",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_23_b4f89ca1-7bed-4d67-952d-3f5be4caf73d.jpg?v=1762839915"
+      "/images/perfume_gold_1784661624207.png",
+      "/images/perfume_sapphire_1784661635266.png"
     ],
     "isBestseller": true,
     "isNewArrival": false,
@@ -167,7 +162,7 @@
   {
     "id": "7589366333486",
     "title": "DC Wonder Woman Perfume (SPRT)",
-    "brand": "Ishaya Luxury Perfume",
+    "brand": "C&S Perfumes",
     "concentration": "Extrait De Parfum",
     "gender": "Women",
     "inStock": true,
@@ -184,11 +179,10 @@
     "discount": 0,
     "rating": 4.7,
     "reviewsCount": 309,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_2c8e9d97-342f-4ef0-8a3d-2e50980fb0c8.jpg?v=1762856181",
+    "image": "/images/perfume_sapphire_1784661635266.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_2c8e9d97-342f-4ef0-8a3d-2e50980fb0c8.jpg?v=1762856181",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_0f5033ae-40ab-482b-9b94-275877c562a2.jpg?v=1762856181",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_041cb5d4-28b8-46ac-956e-062d75ed6568.jpg?v=1762856181"
+      "/images/perfume_sapphire_1784661635266.png",
+      "/images/perfume_emerald_1784661645746.png"
     ],
     "isBestseller": true,
     "isNewArrival": false,
@@ -217,11 +211,10 @@
     "discount": 0,
     "rating": 4.8,
     "reviewsCount": 346,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_882c66c9-0dd4-4d30-806f-cb8ea7c3f1b1.jpg?v=1739271382",
+    "image": "/images/perfume_emerald_1784661645746.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_882c66c9-0dd4-4d30-806f-cb8ea7c3f1b1.jpg?v=1739271382",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_c5138b90-ae7c-4edf-bdc3-c166c5f8e5f2.jpg?v=1739337408",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_emerald_1784661645746.png",
+      "/images/perfume_ruby_1784661656064.png"
     ],
     "isBestseller": false,
     "isNewArrival": true,
@@ -250,11 +243,10 @@
     "discount": 9,
     "rating": 4.9,
     "reviewsCount": 383,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/0_6326984c-e89a-43ba-b560-e35d40faba70.jpg?v=1703835295",
+    "image": "/images/perfume_ruby_1784661656064.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/0_6326984c-e89a-43ba-b560-e35d40faba70.jpg?v=1703835295",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/4_7ff50a1c-0428-443a-8b78-85cbd5c7afec.jpg?v=1712732887",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_5db2ac03-fb0d-45b9-b9aa-156d7073ae9a.jpg?v=1712732887"
+      "/images/perfume_ruby_1784661656064.png",
+      "/images/perfume_crystal_1784661665901.png"
     ],
     "isBestseller": false,
     "isNewArrival": true,
@@ -271,7 +263,7 @@
     "gender": "Men",
     "inStock": true,
     "slug": "impact-man-perfume-100ml-shiprocket",
-    "description": "Get your hands on this classy and premium perfume from Ishaya Luxury Perfume. In its top notes, the fragrance presents an intense touch of Mandarin Orange that contrasts with nutmeg and a warm hint of cardamom. The base note hides that mesmerizing touch of woody cedar. The fragrance leaves spicy and warm notes...",
+    "description": "Get your hands on this classy and premium perfume from C&S Perfumes. In its top notes, the fragrance presents an intense touch of Mandarin Orange that contrasts with nutmeg and a warm hint of cardamom. The base note hides that mesmerizing touch of woody cedar. The fragrance leaves spicy and warm notes...",
     "category": "Shiprocket",
     "notes": [
       "Woody",
@@ -283,11 +275,10 @@
     "discount": 11,
     "rating": 4.2,
     "reviewsCount": 420,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_363a09fe-797f-4f61-b44d-cbfe73818d95.jpg?v=1714553819",
+    "image": "/images/perfume_crystal_1784661665901.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_363a09fe-797f-4f61-b44d-cbfe73818d95.jpg?v=1714553819",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/22.jpg?v=1767770863",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_14b2ff50-59be-43d7-9100-31c1be14aa20.jpg?v=1767770863"
+      "/images/perfume_crystal_1784661665901.png",
+      "/images/perfume_sleek_1784660046118.png"
     ],
     "isBestseller": false,
     "isNewArrival": true,
@@ -316,11 +307,10 @@
     "discount": 8,
     "rating": 4.3,
     "reviewsCount": 457,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/LuxuryCollectionGiftSet-01.jpg?v=1705048050",
+    "image": "/images/perfume_sleek_1784660046118.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/LuxuryCollectionGiftSet-01.jpg?v=1705048050",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/LuxuryCollectionGiftSet-02.jpg?v=1705048052",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/LuxuryCollectionGiftSet-03.jpg?v=1705048049"
+      "/images/perfume_sleek_1784660046118.png",
+      "/images/perfume_vintage_1784660057925.png"
     ],
     "isBestseller": false,
     "isNewArrival": true,
@@ -349,11 +339,10 @@
     "discount": 0,
     "rating": 4.4,
     "reviewsCount": 494,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0a67330f-d6ef-45e8-ab5f-ae93248a4255.jpg?v=1739271587",
+    "image": "/images/perfume_vintage_1784660057925.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0a67330f-d6ef-45e8-ab5f-ae93248a4255.jpg?v=1739271587",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_c56640b9-3ea6-49f2-8e27-ba243f2c07d3.jpg?v=1739361593",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_25cf5c2c-6410-4be5-9f18-30c15bc16936.jpg?v=1739361603"
+      "/images/perfume_vintage_1784660057925.png",
+      "/images/perfume_modern_1784660067627.png"
     ],
     "isBestseller": false,
     "isNewArrival": true,
@@ -365,7 +354,7 @@
   {
     "id": "7589366136878",
     "title": "Leo Perfume - 100ml (SPRT)",
-    "brand": "Ishaya Luxury Perfume",
+    "brand": "C&S Perfumes",
     "concentration": "Extrait De Parfum",
     "gender": "Unisex",
     "inStock": true,
@@ -382,11 +371,10 @@
     "discount": 0,
     "rating": 4.5,
     "reviewsCount": 531,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_59f46f98-4205-49ca-b886-c0e730d96e1a.jpg?v=1739271658",
+    "image": "/images/perfume_modern_1784660067627.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_59f46f98-4205-49ca-b886-c0e730d96e1a.jpg?v=1739271658",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_adc4985c-eff9-4b10-ac70-ad565c52c27e.jpg?v=1739361667",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_modern_1784660067627.png",
+      "/images/perfume_elegant_1784660079140.png"
     ],
     "isBestseller": false,
     "isNewArrival": true,
@@ -415,11 +403,10 @@
     "discount": 0,
     "rating": 4.6,
     "reviewsCount": 568,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_716900a8-4842-4a7f-8f8f-79b44204363d.jpg?v=1762855713",
+    "image": "/images/perfume_elegant_1784660079140.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_716900a8-4842-4a7f-8f8f-79b44204363d.jpg?v=1762855713",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_ffe64dae-c26a-4c49-aed9-25a67a0a81fb.jpg?v=1762855737",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_055b0e0b-d153-489b-a86a-55e1e221e695.jpg?v=1762855737"
+      "/images/perfume_elegant_1784660079140.png",
+      "/images/perfume_gold_1784661624207.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -448,11 +435,10 @@
     "discount": 0,
     "rating": 4.7,
     "reviewsCount": 605,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_7eed1969-ff86-4e92-adbb-faf971b9fc3c.jpg?v=1762856091",
+    "image": "/images/perfume_gold_1784661624207.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_7eed1969-ff86-4e92-adbb-faf971b9fc3c.jpg?v=1762856091",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_e3a704c6-bcf7-4903-9051-f886bf381e29.jpg?v=1762856091",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_77c01bc7-513e-4f4e-b994-d82f56f22231.jpg?v=1762856091"
+      "/images/perfume_gold_1784661624207.png",
+      "/images/perfume_sapphire_1784661635266.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -481,11 +467,10 @@
     "discount": 0,
     "rating": 4.8,
     "reviewsCount": 642,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0a1dbd8a-c88a-4a11-a269-148cd577f505.jpg?v=1739271450",
+    "image": "/images/perfume_sapphire_1784661635266.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0a1dbd8a-c88a-4a11-a269-148cd577f505.jpg?v=1739271450",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_2c585cdd-fca1-4a2f-a72f-9c4a089715bc.jpg?v=1739337438",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0a7a439e-421f-47a5-97c9-8d2bb2b68e2b.jpg?v=1739337438"
+      "/images/perfume_sapphire_1784661635266.png",
+      "/images/perfume_emerald_1784661645746.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -514,11 +499,10 @@
     "discount": 8,
     "rating": 4.9,
     "reviewsCount": 679,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Hot-_-classy-2_2.jpg?v=1707985653",
+    "image": "/images/perfume_emerald_1784661645746.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Hot-_-classy-2_2.jpg?v=1707985653",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Hot-_-classy-10.jpg?v=1707985653",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Hot-_-classy-6.jpg?v=1707985653"
+      "/images/perfume_emerald_1784661645746.png",
+      "/images/perfume_ruby_1784661656064.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -547,11 +531,10 @@
     "discount": 0,
     "rating": 4.2,
     "reviewsCount": 716,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_ab64b433-16bc-4a5d-b03c-20d621351395.jpg?v=1739271795",
+    "image": "/images/perfume_ruby_1784661656064.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_ab64b433-16bc-4a5d-b03c-20d621351395.jpg?v=1739271795",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_551870c4-4189-4110-8204-06421b7c47ef.jpg?v=1739625763",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Sagittarius.jpg?v=1739625763"
+      "/images/perfume_ruby_1784661656064.png",
+      "/images/perfume_crystal_1784661665901.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -563,7 +546,7 @@
   {
     "id": "7589365907502",
     "title": "Scorpio Perfume - 100ml (SPRT)",
-    "brand": "Ishaya Luxury Perfume",
+    "brand": "C&S Perfumes",
     "concentration": "Extrait De Parfum",
     "gender": "Unisex",
     "inStock": true,
@@ -580,11 +563,10 @@
     "discount": 0,
     "rating": 4.3,
     "reviewsCount": 753,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0c1ad09f-3430-4fe2-b302-a008549c4886.jpg?v=1739271518",
+    "image": "/images/perfume_crystal_1784661665901.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_0c1ad09f-3430-4fe2-b302-a008549c4886.jpg?v=1739271518",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_ae1ef1c2-1e99-4f51-a8be-10e53d1a12aa.jpg?v=1739695189",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_crystal_1784661665901.png",
+      "/images/perfume_sleek_1784660046118.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -613,11 +595,10 @@
     "discount": 0,
     "rating": 4.4,
     "reviewsCount": 790,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_f93a71ea-1470-4a88-af91-e343e8515788.jpg?v=1739271940",
+    "image": "/images/perfume_sleek_1784660046118.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_f93a71ea-1470-4a88-af91-e343e8515788.jpg?v=1739271940",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_2f2ce112-3338-4c7d-a3f4-28c6a967784b.jpg?v=1739625737",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_sleek_1784660046118.png",
+      "/images/perfume_vintage_1784660057925.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -646,11 +627,10 @@
     "discount": 0,
     "rating": 4.5,
     "reviewsCount": 827,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_d2be2eaa-d80b-427e-978a-13a476274acd.jpg?v=1739272147",
+    "image": "/images/perfume_vintage_1784660057925.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_d2be2eaa-d80b-427e-978a-13a476274acd.jpg?v=1739272147",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_fdb8545f-1b29-4cfc-be82-071182fac32e.jpg?v=1739340619",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_vintage_1784660057925.png",
+      "/images/perfume_modern_1784660067627.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -679,11 +659,10 @@
     "discount": 0,
     "rating": 4.6,
     "reviewsCount": 864,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_85aefa6b-8029-4ccb-b576-950f9a0b70d2.jpg?v=1739272081",
+    "image": "/images/perfume_modern_1784660067627.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_85aefa6b-8029-4ccb-b576-950f9a0b70d2.jpg?v=1739272081",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_1d154a2c-98e0-4455-a30a-b31097a8bb9e.jpg?v=1739625695",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_1b6c7d42-44ad-4df9-b237-8ee1ecc41f1c.jpg?v=1739625695"
+      "/images/perfume_modern_1784660067627.png",
+      "/images/perfume_elegant_1784660079140.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -712,11 +691,10 @@
     "discount": 0,
     "rating": 4.7,
     "reviewsCount": 901,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_058a8290-6bac-439d-9a62-65aa475acee4.jpg?v=1739271728",
+    "image": "/images/perfume_elegant_1784660079140.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_058a8290-6bac-439d-9a62-65aa475acee4.jpg?v=1739271728",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_3043e160-db22-48f3-94ca-937f2a312179.jpg?v=1739361899",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_elegant_1784660079140.png",
+      "/images/perfume_gold_1784661624207.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -745,11 +723,10 @@
     "discount": 0,
     "rating": 4.8,
     "reviewsCount": 938,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_9ed7a5ff-f8e1-428a-bc54-466c40f098fb.jpg?v=1739272014",
+    "image": "/images/perfume_gold_1784661624207.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_9ed7a5ff-f8e1-428a-bc54-466c40f098fb.jpg?v=1739272014",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_7ae7e657-1ffb-4ee1-a320-c159b0ca1675.jpg?v=1739362063",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_gold_1784661624207.png",
+      "/images/perfume_sapphire_1784661635266.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -761,7 +738,7 @@
   {
     "id": "7589365710894",
     "title": "Pisces Perfume - 100ml (SPRT)",
-    "brand": "Ishaya Luxury Perfume",
+    "brand": "C&S Perfumes",
     "concentration": "Extrait De Parfum",
     "gender": "Unisex",
     "inStock": true,
@@ -778,11 +755,10 @@
     "discount": 0,
     "rating": 4.9,
     "reviewsCount": 975,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_e779dd64-4666-4324-9edd-d5f5185d65cc.jpg?v=1739271867",
+    "image": "/images/perfume_sapphire_1784661635266.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_e779dd64-4666-4324-9edd-d5f5185d65cc.jpg?v=1739271867",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_19bd2ef9-c3b2-4f6d-ab35-1d3173ab8001.jpg?v=1739625756",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Range.jpg?v=1739695189"
+      "/images/perfume_sapphire_1784661635266.png",
+      "/images/perfume_emerald_1784661645746.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -811,11 +787,10 @@
     "discount": 0,
     "rating": 4.2,
     "reviewsCount": 1012,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_4d72c982-d515-4475-b2be-77f3a50cf1b3.jpg?v=1762856223",
+    "image": "/images/perfume_emerald_1784661645746.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_4d72c982-d515-4475-b2be-77f3a50cf1b3.jpg?v=1762856223",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_188a85b7-6456-47a1-80d2-7c02074cf939.jpg?v=1762856223",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_27e7647a-fdb5-49f1-997f-bf40f7863fae.jpg?v=1762856222"
+      "/images/perfume_emerald_1784661645746.png",
+      "/images/perfume_ruby_1784661656064.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -844,11 +819,10 @@
     "discount": 11,
     "rating": 4.3,
     "reviewsCount": 1049,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Narco-00.jpg?v=1728286821",
+    "image": "/images/perfume_ruby_1784661656064.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Narco-00.jpg?v=1728286821",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Narco-02.jpg?v=1728286821",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Narco-03.jpg?v=1728286821"
+      "/images/perfume_ruby_1784661656064.png",
+      "/images/perfume_crystal_1784661665901.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -877,11 +851,10 @@
     "discount": 11,
     "rating": 4.4,
     "reviewsCount": 1086,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_73f48506-3dc4-4439-9894-36f871911b33.jpg?v=1746164664",
+    "image": "/images/perfume_crystal_1784661665901.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_73f48506-3dc4-4439-9894-36f871911b33.jpg?v=1746164664",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_a3183477-8f8c-4a7d-928f-94f06c5e2708.jpg?v=1746164671",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_fd46acab-02e9-4e4d-9bd5-302bc24a4d48.jpg?v=1746164677"
+      "/images/perfume_crystal_1784661665901.png",
+      "/images/perfume_sleek_1784660046118.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -910,11 +883,10 @@
     "discount": 10,
     "rating": 4.5,
     "reviewsCount": 1123,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_f67f45b0-f265-4845-98bf-982e0c595504.jpg?v=1714740709",
+    "image": "/images/perfume_sleek_1784660046118.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_f67f45b0-f265-4845-98bf-982e0c595504.jpg?v=1714740709",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_5423534e-b9d4-4cfa-b5ad-247b72b9107d.jpg?v=1767772643",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_d209a842-a9d8-45fc-a54b-58317057271b.jpg?v=1767772643"
+      "/images/perfume_sleek_1784660046118.png",
+      "/images/perfume_vintage_1784660057925.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -943,11 +915,10 @@
     "discount": 11,
     "rating": 4.6,
     "reviewsCount": 1160,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_cb67d78b-eff6-429f-84c3-fb30aa56c41c.jpg?v=1746164777",
+    "image": "/images/perfume_vintage_1784660057925.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_cb67d78b-eff6-429f-84c3-fb30aa56c41c.jpg?v=1746164777",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_edcddac3-26f1-4122-aac0-9aadb599cde9.jpg?v=1746164783",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_f23c2b97-d8da-48e8-ba21-fc348903c928.jpg?v=1746164789"
+      "/images/perfume_vintage_1784660057925.png",
+      "/images/perfume_modern_1784660067627.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -959,7 +930,7 @@
   {
     "id": "7589365481518",
     "title": "Beast Perfume - 100ml (SPRT)",
-    "brand": "Ishaya Luxury Perfume",
+    "brand": "C&S Perfumes",
     "concentration": "Extrait De Parfum",
     "gender": "Unisex",
     "inStock": true,
@@ -976,11 +947,10 @@
     "discount": 11,
     "rating": 4.7,
     "reviewsCount": 1197,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_cf0d73c0-e647-40af-a81f-a154aa8ac8c6.jpg?v=1746164721",
+    "image": "/images/perfume_modern_1784660067627.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_cf0d73c0-e647-40af-a81f-a154aa8ac8c6.jpg?v=1746164721",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_d079fefb-77ad-4f6c-9784-8cbc68690faf.jpg?v=1746164728",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/download_5d1e3a6a-df84-4c41-b9e9-aa4ffd04465e.jpg?v=1746164734"
+      "/images/perfume_modern_1784660067627.png",
+      "/images/perfume_elegant_1784660079140.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -1009,11 +979,10 @@
     "discount": 11,
     "rating": 4.8,
     "reviewsCount": 1234,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_bfb8703a-9f95-4910-9e04-a21b16a1bf75.jpg?v=1714548830",
+    "image": "/images/perfume_elegant_1784660079140.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_bfb8703a-9f95-4910-9e04-a21b16a1bf75.jpg?v=1714548830",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/ceowomenwebsite.jpg?v=1715928825",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/3_61c2f5f8-a0d6-4e5b-8698-c98e46cf6c86.jpg?v=1714548864"
+      "/images/perfume_elegant_1784660079140.png",
+      "/images/perfume_gold_1784661624207.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -1042,11 +1011,10 @@
     "discount": 11,
     "rating": 4.9,
     "reviewsCount": 1271,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Devil-00.jpg?v=1728283101",
+    "image": "/images/perfume_gold_1784661624207.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Devil-00.jpg?v=1728283101",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Devil-02.jpg?v=1728283101",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/Devil-03.jpg?v=1728283101"
+      "/images/perfume_gold_1784661624207.png",
+      "/images/perfume_sapphire_1784661635266.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -1075,11 +1043,10 @@
     "discount": 11,
     "rating": 4.2,
     "reviewsCount": 1308,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/PureMusk-00.jpg?v=1728285468",
+    "image": "/images/perfume_sapphire_1784661635266.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/PureMusk-00.jpg?v=1728285468",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/PureMusk-07.jpg?v=1728285468",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/PureMusk-03.jpg?v=1728285468"
+      "/images/perfume_sapphire_1784661635266.png",
+      "/images/perfume_emerald_1784661645746.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -1108,11 +1075,10 @@
     "discount": 10,
     "rating": 4.3,
     "reviewsCount": 1345,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_1_2_1.jpg?v=1779961958",
+    "image": "/images/perfume_emerald_1784661645746.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_1_2_1.jpg?v=1779961958",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_8f7cd2d7-7892-4f26-9e93-7666b57a7747.jpg?v=1779539035",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_0d6809f1-df60-4c8f-bead-f628bdc3f0e5.jpg?v=1779539035"
+      "/images/perfume_emerald_1784661645746.png",
+      "/images/perfume_ruby_1784661656064.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,
@@ -1141,11 +1107,10 @@
     "discount": 10,
     "rating": 4.4,
     "reviewsCount": 1382,
-    "image": "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_1_2_ac7e7fc8-5cf3-40fa-bf35-7848eaa5cc4f.jpg?v=1779961864",
+    "image": "/images/perfume_ruby_1784661656064.png",
     "images": [
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_1_2_ac7e7fc8-5cf3-40fa-bf35-7848eaa5cc4f.jpg?v=1779961864",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/1_178c1286-5eea-44fb-a93c-80da64b25992.jpg?v=1779539865",
-      "https://cdn.shopify.com/s/files/1/0054/6665/2718/files/2_1e00491b-6119-462b-8699-a20329e06594.jpg?v=1779539865"
+      "/images/perfume_ruby_1784661656064.png",
+      "/images/perfume_crystal_1784661665901.png"
     ],
     "isBestseller": false,
     "isNewArrival": false,

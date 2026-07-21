@@ -8,15 +8,15 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
 
 export default defineConfig({
   basePath: '/studio',
-  name: 'ishaya_luxury_studio',
-  title: '✨ Ishaya Luxury — Admin Studio',
+  name: 'cnss_luxury_studio',
+  title: '✨ C&S Perfumes — Admin Studio',
   projectId,
   dataset,
   plugins: [
     structureTool({
       structure: (S) =>
         S.list()
-          .title('Ishaya Luxury CMS')
+          .title('C&S Perfumes CMS')
           .items([
             S.listItem()
               .title('⚙️ Site Settings')

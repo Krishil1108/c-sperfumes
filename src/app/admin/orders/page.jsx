@@ -2,7 +2,7 @@ import { getOrders } from '@/lib/sanity';
 import OrdersClient from './OrdersClient';
 
 export const metadata = {
-  title: 'Admin Orders | Ishaya Luxury',
+  title: 'Admin Orders | C&S Perfumes',
   description: 'View and export customer orders',
 };
 

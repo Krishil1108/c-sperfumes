@@ -44,3 +44,10 @@ next-env.d.ts
 scratch/
 public/logo_converted.svg
 rzp-key.csv
+*.py
+append_css.js
+update_images*.js
+*.jpeg
+demo2.png
+cs 4 logo*
+Untitled*

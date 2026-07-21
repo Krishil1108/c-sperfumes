@@ -55,17 +55,17 @@ export default function BottomNav() {
                   position: 'absolute',
                   top: '-6px',
                   right: '-8px',
-                  background: 'var(--color-accent)',
-                  color: 'var(--color-primary)',
-                  fontSize: '10px',
+                  background: 'var(--gold)',
+                  color: 'var(--noir)',
+                  fontFamily: 'var(--font-label)',
+                  fontSize: '9px',
                   fontWeight: '800',
-                  width: '18px',
-                  height: '18px',
+                  width: '17px',
+                  height: '17px',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 0 0 2px var(--color-bg)',
                 }}
               >
                 {cartCount}

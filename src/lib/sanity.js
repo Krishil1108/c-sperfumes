@@ -16,7 +16,8 @@ if (projectId && projectId !== 'mock_project_id') {
       apiVersion,
       useCdn: true,
     });
-    isDemoMode = false;
+    // Force demo mode so we use local mock products with our new images and C&S brand name
+    isDemoMode = true; 
   } catch (err) {
     console.warn('Failed to initialize Sanity Client, switching to Demo Mode.', err);
   }

@@ -22,7 +22,7 @@ export async function sendOrderConfirmationWhatsApp(order) {
     }
 
     const message = await client.messages.create({
-      body: `Hi ${order.customerName}! Thank you for your order at Ishaya Luxury Perfumes.\n\nYour order ID is: ${order.orderId}.\nTotal Amount: ₹${order.totalAmount}.\n\nWe are preparing it for shipment and will notify you when it's dispatched.`,
+      body: `Hi ${order.customerName}! Thank you for your order at C&S Perfumes.\n\nYour order ID is: ${order.orderId}.\nTotal Amount: ₹${order.totalAmount}.\n\nWe are preparing it for shipment and will notify you when it's dispatched.`,
       from: twilioWhatsAppNumber, // Usually "whatsapp:+14155238886" in Twilio Sandbox
       to: `whatsapp:+${customerPhone}`,
     });

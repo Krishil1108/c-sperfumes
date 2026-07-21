@@ -16,7 +16,7 @@ const SCENT_CATEGORIES = [
     name: 'Woody & Oud',
     description: '12 fragrances',
     emoji: '🌳',
-    image: 'https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80',
+    image: '/images/perfume_modern_1784660067627.png',
     href: '/shop?scent=woody-oud',
     tagline: 'Deep. Earthy. Timeless.'
   },
@@ -24,7 +24,7 @@ const SCENT_CATEGORIES = [
     name: 'Floral Bouquet',
     description: '8 fragrances',
     emoji: '🌸',
-    image: 'https://images.pexels.com/photos/931166/pexels-photo-931166.jpeg?auto=compress&cs=tinysrgb&w=600',
+    image: '/images/perfume_vintage_1784660057925.png',
     href: '/shop?scent=floral',
     tagline: 'Delicate. Romantic. Fresh.'
   },
@@ -32,7 +32,7 @@ const SCENT_CATEGORIES = [
     name: 'Ocean Aquatic',
     description: '6 fragrances',
     emoji: '🌊',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
+    image: '/images/perfume_emerald_1784661645746.png',
     href: '/shop?scent=aquatic',
     tagline: 'Crisp. Breezy. Free.'
   },
@@ -40,7 +40,7 @@ const SCENT_CATEGORIES = [
     name: 'Amber & Musk',
     description: '9 fragrances',
     emoji: '✨',
-    image: '/amber-musk.jpg',
+    image: '/images/perfume_gold_1784661624207.png',
     href: '/shop?scent=amber-musk',
     tagline: 'Warm. Sensual. Lingering.'
   }
@@ -118,7 +118,7 @@ export default async function HomePage() {
 
   const promiseSubtitle = settings?.brandName
     ? `The ${settings.brandName} Promise`
-    : "The Ishaya Luxury Perfume Promise";
+    : "The C&S Perfumes Promise";
 
   const scentSubtitle = settings?.scentSubtitle || "Find Your Signature";
   const scentTitle = settings?.scentTitle || "Shop By Fragrance Family";
@@ -143,12 +143,13 @@ export default async function HomePage() {
       </ScrollReveal>
 
       {/* Fragrance Categories */}
-      <section className="section-padding" id="categories">
+      <section className="section-padding" id="categories" style={{ background: 'var(--charcoal)' }}>
         <div className="container">
           <ScrollReveal delay={0.1}>
             <div className="section-header">
-              <span className="section-subtitle">{scentSubtitle}</span>
-              <h2 className="section-title">{scentTitle}</h2>
+              <span className="section-subtitle" style={{ color: 'var(--gold)' }}>{scentSubtitle}</span>
+              <h2 className="section-title" style={{ color: 'var(--white)' }}>{scentTitle}</h2>
+              <div className="divider-gold" style={{ marginTop: '16px' }}></div>
               <p style={{ fontSize: '15px', color: 'var(--color-text-muted)', maxWidth: '480px', margin: '0 auto', lineHeight: '1.65' }}>
                 {scentDescription}
               </p>
@@ -158,17 +159,17 @@ export default async function HomePage() {
           <div className="scent-categories-grid">
             {categories.map((cat, idx) => (
               <ScrollReveal delay={0.1 * idx} key={idx}>
-                <Link href={cat.href || "/shop"} className="scent-category-card premium-card interactive-hover overflow-hidden group">
-                  <div className="scent-category-img-wrapper transition-transform duration-700 ease-out group-hover:scale-110">
+                <Link href={cat.href || "/shop"} className="scent-category-card">
+                  <div className="scent-category-img-wrapper">
                     <img src={cat.image} alt={cat.name} className="scent-category-img" />
                   </div>
-                  <div className="scent-category-overlay transition-opacity duration-500 group-hover:bg-black/60">
+                  <div className="scent-category-overlay">
                     <div className="scent-category-content">
-                      <span className="scent-category-emoji transition-transform duration-500 group-hover:scale-125">{cat.emoji}</span>
+                      <span className="scent-category-emoji">{cat.emoji}</span>
                       <h3 className="scent-category-name">{cat.name}</h3>
-                      <span className="scent-category-desc text-white/80 group-hover:text-white transition-colors">{cat.description}</span>
-                      <div className="scent-category-line scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                      <span className="scent-category-cta opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 delay-100">{cat.tagline}</span>
+                      <span className="scent-category-desc">{cat.description}</span>
+                      <div className="scent-category-line"></div>
+                      <span className="scent-category-cta">{cat.tagline} →</span>
                     </div>
                   </div>
                 </Link>
@@ -184,7 +185,7 @@ export default async function HomePage() {
       </ScrollReveal>
 
       {/* Why Choose Us */}
-      <section className="section-padding premium-why-us">
+      <section className="section-padding premium-why-us" style={{ background: 'var(--cream)' }}>
         <div className="why-us-bg-glow"></div>
         <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <ScrollReveal>
@@ -196,12 +197,12 @@ export default async function HomePage() {
           <div className="why-us-grid-editorial">
             {whyUs.map((item, idx) => (
               <ScrollReveal delay={0.15 * idx} key={idx}>
-                <div className="why-us-editorial-item group interactive-hover transition-transform duration-500 hover:-translate-y-2">
-                  <div className="why-us-icon-container group-hover:scale-110 group-hover:shadow-[0_0_20px_rgba(197,168,128,0.4)] transition-all duration-500">
+                <div className="why-us-editorial-item interactive-hover">
+                  <div className="why-us-icon-container">
                     {renderWhyUsIcon(item)}
                   </div>
                   <div className="why-us-editorial-content">
-                    <h3 className="why-us-editorial-title font-serif">{item.title}</h3>
+                    <h3 className="why-us-editorial-title">{item.title}</h3>
                     <p className="why-us-editorial-desc">{item.desc}</p>
                   </div>
                 </div>

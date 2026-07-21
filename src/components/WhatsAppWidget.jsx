@@ -9,7 +9,7 @@ export default function WhatsAppWidget({ settings }) {
 
   // Extract settings or use defaults
   const waNumber = settings?.whatsappNumber || '+919876543210';
-  const waWelcome = settings?.whatsappWelcome || 'Hello! Welcome to Ishaya Luxury Perfumes. How can we assist you today?';
+  const waWelcome = settings?.whatsappWelcome || 'Hello! Welcome to C&S Perfumes. How can we assist you today?';
   const waQuestions = settings?.whatsappQuestions && settings.whatsappQuestions.filter(Boolean).length > 0
     ? settings.whatsappQuestions.filter(Boolean)
     : [
@@ -49,7 +49,7 @@ export default function WhatsAppWidget({ settings }) {
                 <span className="whatsapp-status-dot"></span>
               </div>
               <div>
-                <h4 className="whatsapp-title">Ishaya Luxury Support</h4>
+                <h4 className="whatsapp-title">C&S Perfumes Support</h4>
                 <p className="whatsapp-subtitle">Online • Typically replies in mins</p>
               </div>
             </div>

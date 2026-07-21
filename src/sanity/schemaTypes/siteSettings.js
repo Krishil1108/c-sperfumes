@@ -215,7 +215,7 @@ export const siteSettingsType = defineType({
       name: 'shopSubtitle',
       title: 'Shop Page Category Label',
       type: 'string',
-      initialValue: 'Explore Ishaya Catalog',
+      initialValue: 'Explore C&S Perfumes Catalog',
     }),
     defineField({
       name: 'shopTitle',
@@ -276,7 +276,7 @@ export const siteSettingsType = defineType({
       name: 'whatsappWelcome',
       title: 'WhatsApp Welcome Greeting',
       type: 'string',
-      initialValue: 'Hello! Welcome to Ishaya Luxury Perfumes. How can we assist you today?',
+      initialValue: 'Hello! Welcome to C&S Perfumes. How can we assist you today?',
       description: 'The greeting text displayed inside the chat popup.',
     }),
     defineField({

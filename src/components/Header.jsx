@@ -143,7 +143,7 @@ export default function Header({ settings }) {
         <span className="announcement-text" key={announcementIdx}>{announcements[announcementIdx]}</span>
       </div>
 
-      <header className="main-header">
+      <header className="header header-glass">
         <div className="container header-container">
           <div className="header-left-group">
             {/* Hamburger — mobile only */}
@@ -156,8 +156,18 @@ export default function Header({ settings }) {
             </button>
 
             {/* Logo */}
-            <Link href="/" className="logo" style={{ transform: 'scale(1.4) translateX(-15px)' }}>
-              <img src={settings?.logo || "/logo.svg"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
+            <Link href="/" className="logo">
+              <span style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--cream)',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                height: '54px',
+              }}>
+                <img src="/logo.png" alt="C&S Perfumes" className="logo-img" style={{ height: '42px', width: 'auto' }} />
+              </span>
             </Link>
           </div>
 
@@ -266,10 +276,13 @@ export default function Header({ settings }) {
       {/* Mobile Slide-out Drawer */}
       <div className={`mobile-drawer ${mobileMenuOpen ? 'active' : ''}`}>
         <div className="mobile-drawer-header">
-          <Link href="/" className="logo" onClick={() => setMobileMenuOpen(false)}>
-            <img src={settings?.logo || "/logo.png"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
+          {/* Drawer Logo */}
+          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="logo">
+            <span style={{ display: 'flex', alignItems: 'center', background: 'var(--cream)', padding: '5px 10px', borderRadius: '4px', height: '44px' }}>
+              <img src="/logo.png" alt="C&S Perfumes" className="logo-img" style={{ height: '34px', width: 'auto' }} />
+            </span>
           </Link>
-          <button className="icon-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close Menu">
+          <button className="icon-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
             <X size={24} />
           </button>
         </div>

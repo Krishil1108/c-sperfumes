@@ -32,7 +32,7 @@ export async function sendOrderConfirmationEmail(order) {
     const fromAddress = process.env.EMAIL_FROM_ADDRESS || 'onboarding@resend.dev';
 
     const { data, error } = await resend.emails.send({
-      from: `Ishaya Luxury <${fromAddress}>`,
+      from: `C&S Perfumes <${fromAddress}>`,
       to: order.email,
       subject: `Order Confirmed - ${order.orderId}`,
       html: `
@@ -40,7 +40,7 @@ export async function sendOrderConfirmationEmail(order) {
           
           <!-- Logo & Header -->
           <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://raw.githubusercontent.com/Krishil1108/perfumes-sk/main/public/perfume-icon.png" alt="Ishaya Luxury" style="max-height: 70px; width: auto;" />
+            <img src="https://raw.githubusercontent.com/Krishil1108/perfumes-sk/main/public/perfume-icon.png" alt="C&S Perfumes" style="max-height: 70px; width: auto;" />
             <div style="font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: #bfa15f; margin-top: 10px;">The Essence of Elegance</div>
           </div>
 
@@ -97,19 +97,19 @@ export async function sendOrderConfirmationEmail(order) {
             
             <div style="margin: 30px 0;">
               <p style="margin: 0; font-size: 14px;">With gratitude,</p>
-              <p style="margin: 5px 0 0 0; font-family: 'Georgia', serif; font-size: 20px; color: #111;">The Ishaya Team</p>
+              <p style="margin: 5px 0 0 0; font-family: 'Georgia', serif; font-size: 20px; color: #111;">The C&S Perfumes Team</p>
             </div>
 
             <div style="border-top: 1px solid #ddd; margin: 30px 0; padding-top: 30px; font-size: 12px; line-height: 1.8;">
               <p style="margin: 0;"><strong>Need Assistance?</strong></p>
               <p style="margin: 0;">Call our helpline: <strong>+91 98765 43210</strong></p>
-              <p style="margin: 0;">Email: support@ishayaluxury.com</p>
+              <p style="margin: 0;">Email: support@cnssluxury.com</p>
               
               <p style="margin: 20px 0 0 0; color: #aaa;">
                 <strong>Terms & Conditions:</strong><br>
                 Please note that all orders are subject to availability and confirmation of the order price. Dispatch times may vary according to availability. For our full return policy and terms of service, please visit our website.
               </p>
-              <p style="margin-top: 20px; color: #aaa;">&copy; ${new Date().getFullYear()} Ishaya Luxury Perfumes. All rights reserved.</p>
+              <p style="margin-top: 20px; color: #aaa;">&copy; ${new Date().getFullYear()} C&S Perfumes. All rights reserved.</p>
             </div>
           </div>
         </div>

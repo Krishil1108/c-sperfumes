@@ -27,7 +27,9 @@ export default function Footer({ settings }) {
         <div className="footer-top">
           <div className="footer-brand-col">
             <Link href="/" className="logo">
-              <img src={settings?.logo || "/logo.svg"} alt={settings?.brandName || "Ishaya Luxury Perfume"} className="logo-img" />
+              <span style={{ display: 'inline-flex', alignItems: 'center', background: 'var(--cream)', padding: '7px 14px', borderRadius: '4px' }}>
+                <img src="/logo.png" alt="C&S Perfumes" className="logo-img" style={{ height: '38px', width: 'auto' }} />
+              </span>
             </Link>
             <p className="footer-desc">
               {settings?.footerDesc || "Curating high-end organic perfumes formulated with authentic essential oils, natural botanical extracts, and premium luxury craftsmanship."}
@@ -71,7 +73,7 @@ export default function Footer({ settings }) {
           </div>
 
           <div>
-            <h3 className="footer-title">{settings?.brandName ? `Join ${settings.brandName.split(" ")[0]} VIP` : "Join Ishaya VIP"}</h3>
+            <h3 className="footer-title">{settings?.brandName ? `Join ${settings.brandName.split(" ")[0]} VIP` : "Join C&S Perfumes VIP"}</h3>
             <p className="footer-desc" style={{ fontSize: '13px', color: '#afafaf' }}>
               Subscribe to unlock 15% off your first luxury fragrance order and receive weekly scent pairing articles.
             </p>
@@ -79,15 +81,16 @@ export default function Footer({ settings }) {
               <form className="footer-newsletter-form" onSubmit={handleSubscribe}>
                 <input 
                   type="email" 
-                  className="newsletter-input" 
-                  placeholder={subscribed ? "Subscription Active!" : "Enter your email..."}
+                  className="footer-newsletter-input" 
+                  placeholder={subscribed ? "Subscription Active!" : "Your email address"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={subscribed}
                   required
                 />
-                <button type="submit" className="btn-newsletter" aria-label="Subscribe">
-                  <Send size={16} />
+                <button type="submit" className="footer-newsletter-btn" aria-label="Subscribe">
+                  <Send size={14} />
+                  <span>Subscribe</span>
                 </button>
               </form>
               {subscribed && (
@@ -99,16 +102,21 @@ export default function Footer({ settings }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'center', paddingBottom: '40px', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', textAlign: 'center' }}>
+        <div className="footer-trust">
           {trustItems.map((item, idx) => (
-            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#afafaf' }}>
-              <span style={{ color: 'var(--color-accent)', fontWeight: 'bold' }}>✓</span> {item.replace("✓ ", "")}
-            </div>
+            <span key={idx} className="footer-trust-item">
+              {item.replace('✓ ', '◆ ')}
+            </span>
           ))}
         </div>
 
         <div className="footer-bottom">
-          <p>{settings?.footerCopyright || `© ${new Date().getFullYear()} Ishaya Luxury Perfumes. All Rights Reserved. Built as a high-fidelity replica store.`}</p>
+          <p className="footer-copy">{settings?.footerCopyright || `© ${new Date().getFullYear()} C&S Perfumes. All Rights Reserved.`}</p>
+          <div className="footer-legal">
+            <a href="#" className="footer-legal-link">Privacy Policy</a>
+            <a href="#" className="footer-legal-link">Terms of Service</a>
+            <a href="#" className="footer-legal-link">Return Policy</a>
+          </div>
         </div>
       </div>
     </footer>

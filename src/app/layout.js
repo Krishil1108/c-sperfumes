@@ -11,9 +11,14 @@ import MetaPixel from '../components/MetaPixel';
 import { getSiteSettings } from '../lib/sanity';
 
 export const metadata = {
-  title: 'Ishaya Luxury Perfume | Luxury Organic Perfumes & Cologne Store',
-  description: 'Shop Ishaya Luxury Perfume, a premium organic perfume boutique selling long-lasting oud collections, fresh aquatic notes, floral extracts, and custom gift sets.',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+  title: 'C&S Perfumes | Luxury Organic Perfumes & Cologne Store',
+  description: 'Shop C&S Perfumes, a premium organic perfume boutique selling long-lasting oud collections, fresh aquatic notes, floral extracts, and custom gift sets.',
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
   themeColor: '#121212',
 };
 

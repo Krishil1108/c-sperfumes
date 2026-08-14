@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useCart } from '../lib/CartContext';
-import { Star, ShoppingCart, X } from 'lucide-react';
+import { Star, ShoppingBag, X } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getOptimizedImageUrl } from '../lib/image';
@@ -32,14 +32,14 @@ export default function TabbedProducts({ products }) {
     <section className="section-padding" id="bestsellers" style={{ background: 'var(--cream)', overflow: 'hidden' }}>
       <div className="container">
         <div className="section-header">
-          <span className="section-subtitle">Exquisite Creations</span>
-          <h2 className="section-title">Our Collections</h2>
+          <span className="section-subtitle" style={{ letterSpacing: '0.35em', fontSize: '10px' }}>Exquisite Creations</span>
+          <h2 className="section-title" style={{ fontFamily: 'var(--font-display)', fontWeight: 300 }}>Olfactory Masterpieces</h2>
           <div className="divider-gold" style={{ marginTop: '16px' }}></div>
         </div>
 
         {/* Animated Tab Bar */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '48px' }}>
-          <div style={{ display: 'inline-flex', position: 'relative', borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '56px' }}>
+          <div style={{ display: 'inline-flex', position: 'relative', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
             {tabs.map((tab) => (
               <button
                 key={tab.key}
@@ -47,7 +47,7 @@ export default function TabbedProducts({ products }) {
                 onClick={() => handleTabChange(tab.key)}
                 style={{
                   position: 'relative',
-                  padding: '14px 36px',
+                  padding: '16px 40px',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
@@ -55,9 +55,9 @@ export default function TabbedProducts({ products }) {
                   fontSize: '11px',
                   fontWeight: '600',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.18em',
+                  letterSpacing: '0.22em',
                   color: activeTab === tab.key ? 'var(--text-dark)' : 'var(--text-muted)',
-                  transition: 'color 0.25s ease',
+                  transition: 'color 0.3s ease',
                 }}
               >
                 {tab.label}
@@ -75,7 +75,7 @@ export default function TabbedProducts({ products }) {
                         background: 'var(--gold)',
                         borderRadius: '2px 2px 0 0',
                       }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      transition={{ type: 'spring', stiffness: 350, damping: 28 }}
                     />
                   )}
                 </AnimatePresence>
@@ -92,7 +92,7 @@ export default function TabbedProducts({ products }) {
               custom={direction}
               variants={{
                 enter: (dir) => ({
-                  x: dir > 0 ? 60 : -60,
+                  x: dir > 0 ? 40 : -40,
                   opacity: 0,
                 }),
                 center: {
@@ -100,7 +100,7 @@ export default function TabbedProducts({ products }) {
                   opacity: 1,
                 },
                 exit: (dir) => ({
-                  x: dir > 0 ? -60 : 60,
+                  x: dir > 0 ? -40 : 40,
                   opacity: 0,
                 }),
               }}
@@ -108,64 +108,72 @@ export default function TabbedProducts({ products }) {
               animate="center"
               exit="exit"
               transition={{
-                x: { type: 'spring', stiffness: 280, damping: 30 },
-                opacity: { duration: 0.22 },
+                x: { type: 'spring', stiffness: 300, damping: 28 },
+                opacity: { duration: 0.2 },
               }}
               className="products-grid"
             >
               {filteredProducts.map((product, idx) => (
                 <motion.div
-                  key={product.id}
-                  className={`product-card ${product.inStock === false ? 'sold-out' : ''}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  key={product.id || product._id || idx}
+                  className={`product-card-elevated ${product.inStock === false ? 'sold-out' : ''}`}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.06, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  style={{ position: 'relative' }}
+                  transition={{ delay: idx * 0.05, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  {product.inStock === false && <div className="out-of-stock-label">Sold Out</div>}
+                  {product.inStock === false && <div className="out-of-stock-label" style={{ borderRadius: '0' }}>Sold Out</div>}
                   {product.discount > 0 && product.inStock !== false && (
-                    <div className="product-badge sale">{product.discount}% OFF</div>
+                    <div className="product-badge sale" style={{ borderRadius: '0' }}>{product.discount}% OFF</div>
                   )}
 
-                  <Link href={`/product/${product.slug}`} className="product-img-wrapper" style={{ display: 'block', position: 'relative', overflow: 'hidden' }}>
+                  <Link 
+                    href={`/product/${product.slug}`} 
+                    className="product-img-wrapper" 
+                    style={{ position: 'relative', overflow: 'hidden' }}
+                  >
                     <img
                       src={getOptimizedImageUrl(product.image, 400)}
                       alt={product.title}
                       className="product-img"
                     />
-                    <div className="royal-quick-add">Quick View</div>
+                    <div className="royal-quick-add" style={{ fontStyle: 'italic', letterSpacing: '0.25em' }}>View Essence</div>
                   </Link>
 
                   <div className="product-details">
-                    <div className="product-notes">
-                      {product.notes ? product.notes.slice(0, 3).join(' · ') : 'Luxury Fragrance'}
+                    <div className="product-notes" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', fontStyle: 'italic' }}>
+                      {product.notes ? product.notes.slice(0, 2).join(' · ') : 'Luxury Note'}
                     </div>
 
-                    <Link href={`/product/${product.slug}`}>
-                      <h3 className="product-title">{product.title}</h3>
+                    <Link href={`/product/${product.slug}`} style={{ marginTop: '4px' }}>
+                      <h3 className="product-title" style={{ fontWeight: '400', fontFamily: 'var(--font-display)', fontSize: '18px' }}>
+                        {product.title}
+                      </h3>
                     </Link>
 
-                    <div className="product-rating">
-                      <div style={{ display: 'flex', gap: '2px' }}>
+                    <div className="product-rating" style={{ marginTop: '8px' }}>
+                      <div style={{ display: 'flex', gap: '3px' }}>
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
                             className="rating-star"
                             fill={i < Math.floor(product.rating) ? 'var(--gold)' : 'none'}
                             color="var(--gold)"
+                            style={{ width: '11px', height: '11px' }}
                           />
                         ))}
                       </div>
-                      <span className="rating-value">{product.rating}</span>
-                      <span className="rating-count">({product.reviewsCount})</span>
+                      <span className="rating-value" style={{ fontSize: '11px', fontWeight: '500', marginLeft: '4px' }}>{product.rating}</span>
+                      <span className="rating-count" style={{ fontSize: '10px' }}>({product.reviewsCount})</span>
                     </div>
 
                     <div className="product-footer">
                       <div className="price-box">
                         {product.price > product.salePrice && (
-                          <span className="original-price">₹{product.price}</span>
+                          <span className="original-price" style={{ fontSize: '11px' }}>₹{product.price}</span>
                         )}
-                        <span className="sale-price">₹{product.salePrice}</span>
+                        <span className="sale-price" style={{ fontSize: '20px', fontFamily: 'var(--font-display)', color: 'var(--text-dark)' }}>
+                          ₹{product.salePrice}
+                        </span>
                       </div>
 
                       {product.inStock !== false ? (
@@ -175,14 +183,15 @@ export default function TabbedProducts({ products }) {
                           aria-label={`Add ${product.title} to bag`}
                           whileTap={{ scale: 0.88 }}
                           whileHover={{ scale: 1.08 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                          transition={{ type: 'spring', stiffness: 450, damping: 18 }}
+                          style={{ width: '42px', height: '42px' }}
                         >
-                          <ShoppingCart size={15} />
+                          <ShoppingBag size={15} />
                         </motion.button>
                       ) : (
                         <button
                           className="btn-add-cart"
-                          style={{ background: 'rgba(0,0,0,0.08)', cursor: 'not-allowed', color: 'var(--text-muted)' }}
+                          style={{ background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', cursor: 'not-allowed', color: 'var(--text-muted)', width: '42px', height: '42px' }}
                           disabled
                         >
                           <X size={15} />
@@ -197,11 +206,21 @@ export default function TabbedProducts({ products }) {
         </div>
 
         {/* View All CTA */}
-        <div style={{ textAlign: 'center', marginTop: '52px' }}>
-          <Link href="/shop" className="btn-outline" style={{ display: 'inline-flex', color: 'var(--text-dark)', border: '1px solid rgba(0,0,0,0.15)' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.15)'; e.currentTarget.style.color = 'var(--text-dark)'; }}>
-            <span>View All Fragrances</span>
+        <div style={{ textAlign: 'center', marginTop: '56px' }}>
+          <Link 
+            href="/shop" 
+            className="btn-outline" 
+            style={{ 
+              display: 'inline-flex', 
+              color: 'var(--text-dark)', 
+              borderColor: 'rgba(201, 168, 76, 0.4)', 
+              background: 'transparent',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.background = 'rgba(201, 168, 76, 0.05)'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201, 168, 76, 0.4)'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            <span>Reveal All Scents</span>
           </Link>
         </div>
       </div>

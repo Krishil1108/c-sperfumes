@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useCart } from '../lib/CartContext';
-import { Star, ShoppingCart, Grid, LayoutGrid, X, SlidersHorizontal, Search } from 'lucide-react';
+import { Star, ShoppingBag, Grid, LayoutGrid, X, SlidersHorizontal, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { getOptimizedImageUrl } from '../lib/image';
@@ -27,6 +27,7 @@ function ShopContent({ products }) {
   const [selectedScent, setSelectedScent] = useState(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
@@ -74,22 +75,36 @@ function ShopContent({ products }) {
   const FilterPanelContent = () => (
     <>
       {/* Search */}
-      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
         <h3 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-dark)', marginBottom: '12px' }}>Search</h3>
         <div style={{ position: 'relative' }}>
-          <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: searchFocused ? 'var(--gold)' : 'var(--text-muted)', transition: 'color 0.22s' }} />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             placeholder="Search fragrances..."
-            style={{ width: '100%', border: '1px solid rgba(0,0,0,0.1)', background: 'transparent', padding: '10px 12px 10px 34px', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--text-dark)', outline: 'none', borderRadius: '0' }}
+            style={{
+              width: '100%',
+              border: searchFocused ? '1px solid var(--gold)' : '1px solid rgba(0,0,0,0.12)',
+              background: 'transparent',
+              padding: '10px 12px 10px 34px',
+              fontFamily: 'var(--font-body)',
+              fontSize: '13px',
+              color: 'var(--text-dark)',
+              outline: 'none',
+              borderRadius: '0',
+              transition: 'border-color 0.22s',
+              boxShadow: searchFocused ? '0 0 0 3px rgba(201,168,76,0.06)' : 'none'
+            }}
           />
         </div>
       </div>
 
       {/* Brand Filter */}
-      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
         <h3 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-dark)', marginBottom: '14px' }}>Brand</h3>
         {brandsList.map(brand => (
           <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', cursor: 'pointer', fontSize: '13px', color: selectedBrands.includes(brand) ? 'var(--text-dark)' : 'var(--text-muted)', fontWeight: selectedBrands.includes(brand) ? '600' : '300' }}>
@@ -101,7 +116,7 @@ function ShopContent({ products }) {
       </div>
 
       {/* Gender */}
-      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
         <h3 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-dark)', marginBottom: '14px' }}>Gender Scent</h3>
         {gendersList.map(gender => (
           <label key={gender} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', cursor: 'pointer', fontSize: '13px', color: selectedGenders.includes(gender) ? 'var(--text-dark)' : 'var(--text-muted)', fontWeight: selectedGenders.includes(gender) ? '600' : '300' }}>
@@ -113,7 +128,7 @@ function ShopContent({ products }) {
       </div>
 
       {/* Concentration */}
-      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
         <h3 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-dark)', marginBottom: '14px' }}>Concentration</h3>
         {concentrationsList.map(conc => (
           <label key={conc} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 0', cursor: 'pointer', fontSize: '13px', color: selectedConcentrations.includes(conc) ? 'var(--text-dark)' : 'var(--text-muted)', fontWeight: selectedConcentrations.includes(conc) ? '600' : '300' }}>
@@ -125,7 +140,7 @@ function ShopContent({ products }) {
       </div>
 
       {/* Price */}
-      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+      <div style={{ marginBottom: '28px', paddingBottom: '28px', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
         <h3 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-dark)', marginBottom: '14px' }}>Max Budget</h3>
         <input type="range" min={199} max={maxProductPrice} value={maxPrice} onChange={e => setMaxPrice(parseInt(e.target.value))}
           style={{ width: '100%', accentColor: 'var(--gold)', margin: '0 0 10px' }} />
@@ -159,7 +174,7 @@ function ShopContent({ products }) {
         transition: 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1)', overflowY: 'auto',
         display: 'flex', flexDirection: 'column'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid rgba(0,0,0,0.08)', background: 'var(--noir)', position: 'sticky', top: '0', zIndex: '10' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 24px', borderBottom: '1px solid rgba(201,168,76,0.15)', background: 'var(--noir)', position: 'sticky', top: '0', zIndex: '10' }}>
           <span style={{ fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--white)' }}>
             Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
           </span>
@@ -186,7 +201,7 @@ function ShopContent({ products }) {
         className="shop-two-col">
         
         {/* Sidebar */}
-        <aside style={{ borderRight: '1px solid rgba(0,0,0,0.07)', padding: '40px 28px', position: 'sticky', top: 'calc(var(--header-height) + var(--announcement-height))', height: 'fit-content', maxHeight: 'calc(100vh - var(--header-height) - var(--announcement-height))', overflowY: 'auto' }}
+        <aside style={{ borderRight: '1px solid rgba(201,168,76,0.15)', padding: '40px 28px', position: 'sticky', top: 'calc(var(--header-height) + var(--announcement-height))', height: 'fit-content', maxHeight: 'calc(100vh - var(--header-height) - var(--announcement-height))', overflowY: 'auto' }}
           className="shop-sidebar-desktop">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: '400', color: 'var(--text-dark)' }}>Refine</h2>
@@ -204,30 +219,30 @@ function ShopContent({ products }) {
 
           {/* Mobile filter toggle */}
           <button onClick={() => setMobileFilterOpen(true)}
-            style={{ display: 'none', alignItems: 'center', gap: '8px', border: '1px solid rgba(0,0,0,0.12)', padding: '10px 16px', background: 'transparent', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', marginBottom: '20px', color: 'var(--text-dark)' }}
+            style={{ display: 'none', alignItems: 'center', gap: '8px', border: '1px solid rgba(201,168,76,0.4)', padding: '10px 16px', background: 'transparent', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', marginBottom: '20px', color: 'var(--text-dark)' }}
             className="shop-mobile-filter-btn">
             <SlidersHorizontal size={14} />
             Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
           </button>
 
           {/* Control Bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '12px' }}>
             <span style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)' }}>
               {filteredProducts.length} Fragrances
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {/* Grid toggle */}
-              <div style={{ display: 'flex', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '0' }}>
+              <div style={{ display: 'flex', border: '1px solid rgba(201,168,76,0.25)', borderRadius: '0' }}>
                 <button onClick={() => setGridCols(3)} aria-label="3 col"
                   style={{ padding: '7px 10px', border: 'none', background: gridCols === 3 ? 'var(--noir)' : 'transparent', color: gridCols === 3 ? 'var(--white)' : 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s' }}>
                   <LayoutGrid size={15} />
                 </button>
                 <button onClick={() => setGridCols(4)} aria-label="4 col"
-                  style={{ padding: '7px 10px', border: 'none', borderLeft: '1px solid rgba(0,0,0,0.1)', background: gridCols === 4 ? 'var(--noir)' : 'transparent', color: gridCols === 4 ? 'var(--white)' : 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s' }}>
+                  style={{ padding: '7px 10px', border: 'none', borderLeft: '1px solid rgba(201,168,76,0.25)', background: gridCols === 4 ? 'var(--noir)' : 'transparent', color: gridCols === 4 ? 'var(--white)' : 'var(--text-muted)', cursor: 'pointer', transition: 'background 0.2s' }}>
                   <Grid size={15} />
                 </button>
               </div>
-              <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="sort-select">
+              <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="sort-select" style={{ borderColor: 'rgba(201,168,76,0.3)', background: 'transparent' }}>
                 <option value="bestselling">Bestselling</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
@@ -238,7 +253,7 @@ function ShopContent({ products }) {
 
           {/* Active Filter Pills */}
           {activeFiltersCount > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '32px' }}>
               {[...selectedBrands.map(b => ({ label: `Brand: ${b}`, clear: () => handleBrandChange(b) })),
                 ...selectedGenders.map(g => ({ label: `Gender: ${g}`, clear: () => handleGenderChange(g) })),
                 ...selectedConcentrations.map(c => ({ label: `Conc: ${c}`, clear: () => handleConcentrationChange(c) })),
@@ -262,45 +277,57 @@ function ShopContent({ products }) {
 
           {/* Products Grid */}
           {filteredProducts.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 24px', background: 'var(--white)', border: '1px solid rgba(0,0,0,0.06)' }}>
+            <div style={{ textAlign: 'center', padding: '80px 24px', background: 'var(--white)', border: '1px solid rgba(201,168,76,0.15)', boxShadow: 'var(--shadow-sm)' }}>
               <p style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '300', marginBottom: '12px', color: 'var(--text-dark)' }}>No Fragrances Found</p>
               <p style={{ color: 'var(--text-muted)', fontSize: '14px', marginBottom: '24px', fontWeight: '300' }}>Try loosening your filter parameters.</p>
               <button className="btn-primary" onClick={clearAllFilters} style={{ display: 'inline-flex' }}>Clear All Filters</button>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gap: '20px' }} className={`products-grid-responsive g${gridCols}`}>
-              {filteredProducts.map((product) => (
-                <div className={`product-card ${!product.inStock ? 'sold-out' : ''}`} key={product.id} style={{ position: 'relative' }}>
-                  {!product.inStock && <div className="out-of-stock-label">Sold Out</div>}
-                  {product.discount > 0 && product.inStock && <div className="product-badge sale">{product.discount}% OFF</div>}
+              {filteredProducts.map((product, idx) => (
+                <div className={`product-card-elevated ${!product.inStock ? 'sold-out' : ''}`} key={product.id || product._id || idx}>
+                  {!product.inStock && <div className="out-of-stock-label" style={{ borderRadius: '0' }}>Sold Out</div>}
+                  {product.discount > 0 && product.inStock && <div className="product-badge sale" style={{ borderRadius: '0' }}>{product.discount}% OFF</div>}
+                  
                   <Link href={`/product/${product.slug}`} className="product-img-wrapper" style={{ display: 'block', position: 'relative', overflow: 'hidden' }}>
                     <img src={getOptimizedImageUrl(product.image, 400)} alt={product.title} className="product-img" />
-                    <div className="royal-quick-add">View Product</div>
+                    <div className="royal-quick-add" style={{ fontStyle: 'italic', letterSpacing: '0.25em' }}>View Essence</div>
                   </Link>
+
                   <div className="product-details">
-                    <div className="product-notes">{product.brand || 'C&S Perfumes'}</div>
-                    <Link href={`/product/${product.slug}`}>
-                      <h3 className="product-title">{product.title}</h3>
-                    </Link>
-                    <div className="product-rating">
-                      <Star className="rating-star" fill="var(--gold)" color="var(--gold)" size={12} />
-                      <span className="rating-value">{product.rating}</span>
-                      <span className="rating-count">({product.reviewsCount})</span>
+                    <div className="product-notes" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', fontStyle: 'italic' }}>
+                      {product.brand || 'C&S Perfumes'}
                     </div>
+                    <Link href={`/product/${product.slug}`}>
+                      <h3 className="product-title" style={{ fontWeight: '400', fontFamily: 'var(--font-display)', fontSize: '18px' }}>{product.title}</h3>
+                    </Link>
+                    
+                    <div className="product-rating" style={{ marginTop: '8px' }}>
+                      <div style={{ display: 'flex', gap: '3px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="rating-star" fill={i < Math.floor(product.rating) ? 'var(--gold)' : 'none'} color="var(--gold)" style={{ width: '11px', height: '11px' }} />
+                        ))}
+                      </div>
+                      <span className="rating-value" style={{ fontSize: '11px', fontWeight: '500', marginLeft: '4px' }}>{product.rating}</span>
+                      <span className="rating-count" style={{ fontSize: '10px' }}>({product.reviewsCount})</span>
+                    </div>
+
                     {product.concentration && (
-                      <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-muted)', paddingTop: '2px' }}>{product.concentration}</span>
+                      <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-muted)', paddingTop: '4px', display: 'block' }}>{product.concentration}</span>
                     )}
+
                     <div className="product-footer">
                       <div className="price-box">
-                        {product.price > product.salePrice && <span className="original-price">₹{product.price}</span>}
-                        <span className="sale-price">₹{product.salePrice}</span>
+                        {product.price > product.salePrice && <span className="original-price" style={{ fontSize: '11px' }}>₹{product.price}</span>}
+                        <span className="sale-price" style={{ fontSize: '20px', fontFamily: 'var(--font-display)', color: 'var(--text-dark)' }}>₹{product.salePrice}</span>
                       </div>
+                      
                       {product.inStock ? (
-                        <button className="btn-add-cart" onClick={() => addToCart(product)} aria-label={`Add ${product.title} to bag`}>
-                          <ShoppingCart size={15} />
+                        <button className="btn-add-cart interactive-hover" onClick={() => addToCart(product)} aria-label={`Add ${product.title} to bag`} style={{ width: '42px', height: '42px' }}>
+                          <ShoppingBag size={15} />
                         </button>
                       ) : (
-                        <button className="btn-add-cart" style={{ background: 'rgba(0,0,0,0.08)', cursor: 'not-allowed', color: 'var(--text-muted)' }} disabled>
+                        <button className="btn-add-cart" style={{ background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', cursor: 'not-allowed', color: 'var(--text-muted)', width: '42px', height: '42px' }} disabled>
                           <X size={15} />
                         </button>
                       )}

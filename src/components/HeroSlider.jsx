@@ -51,66 +51,106 @@ export default function HeroSlider({ settings }) {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.18, delayChildren: 0.2 } },
-    exit: { opacity: 0, transition: { duration: 0.5 } }
+    visible: { 
+      opacity: 1, 
+      transition: { staggerChildren: 0.15, delayChildren: 0.1 } 
+    },
+    exit: { opacity: 0, transition: { duration: 0.4 } }
   };
 
   const itemVariants = {
-    hidden: { y: 28, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.9, ease: [0.25, 0.46, 0.45, 0.94] } }
+    hidden: { y: 24, opacity: 0 },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] } 
+    }
+  };
+
+  const imageVariants = {
+    hidden: { scale: 1.15, opacity: 0 },
+    visible: { 
+      scale: 1, 
+      opacity: 1, 
+      transition: { duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] } 
+    },
+    exit: { 
+      scale: 0.95, 
+      opacity: 0, 
+      transition: { duration: 0.6 } 
+    }
   };
 
   return (
-    <section className="hero-section" aria-label="Hero Campaigns">
-      {slides.map((slide, idx) => (
-        <div
-          key={slide.id || idx}
-          className={`hero-slide ${idx === activeIdx ? 'active' : ''}`}
-        >
-          <img
-            src={slide.image}
-            alt={slide.title}
-            className="hero-bg-media"
-            style={{
-              animation: idx === activeIdx ? 'kenBurns 10s ease-out forwards' : 'none',
-              transformOrigin: 'center center'
-            }}
-          />
-
-          <div className="container" style={{ width: '100%' }}>
+    <section className="hero-section" aria-label="Hero Campaigns" style={{ background: 'var(--noir)', display: 'flex', alignItems: 'center' }}>
+      <div className="container" style={{ width: '100%', position: 'relative', zIndex: 5 }}>
+        <div className="hero-split-container">
+          
+          {/* Left Panel: Animated Editorial Text */}
+          <div className="hero-text-panel">
             <AnimatePresence mode="wait">
-              {idx === activeIdx && (
-                <motion.div
-                  className="hero-content"
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                >
-                  <motion.span variants={itemVariants} className="hero-tagline">
-                    {slide.tagline}
-                  </motion.span>
-                  <motion.h1 variants={itemVariants} className="hero-title" style={{ whiteSpace: 'pre-line' }}>
-                    {slide.title}
-                  </motion.h1>
-                  <motion.p variants={itemVariants} className="hero-desc">
-                    {slide.desc}
-                  </motion.p>
-                  <motion.div variants={itemVariants} style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                    <Link href={slide.link || "/#bestsellers"} className="btn-primary">
-                      <span>{slide.btnText}</span>
-                      <ArrowRight size={16} />
-                    </Link>
-                    <Link href="/shop" className="btn-outline">
-                      <span>View All</span>
-                    </Link>
+              {slides.map((slide, idx) => (
+                idx === activeIdx && (
+                  <motion.div
+                    key={slide.id || idx}
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    className="hero-content"
+                    style={{ padding: 0, margin: 0 }}
+                  >
+                    <motion.span variants={itemVariants} className="hero-tagline">
+                      {slide.tagline}
+                    </motion.span>
+                    <motion.h1 variants={itemVariants} className="hero-title" style={{ whiteSpace: 'pre-line', color: 'var(--white)' }}>
+                      {slide.title}
+                    </motion.h1>
+                    <motion.p variants={itemVariants} className="hero-desc" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                      {slide.desc}
+                    </motion.p>
+                    <motion.div variants={itemVariants} style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                      <Link href={slide.link || "/#bestsellers"} className="btn-primary">
+                        <span>{slide.btnText}</span>
+                        <ArrowRight size={16} />
+                      </Link>
+                      <Link href="/shop" className="btn-outline" style={{ color: 'var(--white)', border: '1px solid rgba(255,255,255,0.25)' }}>
+                        <span>View All</span>
+                      </Link>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              )}
+                )
+              ))}
             </AnimatePresence>
           </div>
+
+          {/* Right Panel: Dynamic Scent Visualizer Frame */}
+          <div className="hero-image-panel">
+            {/* Ambient luxury vector decoration rings */}
+            <div className="hero-deco-ring hero-ring-1"></div>
+            <div className="hero-deco-ring hero-ring-2"></div>
+            
+            <AnimatePresence mode="wait">
+              {slides.map((slide, idx) => (
+                idx === activeIdx && (
+                  <div key={slide.id || idx} className="hero-arch-frame">
+                    <motion.img
+                      variants={imageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      src={slide.image}
+                      alt={slide.title}
+                      className="hero-slide-image"
+                    />
+                  </div>
+                )
+              ))}
+            </AnimatePresence>
+          </div>
+          
         </div>
-      ))}
+      </div>
 
       {/* Slide counter */}
       <div style={{ position: 'absolute', bottom: '32px', right: '32px', zIndex: 10, color: 'rgba(255,255,255,0.4)', fontFamily: 'var(--font-label)', fontSize: '11px', letterSpacing: '0.15em', display: 'flex', alignItems: 'center', gap: '8px' }}>

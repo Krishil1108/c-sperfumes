@@ -26,10 +26,17 @@ export default function Footer({ settings }) {
       <div className="container">
         <div className="footer-top">
           <div className="footer-brand-col">
-            <Link href="/" className="logo">
-              <span style={{ display: 'inline-flex', alignItems: 'center', background: 'var(--cream)', padding: '7px 14px', borderRadius: '4px' }}>
-                <img src="/logo.png" alt="C&S Perfumes" className="logo-img" style={{ height: '38px', width: 'auto' }} />
-              </span>
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src="/images/logo.png" 
+                alt="C&S Perfumes" 
+                className="logo-img" 
+                style={{ 
+                  height: '42px', 
+                  width: 'auto',
+                  filter: 'brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(15deg) brightness(0.95)' 
+                }} 
+              />
             </Link>
             <p className="footer-desc">
               {settings?.footerDesc || "Curating high-end organic perfumes formulated with authentic essential oils, natural botanical extracts, and premium luxury craftsmanship."}

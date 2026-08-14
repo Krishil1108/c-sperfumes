@@ -156,18 +156,17 @@ export default function Header({ settings }) {
             </button>
 
             {/* Logo */}
-            <Link href="/" className="logo">
-              <span style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: 'var(--cream)',
-                padding: '6px 12px',
-                borderRadius: '4px',
-                height: '54px',
-              }}>
-                <img src="/logo.png" alt="C&S Perfumes" className="logo-img" style={{ height: '42px', width: 'auto' }} />
-              </span>
+            <Link href="/" className="logo" style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src="/images/logo.png" 
+                alt="C&S Perfumes" 
+                className="logo-img" 
+                style={{ 
+                  height: '48px', 
+                  width: 'auto',
+                  filter: 'brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(15deg) brightness(0.95)' 
+                }} 
+              />
             </Link>
           </div>
 
@@ -277,10 +276,17 @@ export default function Header({ settings }) {
       <div className={`mobile-drawer ${mobileMenuOpen ? 'active' : ''}`}>
         <div className="mobile-drawer-header">
           {/* Drawer Logo */}
-          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="logo">
-            <span style={{ display: 'flex', alignItems: 'center', background: 'var(--cream)', padding: '5px 10px', borderRadius: '4px', height: '44px' }}>
-              <img src="/logo.png" alt="C&S Perfumes" className="logo-img" style={{ height: '34px', width: 'auto' }} />
-            </span>
+          <Link href="/" onClick={() => setMobileMenuOpen(false)} className="logo" style={{ display: 'flex', alignItems: 'center' }}>
+            <img 
+              src="/images/logo.png" 
+              alt="C&S Perfumes" 
+              className="logo-img" 
+              style={{ 
+                height: '38px', 
+                width: 'auto',
+                filter: 'brightness(0)' 
+              }} 
+            />
           </Link>
           <button className="icon-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
             <X size={24} />

@@ -1,137 +1,22 @@
-import { createClient } from '@sanity/client';
-import mockProducts from '../../data/mockProducts.json';
+import { dbService } from './db';
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '92sib1op';
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
-const apiVersion = '2024-01-01';
-
-let client = null;
-let isDemoMode = true;
-
-if (projectId && projectId !== 'mock_project_id') {
-  try {
-    client = createClient({
-      projectId,
-      dataset,
-      apiVersion,
-      useCdn: true,
-    });
-    // Force demo mode so we use local mock products with our new images and C&S brand name
-    isDemoMode = true; 
-  } catch (err) {
-    console.warn('Failed to initialize Sanity Client, switching to Demo Mode.', err);
-  }
-}
-
+// Redirect all data query calls from Sanity to our new Firebase/LocalStorage database manager (dbService)
 export function getSanityStatus() {
-  return { isDemoMode, projectId };
+  return { isDemoMode: true, projectId: 'firebase' };
 }
-
-const PRODUCT_FIELDS = `
-  "id": _id,
-  title,
-  "slug": slug.current,
-  description,
-  brand,
-  category,
-  concentration,
-  gender,
-  notes,
-  price,
-  salePrice,
-  discount,
-  rating,
-  reviewsCount,
-  "image": coalesce(imageUpload.asset->url, image),
-  "images": select(count(imagesUploads[defined(asset)]) > 0 => imagesUploads[defined(asset)].asset->url, images),
-  inStock,
-  isBestseller,
-  isNewArrival,
-  hotspot { x, y }
-`;
 
 export async function getPerfumes() {
-  if (isDemoMode || !client) {
-    console.log('Serving perfumes from Local Mock Database (Demo Mode)...');
-    return mockProducts;
-  }
-
-  try {
-    const query = `*[_type == "product"] | order(_createdAt desc) { ${PRODUCT_FIELDS} }`;
-    const data = await client.fetch(query);
-    if (data && data.length > 0) {
-      return data;
-    }
-    console.log('Sanity dataset is empty, falling back to Mock Database...');
-    return mockProducts;
-  } catch (err) {
-    console.error('Sanity query failed, falling back to Mock Database:', err);
-    return mockProducts;
-  }
+  return await dbService.getPerfumes();
 }
 
 export async function getPerfumeBySlug(slug) {
-  if (isDemoMode || !client) {
-    return mockProducts.find(p => p.slug === slug) || null;
-  }
-
-  try {
-    const query = `*[_type == "product" && slug.current == $slug][0] { ${PRODUCT_FIELDS} }`;
-    const data = await client.fetch(query, { slug });
-    return data || mockProducts.find(p => p.slug === slug) || null;
-  } catch (err) {
-    console.error(`Sanity query failed for slug ${slug}, falling back to Mock Database:`, err);
-    return mockProducts.find(p => p.slug === slug) || null;
-  }
+  return await dbService.getPerfumeBySlug(slug);
 }
 
 export async function getSiteSettings() {
-  if (isDemoMode || !client) {
-    return null;
-  }
-  try {
-    const query = `*[_type == "siteSettings"][0] {
-      ...,
-      "logo": logoUpload.asset->url,
-      heroSlides[] {
-        ...,
-        "image": coalesce(imageUpload.asset->url, imageUrl)
-      },
-      scentCategories[] {
-        ...,
-        "image": coalesce(imageUpload.asset->url, imageUrl)
-      },
-      whyChooseUs[] {
-        ...,
-        "iconUploadUrl": iconUpload.asset->url
-      },
-      "shopTheLookImage": coalesce(shopTheLookImageUpload.asset->url, shopTheLookImageUrl)
-    }`;
-    return await client.fetch(query);
-  } catch (err) {
-    console.error('Failed to fetch site settings, using defaults:', err);
-    return null;
-  }
+  return await dbService.getSiteSettings();
 }
 
 export async function getOrders() {
-  if (isDemoMode || !client) {
-    return [];
-  }
-  try {
-    const query = `*[_type == "order"] | order(_createdAt desc) {
-      _id,
-      orderId,
-      customerName,
-      email,
-      phone,
-      totalAmount,
-      paymentStatus,
-      _createdAt
-    }`;
-    return await client.fetch(query);
-  } catch (err) {
-    console.error('Failed to fetch orders:', err);
-    return [];
-  }
+  return await dbService.getOrders();
 }

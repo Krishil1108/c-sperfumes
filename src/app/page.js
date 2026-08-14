@@ -159,7 +159,7 @@ export default async function HomePage() {
           <div className="scent-categories-grid">
             {categories.map((cat, idx) => (
               <ScrollReveal delay={0.1 * idx} key={idx}>
-                <Link href={cat.href || "/shop"} className="scent-category-card">
+                <Link href={cat.href || "/shop"} className="scent-category-arch-card">
                   <div className="scent-category-img-wrapper">
                     <img src={cat.image} alt={cat.name} className="scent-category-img" />
                   </div>
@@ -197,7 +197,7 @@ export default async function HomePage() {
           <div className="why-us-grid-editorial">
             {whyUs.map((item, idx) => (
               <ScrollReveal delay={0.15 * idx} key={idx}>
-                <div className="why-us-editorial-item interactive-hover">
+                <div className="why-us-editorial-tile">
                   <div className="why-us-icon-container">
                     {renderWhyUsIcon(item)}
                   </div>

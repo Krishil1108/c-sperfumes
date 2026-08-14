@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { ShoppingBag, FileSpreadsheet, Lock } from 'lucide-react';
+import Link from 'next/link';
 
 export default function OrdersClient({ initialOrders }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [focused, setFocused] = useState(false);
 
   // Protect the page with the studio password
   const handleLogin = (e) => {
@@ -14,7 +17,7 @@ export default function OrdersClient({ initialOrders }) {
       setIsAuthenticated(true);
       setError('');
     } else {
-      setError('Incorrect password');
+      setError('Incorrect password. Access denied.');
     }
   };
 
@@ -55,83 +58,174 @@ export default function OrdersClient({ initialOrders }) {
 
   if (!isAuthenticated) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#f9f9f9' }}>
-        <form onSubmit={handleLogin} style={{ padding: '40px', background: 'white', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h2 style={{ marginBottom: '20px', color: '#333' }}>Admin Login</h2>
-          <input 
-            type="password" 
-            placeholder="Enter Admin Password" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ padding: '10px', width: '100%', marginBottom: '15px', border: '1px solid #ccc', borderRadius: '4px' }}
-          />
-          {error && <p style={{ color: 'red', fontSize: '14px', marginBottom: '15px' }}>{error}</p>}
-          <button type="submit" style={{ padding: '10px 20px', background: '#000', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>
-            Access Dashboard
-          </button>
-        </form>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: 'var(--cream)', padding: '24px' }}>
+        <div style={{ 
+          maxWidth: '420px', 
+          width: '100%', 
+          padding: '52px 40px', 
+          background: 'var(--charcoal)', 
+          border: '1px solid var(--gold)', 
+          boxShadow: 'var(--shadow-gold)',
+          textAlign: 'center' 
+        }}>
+          
+          <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)', display: 'flex', alignItems: 'center', justify: 'center', margin: '0 auto 20px', color: 'var(--gold)' }}>
+            <Lock size={22} />
+          </div>
+
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: '300', color: 'var(--white)', marginBottom: '8px' }}>Admin Portal</h2>
+          <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--gold)', marginBottom: '32px' }}>Enter Studio Credentials</p>
+          
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <input 
+              type="password" 
+              placeholder="Admin Password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              style={{ 
+                padding: '14px 16px', 
+                width: '100%', 
+                border: focused ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.1)', 
+                background: 'rgba(255,255,255,0.05)', 
+                outline: 'none', 
+                color: 'var(--white)',
+                fontFamily: 'var(--font-body)',
+                fontSize: '14px',
+                transition: 'all 0.22s ease',
+                borderRadius: '0',
+                boxShadow: focused ? '0 0 0 3px rgba(201,168,76,0.1)' : 'none'
+              }}
+            />
+            {error && <p style={{ color: 'var(--gold-light)', fontSize: '12px', fontFamily: 'var(--font-label)', letterSpacing: '0.05em', textTransform: 'uppercase', margin: '4px 0 8px' }}>⚠️ {error}</p>}
+            <button type="submit" 
+              style={{ 
+                padding: '15px 20px', 
+                background: 'var(--gold)', 
+                color: 'var(--noir)', 
+                border: 'none', 
+                cursor: 'pointer', 
+                width: '100%',
+                fontFamily: 'var(--font-label)',
+                fontSize: '11px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                letterSpacing: '0.22em',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={e => e.target.style.background = 'var(--gold-light)'}
+              onMouseLeave={e => e.target.style.background = 'var(--gold)'}>
+              Access Dashboard
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '28px', color: '#111' }}>Orders Dashboard</h1>
-        <button 
-          onClick={exportToCSV}
-          style={{ padding: '10px 20px', background: '#bfa15f', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          ⬇️ Export to CSV (Excel)
-        </button>
-      </div>
+    <div style={{ background: 'var(--cream)', minHeight: '100vh', padding: '48px 0 80px' }}>
+      <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+        
+        {/* Dashboard Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.3em', color: 'var(--gold)', display: 'block', marginBottom: '8px' }}>
+              Management Console
+            </span>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '38px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>
+              Customer Orders
+            </h1>
+          </div>
+          
+          <button 
+            onClick={exportToCSV}
+            style={{ 
+              padding: '14px 28px', 
+              background: 'var(--noir)', 
+              color: 'var(--white)', 
+              border: '1px solid var(--noir)', 
+              cursor: 'pointer', 
+              fontFamily: 'var(--font-label)',
+              fontSize: '11px',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.18em',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={e => { e.target.style.background = 'var(--gold)'; e.target.style.color = 'var(--noir)'; e.target.style.borderColor = 'var(--gold)'; }}
+            onMouseLeave={e => { e.target.style.background = 'var(--noir)'; e.target.style.color = 'var(--white)'; e.target.style.borderColor = 'var(--noir)'; }}
+          >
+            <FileSpreadsheet size={14} />
+            Export to CSV
+          </button>
+        </div>
 
-      <div style={{ overflowX: 'auto', background: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead>
-            <tr style={{ background: '#f4f4f4', borderBottom: '2px solid #ddd' }}>
-              <th style={{ padding: '15px', color: '#555' }}>Order ID</th>
-              <th style={{ padding: '15px', color: '#555' }}>Date</th>
-              <th style={{ padding: '15px', color: '#555' }}>Customer Name</th>
-              <th style={{ padding: '15px', color: '#555' }}>Email</th>
-              <th style={{ padding: '15px', color: '#555' }}>Phone</th>
-              <th style={{ padding: '15px', color: '#555' }}>Amount</th>
-              <th style={{ padding: '15px', color: '#555' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {initialOrders.length === 0 ? (
-              <tr>
-                <td colSpan="7" style={{ padding: '30px', textAlign: 'center', color: '#888' }}>
-                  No orders found.
-                </td>
+        {/* Orders Table Container */}
+        <div style={{ 
+          background: 'var(--white)', 
+          border: '1px solid rgba(201,168,76,0.15)', 
+          boxShadow: 'var(--shadow-sm)',
+          overflowX: 'auto'
+        }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ background: 'var(--charcoal)', borderBottom: '2px solid var(--gold)' }}>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Order ID</th>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Date</th>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Customer</th>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Email</th>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Phone</th>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Amount</th>
+                <th style={{ padding: '18px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--white)' }}>Status</th>
               </tr>
-            ) : (
-              initialOrders.map((order) => (
-                <tr key={order._id} style={{ borderBottom: '1px solid #eee' }}>
-                  <td style={{ padding: '15px', fontWeight: 'bold' }}>{order.orderId || '-'}</td>
-                  <td style={{ padding: '15px' }}>{new Date(order._createdAt).toLocaleDateString()}</td>
-                  <td style={{ padding: '15px' }}>{order.customerName}</td>
-                  <td style={{ padding: '15px' }}>{order.email}</td>
-                  <td style={{ padding: '15px' }}>{order.phone}</td>
-                  <td style={{ padding: '15px' }}>₹{order.totalAmount}</td>
-                  <td style={{ padding: '15px' }}>
-                    <span style={{ 
-                      padding: '4px 10px', 
-                      background: order.paymentStatus === 'Paid' ? '#e6f4ea' : '#fef0f0', 
-                      color: order.paymentStatus === 'Paid' ? '#1e8e3e' : '#d93025',
-                      borderRadius: '12px',
-                      fontSize: '13px',
-                      fontWeight: 'bold'
-                    }}>
-                      {order.paymentStatus || 'Pending'}
-                    </span>
+            </thead>
+            <tbody>
+              {initialOrders.length === 0 ? (
+                <tr>
+                  <td colSpan="7" style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '300' }}>
+                    No client orders recorded.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                initialOrders.map((order, idx) => (
+                  <tr 
+                    key={order._id || idx} 
+                    style={{ borderBottom: '1px solid rgba(201,168,76,0.15)', transition: 'background 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(201,168,76,0.02)'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <td style={{ padding: '18px 20px', fontWeight: 'bold', fontSize: '13px', color: 'var(--text-dark)' }}>{order.orderId || '-'}</td>
+                    <td style={{ padding: '18px 20px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '300' }}>{new Date(order._createdAt).toLocaleDateString()}</td>
+                    <td style={{ padding: '18px 20px', fontSize: '14px', fontWeight: '500', color: 'var(--text-dark)' }}>{order.customerName}</td>
+                    <td style={{ padding: '18px 20px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '300' }}>{order.email}</td>
+                    <td style={{ padding: '18px 20px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: '300' }}>{order.phone}</td>
+                    <td style={{ padding: '18px 20px', fontSize: '15px', fontWeight: '600', fontFamily: 'var(--font-display)', color: 'var(--text-dark)' }}>₹{order.totalAmount}</td>
+                    <td style={{ padding: '18px 20px' }}>
+                      <span style={{ 
+                        padding: '5px 12px', 
+                        background: order.paymentStatus === 'Paid' ? 'rgba(45,154,95,0.08)' : 'rgba(217,48,37,0.08)', 
+                        color: order.paymentStatus === 'Paid' ? '#1e8e3e' : '#d93025',
+                        border: order.paymentStatus === 'Paid' ? '1px solid rgba(45,154,95,0.25)' : '1px solid rgba(217,48,37,0.25)',
+                        fontSize: '11px',
+                        fontFamily: 'var(--font-label)',
+                        fontWeight: '700',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.1em'
+                      }}>
+                        {order.paymentStatus || 'Pending'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

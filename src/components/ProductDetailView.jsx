@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../lib/CartContext';
-import { Star, ShoppingBag, ArrowRight, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { Star, ShoppingBag, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getOptimizedImageUrl } from '../lib/image';
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 export default function ProductDetailView({ product }) {
   const { addToCart } = useCart();
@@ -14,6 +13,7 @@ export default function ProductDetailView({ product }) {
   const [activeAccordion, setActiveAccordion] = useState('notes');
   const [activeImg, setActiveImg] = useState(0);
   const [addedFeedback, setAddedFeedback] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
 
   const [reviews, setReviews] = useState([
     { id: 1, author: "Meera K.", rating: 5, date: "2 days ago", comment: "Absolutely exquisite! The woody undertones last for over 10 hours. A true investment fragrance." },
@@ -93,35 +93,56 @@ export default function ProductDetailView({ product }) {
 
           {/* Left: Image Gallery */}
           <div style={{ position: 'sticky', top: 'calc(var(--header-height) + var(--announcement-height) + 24px)' }}>
-            {/* Main Image */}
-            <div style={{ background: 'var(--pearl)', aspectRatio: '1', overflow: 'hidden', position: 'relative', marginBottom: '12px' }}>
+            {/* Main Image with Arch Masking */}
+            <div style={{ 
+              background: 'radial-gradient(circle, var(--cream) 0%, var(--pearl) 100%)', 
+              aspectRatio: '0.82', 
+              overflow: 'hidden', 
+              position: 'relative', 
+              marginBottom: '18px',
+              borderRadius: '260px 260px 0 0',
+              border: '1px solid rgba(201,168,76,0.25)',
+              boxShadow: 'var(--shadow-gold)'
+            }}>
               <motion.img
                 key={activeImg}
                 src={getOptimizedImageUrl(images[activeImg], 800)}
                 alt={product.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                initial={{ opacity: 0, scale: 1.03 }}
+                initial={{ opacity: 0, scale: 1.05 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
               />
               {product.discount > 0 && product.inStock !== false && (
-                <div style={{ position: 'absolute', top: '20px', left: '20px', background: 'var(--gold)', color: 'var(--noir)', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '5px 12px' }}>
+                <div style={{ position: 'absolute', top: '30px', left: '50%', transform: 'translateX(-50%)', background: 'var(--gold)', color: 'var(--noir)', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', padding: '5px 12px' }}>
                   {product.discount}% OFF
                 </div>
               )}
               {product.inStock === false && (
-                <div style={{ position: 'absolute', inset: '0', background: 'rgba(10,10,10,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ fontFamily: 'var(--font-label)', fontSize: '12px', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)' }}>Sold Out</span>
+                <div style={{ position: 'absolute', inset: '0', background: 'rgba(10,10,10,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontFamily: 'var(--font-label)', fontSize: '12px', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.9)' }}>Sold Out</span>
                 </div>
               )}
             </div>
 
-            {/* Thumbnails */}
+            {/* Thumbnails with Arch shapes */}
             {images.length > 1 && (
-              <div style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
                 {images.map((img, i) => (
                   <button key={i} onClick={() => setActiveImg(i)}
-                    style={{ width: '72px', height: '72px', border: i === activeImg ? '2px solid var(--gold)' : '2px solid transparent', background: 'var(--pearl)', overflow: 'hidden', cursor: 'pointer', padding: '0', transition: 'border-color 0.2s', flexShrink: '0' }}>
+                    style={{ 
+                      width: '76px', 
+                      height: '92px', 
+                      border: i === activeImg ? '1.5px solid var(--gold)' : '1px solid rgba(201,168,76,0.15)', 
+                      background: 'var(--pearl)', 
+                      overflow: 'hidden', 
+                      cursor: 'pointer', 
+                      padding: '0', 
+                      transition: 'all 0.3s ease', 
+                      flexShrink: '0',
+                      borderRadius: '36px 36px 0 0',
+                      boxShadow: i === activeImg ? 'var(--shadow-gold)' : 'none'
+                    }}>
                     <img src={getOptimizedImageUrl(img, 200)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </button>
                 ))}
@@ -135,19 +156,19 @@ export default function ProductDetailView({ product }) {
               {product.category || 'C&S Perfumes'}
             </span>
 
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px, 4vw, 48px)', fontWeight: '300', color: 'var(--text-dark)', lineHeight: '1.12', marginBottom: '20px' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: '300', color: 'var(--text-dark)', lineHeight: '1.1', marginBottom: '20px' }}>
               {product.title}
             </h1>
 
             {/* Rating */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', gap: '2px' }}>
+              <div style={{ display: 'flex', gap: '3px' }}>
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={14} fill={i < Math.floor(product.rating) ? 'var(--gold)' : 'none'} color="var(--gold)" />
+                  <Star key={i} size={13} fill={i < Math.floor(product.rating) ? 'var(--gold)' : 'none'} color="var(--gold)" />
                 ))}
               </div>
               <span style={{ fontFamily: 'var(--font-label)', fontSize: '11px', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>
-                {product.rating} · {product.reviewsCount + reviews.length - 2} reviews
+                {product.rating} · {product.reviewsCount + reviews.length - 3} reviews
               </span>
             </div>
 
@@ -156,7 +177,7 @@ export default function ProductDetailView({ product }) {
 
             {/* Price */}
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '14px', marginBottom: '28px' }}>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: '36px', fontWeight: '400', color: 'var(--text-dark)' }}>₹{product.salePrice}</span>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '38px', fontWeight: '400', color: 'var(--text-dark)' }}>₹{product.salePrice}</span>
               {product.price > product.salePrice && (
                 <>
                   <span style={{ fontFamily: 'var(--font-label)', fontSize: '15px', textDecoration: 'line-through', color: 'var(--text-muted)' }}>₹{product.price}</span>
@@ -172,7 +193,7 @@ export default function ProductDetailView({ product }) {
               {product.description}
             </p>
 
-            {/* Scent Notes */}
+            {/* Scent Notes (Accords) */}
             {product.notes && (
               <div style={{ marginBottom: '28px' }}>
                 <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-muted)', display: 'block', marginBottom: '12px' }}>
@@ -180,9 +201,21 @@ export default function ProductDetailView({ product }) {
                 </span>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {product.notes.map((note, i) => (
-                    <span key={i} style={{ fontFamily: 'var(--font-label)', fontSize: '10px', padding: '6px 14px', border: '1px solid rgba(0,0,0,0.1)', color: 'var(--text-dark)', letterSpacing: '0.12em', textTransform: 'uppercase', transition: 'border-color 0.2s, background 0.2s', cursor: 'default' }}
-                      onMouseEnter={e => { e.target.style.borderColor = 'var(--gold)'; e.target.style.background = 'rgba(201,168,76,0.06)'; }}
-                      onMouseLeave={e => { e.target.style.borderColor = 'rgba(0,0,0,0.1)'; e.target.style.background = 'transparent'; }}>
+                    <span key={i} style={{ 
+                      fontFamily: 'var(--font-label)', 
+                      fontSize: '10px', 
+                      padding: '8px 18px', 
+                      border: '1px solid rgba(201,168,76,0.2)', 
+                      color: 'var(--text-dark)', 
+                      letterSpacing: '0.12em', 
+                      textTransform: 'uppercase', 
+                      transition: 'all 0.3s ease', 
+                      cursor: 'default',
+                      borderRadius: '16px 16px 0 0',
+                      background: 'transparent'
+                    }}
+                      onMouseEnter={e => { e.target.style.borderColor = 'var(--gold)'; e.target.style.background = 'rgba(201,168,76,0.06)'; e.target.style.boxShadow = '0 4px 12px rgba(201,168,76,0.05)'; }}
+                      onMouseLeave={e => { e.target.style.borderColor = 'rgba(201,168,76,0.2)'; e.target.style.background = 'transparent'; e.target.style.boxShadow = 'none'; }}>
                       {note}
                     </span>
                   ))}
@@ -196,21 +229,32 @@ export default function ProductDetailView({ product }) {
                 <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--text-muted)', display: 'block', marginBottom: '10px' }}>
                   Concentration
                 </span>
-                <span style={{ fontFamily: 'var(--font-label)', fontSize: '11px', padding: '8px 18px', border: '1px solid var(--border-light)', color: 'var(--text-dark)', letterSpacing: '0.15em', textTransform: 'uppercase', display: 'inline-block', background: 'rgba(201,168,76,0.06)' }}>
+                <span style={{ 
+                  fontFamily: 'var(--font-label)', 
+                  fontSize: '11px', 
+                  padding: '8px 20px', 
+                  border: '1px solid var(--border-light)', 
+                  color: 'var(--text-dark)', 
+                  letterSpacing: '0.15em', 
+                  textTransform: 'uppercase', 
+                  display: 'inline-block', 
+                  background: 'rgba(201,168,76,0.06)',
+                  borderRadius: '16px 16px 0 0'
+                }}>
                   {product.concentration}
                 </span>
               </div>
             )}
 
             {/* Qty + Add to Cart */}
-            <div style={{ display: 'flex', gap: '12px', marginBottom: '36px', alignItems: 'stretch' }}>
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '36px', alignItems: 'stretch' }}>
               {/* Qty selector */}
-              <div style={{ display: 'flex', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', opacity: product.inStock === false ? '0.5' : '1' }}>
+              <div style={{ display: 'flex', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', opacity: product.inStock === false ? '0.5' : '1' }}>
                 <button onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={product.inStock === false}
                   style={{ width: '44px', height: '52px', border: 'none', background: 'transparent', fontSize: '18px', color: 'var(--text-dark)', cursor: 'pointer', transition: 'background 0.2s' }}
                   onMouseEnter={e => e.target.style.background = 'var(--pearl)'}
                   onMouseLeave={e => e.target.style.background = 'transparent'}>−</button>
-                <span style={{ width: '44px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-label)', fontSize: '13px', fontWeight: '600', borderLeft: '1px solid rgba(0,0,0,0.1)', borderRight: '1px solid rgba(0,0,0,0.1)' }}>
+                <span style={{ width: '44px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-label)', fontSize: '13px', fontWeight: '600', borderLeft: '1px solid rgba(201,168,76,0.15)', borderRight: '1px solid rgba(201,168,76,0.15)' }}>
                   {product.inStock === false ? 0 : quantity}
                 </span>
                 <button onClick={() => setQuantity(q => q + 1)} disabled={product.inStock === false}
@@ -222,7 +266,9 @@ export default function ProductDetailView({ product }) {
               {/* Add to Bag */}
               {product.inStock !== false ? (
                 <button onClick={handleAddCart}
-                  style={{ flex: '1', background: addedFeedback ? 'var(--gold)' : 'var(--noir)', color: addedFeedback ? 'var(--noir)' : 'var(--white)', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', transition: 'background 0.3s, color 0.3s', height: '52px' }}>
+                  style={{ flex: '1', background: addedFeedback ? 'var(--gold)' : 'var(--noir)', color: addedFeedback ? 'var(--noir)' : 'var(--white)', border: 'none', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '12px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', transition: 'all 0.3s ease', height: '52px' }}
+                  onMouseEnter={e => { if (!addedFeedback) e.target.style.background = 'var(--gold)'; e.target.style.color = 'var(--noir)'; }}
+                  onMouseLeave={e => { if (!addedFeedback) e.target.style.background = 'var(--noir)'; e.target.style.color = 'var(--white)'; }}>
                   {addedFeedback ? <><Check size={16} /> Added to Bag</> : <><ShoppingBag size={16} /> Add to Bag</>}
                 </button>
               ) : (
@@ -235,18 +281,18 @@ export default function ProductDetailView({ product }) {
             {/* Trust micro-badges */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '36px' }}>
               {['🌿 Organic', '🐰 Cruelty-Free', '🚚 Free Shipping'].map((badge, i) => (
-                <div key={i} style={{ border: '1px solid rgba(0,0,0,0.07)', padding: '10px 8px', textAlign: 'center', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted)', background: 'var(--white)' }}>
+                <div key={i} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '12px 8px', textAlign: 'center', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted)', background: 'var(--white)' }}>
                   {badge}
                 </div>
               ))}
             </div>
 
             {/* Accordions */}
-            <div style={{ borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+            <div style={{ borderTop: '1px solid rgba(201,168,76,0.2)' }}>
               {accordionData.map(({ key, label, content }) => (
-                <div key={key} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)' }}>
+                <div key={key} style={{ borderBottom: '1px solid rgba(201,168,76,0.2)' }}>
                   <button onClick={() => toggleAccordion(key)}
-                    style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: activeAccordion === key ? 'var(--text-dark)' : 'var(--text-muted)', fontWeight: '600', transition: 'color 0.2s' }}>
+                    style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 0', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: activeAccordion === key ? 'var(--gold)' : 'var(--text-muted)', fontWeight: '600', transition: 'color 0.2s' }}>
                     <span>{label}</span>
                     {activeAccordion === key ? <ChevronUp size={16} color="var(--gold)" /> : <ChevronDown size={16} />}
                   </button>
@@ -271,7 +317,7 @@ export default function ProductDetailView({ product }) {
         </div>
 
         {/* Reviews Section */}
-        <div style={{ marginTop: '80px', paddingTop: '64px', borderTop: '1px solid rgba(0,0,0,0.08)' }}>
+        <div style={{ marginTop: '80px', paddingTop: '64px', borderTop: '1px solid rgba(201,168,76,0.2)' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', marginBottom: '48px' }}>
             <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '36px', fontWeight: '300', color: 'var(--text-dark)' }}>Scent Experiences</h2>
             <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--gold)' }}>{reviews.length} Reviews</span>
@@ -279,12 +325,20 @@ export default function ProductDetailView({ product }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '64px' }} className="reviews-grid">
             {reviews.map((rev) => (
-              <div key={rev.id} style={{ background: 'var(--white)', padding: '28px', border: '1px solid rgba(0,0,0,0.06)', position: 'relative', transition: 'box-shadow 0.3s' }}>
+              <div key={rev.id} style={{ 
+                background: 'var(--white)', 
+                padding: '28px', 
+                border: '1px solid rgba(201,168,76,0.15)', 
+                position: 'relative', 
+                transition: 'all 0.3s ease'
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.boxShadow = 'var(--shadow-gold)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.15)'; e.currentTarget.style.boxShadow = 'none'; }}>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '56px', fontWeight: '300', color: 'rgba(201,168,76,0.15)', lineHeight: '1', display: 'block', marginBottom: '-12px', marginTop: '-8px' }}>"</span>
                 <p style={{ fontSize: '14px', lineHeight: '1.8', color: 'var(--text-muted)', fontWeight: '300', fontStyle: 'italic', marginBottom: '20px' }}>{rev.comment}</p>
                 <div style={{ display: 'flex', gap: '2px', marginBottom: '12px' }}>
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={12} fill={i < rev.rating ? 'var(--gold)' : 'none'} color="var(--gold)" />
+                    <Star key={i} size={11} fill={i < rev.rating ? 'var(--gold)' : 'none'} color="var(--gold)" />
                   ))}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -296,7 +350,7 @@ export default function ProductDetailView({ product }) {
           </div>
 
           {/* Review Form */}
-          <div style={{ background: 'var(--charcoal)', padding: '52px', maxWidth: '680px' }}>
+          <div style={{ background: 'var(--charcoal)', padding: '52px', maxWidth: '680px', border: '1px solid rgba(201,168,76,0.2)', boxShadow: 'var(--shadow-gold)' }}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '300', color: 'var(--white)', marginBottom: '8px' }}>Leave Your Signature</h3>
             <p style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--gold)', marginBottom: '32px' }}>Share your olfactory journey</p>
 
@@ -308,22 +362,94 @@ export default function ProductDetailView({ product }) {
 
             <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
-                <input type="text" value={reviewerName} onChange={e => setReviewerName(e.target.value)} placeholder="Your Name" required
-                  style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', padding: '14px 16px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--white)', outline: 'none', transition: 'border-color 0.2s' }}
-                  onFocus={e => e.target.style.borderColor = 'var(--gold)'}
-                  onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
-                <select value={reviewerRating} onChange={e => setReviewerRating(e.target.value)}
-                  style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', padding: '14px 16px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--white)', outline: 'none', cursor: 'pointer' }}>
-                  <option value={5} style={{ background: 'var(--charcoal)' }}>5 Stars — Exceptional</option>
-                  <option value={4} style={{ background: 'var(--charcoal)' }}>4 Stars — Splendid</option>
-                  <option value={3} style={{ background: 'var(--charcoal)' }}>3 Stars — Fair</option>
+                <input 
+                  type="text" 
+                  value={reviewerName} 
+                  onChange={e => setReviewerName(e.target.value)} 
+                  placeholder="Your Name" 
+                  required
+                  onFocus={() => setInputFocused(true)}
+                  onBlur={() => setInputFocused(false)}
+                  style={{ 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    background: 'rgba(255,255,255,0.05)', 
+                    padding: '14px 16px', 
+                    fontFamily: 'var(--font-body)', 
+                    fontSize: '14px', 
+                    color: 'var(--white)', 
+                    outline: 'none', 
+                    transition: 'border-color 0.22s, box-shadow 0.22s' 
+                  }}
+                  onMouseEnter={e => e.target.style.borderColor = 'rgba(201,168,76,0.3)'}
+                  onMouseLeave={e => { if (document.activeElement !== e.target) e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                  onFocusCapture={e => { e.target.style.borderColor = 'var(--gold)'; e.target.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.1)'; }}
+                  onBlurCapture={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.boxShadow = 'none'; }}
+                />
+                
+                <select 
+                  value={reviewerRating} 
+                  onChange={e => setReviewerRating(e.target.value)}
+                  style={{ 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    background: 'rgba(255,255,255,0.05)', 
+                    padding: '14px 16px', 
+                    fontFamily: 'var(--font-body)', 
+                    fontSize: '14px', 
+                    color: 'var(--white)', 
+                    outline: 'none', 
+                    cursor: 'pointer',
+                    transition: 'border-color 0.2s'
+                  }}
+                  onMouseEnter={e => e.target.style.borderColor = 'rgba(201,168,76,0.3)'}
+                  onMouseLeave={e => { if (document.activeElement !== e.target) e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                  onFocusCapture={e => e.target.style.borderColor = 'var(--gold)'}
+                  onBlurCapture={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                >
+                  <option value={5} style={{ background: 'var(--charcoal)', color: 'var(--white)' }}>5 Stars — Exceptional</option>
+                  <option value={4} style={{ background: 'var(--charcoal)', color: 'var(--white)' }}>4 Stars — Splendid</option>
+                  <option value={3} style={{ background: 'var(--charcoal)', color: 'var(--white)' }}>3 Stars — Fair</option>
                 </select>
               </div>
-              <textarea value={reviewerText} onChange={e => setReviewerText(e.target.value)} placeholder="Detail your sensory experience..." required rows={4}
-                style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', padding: '14px 16px', fontFamily: 'var(--font-body)', fontSize: '14px', color: 'var(--white)', outline: 'none', resize: 'vertical', transition: 'border-color 0.2s' }}
-                onFocus={e => e.target.style.borderColor = 'var(--gold)'}
-                onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.1)'} />
-              <button type="submit" style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '14px 32px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer', alignSelf: 'flex-start', transition: 'background 0.2s' }}
+
+              <textarea 
+                value={reviewerText} 
+                onChange={e => setReviewerText(e.target.value)} 
+                placeholder="Detail your sensory experience..." 
+                required 
+                rows={4}
+                style={{ 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  background: 'rgba(255,255,255,0.05)', 
+                  padding: '14px 16px', 
+                  fontFamily: 'var(--font-body)', 
+                  fontSize: '14px', 
+                  color: 'var(--white)', 
+                  outline: 'none', 
+                  resize: 'vertical', 
+                  transition: 'border-color 0.22s, box-shadow 0.22s' 
+                }}
+                onMouseEnter={e => e.target.style.borderColor = 'rgba(201,168,76,0.3)'}
+                onMouseLeave={e => { if (document.activeElement !== e.target) e.target.style.borderColor = 'rgba(255,255,255,0.1)'; }}
+                onFocusCapture={e => { e.target.style.borderColor = 'var(--gold)'; e.target.style.boxShadow = '0 0 0 3px rgba(201,168,76,0.1)'; }}
+                onBlurCapture={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.boxShadow = 'none'; }}
+              />
+
+              <button 
+                type="submit" 
+                style={{ 
+                  background: 'var(--gold)', 
+                  color: 'var(--noir)', 
+                  border: 'none', 
+                  padding: '14px 32px', 
+                  fontFamily: 'var(--font-label)', 
+                  fontSize: '11px', 
+                  fontWeight: '700', 
+                  textTransform: 'uppercase', 
+                  letterSpacing: '0.22em', 
+                  cursor: 'pointer', 
+                  alignSelf: 'flex-start', 
+                  transition: 'all 0.3s ease' 
+                }}
                 onMouseEnter={e => e.target.style.background = 'var(--gold-light)'}
                 onMouseLeave={e => e.target.style.background = 'var(--gold)'}>
                 Submit Experience

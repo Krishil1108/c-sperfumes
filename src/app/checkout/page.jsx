@@ -6,6 +6,7 @@ import { ShoppingBag, ArrowLeft, CheckCircle, Gift, CreditCard, Truck, Lock, Che
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { dbService } from '../../lib/db';
 
 const loadScript = (src) => new Promise((resolve) => {
   if (document.querySelector(`script[src="${src}"]`)) { resolve(true); return; }
@@ -36,7 +37,7 @@ function FormInput({ label, type = 'text', name, value, onChange, placeholder, r
         placeholder={placeholder} required={required}
         onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
         style={{
-          border: focused ? '1px solid var(--gold)' : '1px solid rgba(0,0,0,0.12)',
+          border: focused ? '1px solid var(--gold)' : '1px solid rgba(201,168,76,0.15)',
           background: 'var(--white)',
           padding: '13px 16px',
           fontFamily: 'var(--font-body)',
@@ -44,8 +45,8 @@ function FormInput({ label, type = 'text', name, value, onChange, placeholder, r
           color: 'var(--text-dark)',
           outline: 'none',
           borderRadius: '0',
-          transition: 'border-color 0.22s, box-shadow 0.22s',
-          boxShadow: focused ? '0 0 0 3px rgba(201,168,76,0.1)' : 'none',
+          transition: 'all 0.22s ease',
+          boxShadow: focused ? '0 0 0 3px rgba(201,168,76,0.06)' : 'none',
           width: '100%',
         }}
       />
@@ -58,26 +59,27 @@ function PaymentCard({ method, label, sub, icon, selected, onSelect }) {
   return (
     <label onClick={onSelect} style={{
       display: 'flex', alignItems: 'center', gap: '14px',
-      padding: '16px 18px',
-      border: selected ? '1.5px solid var(--gold)' : '1px solid rgba(0,0,0,0.1)',
+      padding: '18px 20px',
+      border: selected ? '1px solid var(--gold)' : '1px solid rgba(201,168,76,0.15)',
       background: selected ? 'rgba(201,168,76,0.04)' : 'var(--white)',
       cursor: 'pointer',
-      transition: 'border-color 0.22s, background 0.22s',
+      transition: 'all 0.22s ease',
+      boxShadow: selected ? 'var(--shadow-gold)' : 'none',
     }}>
       <div style={{
-        width: '20px', height: '20px', borderRadius: '50%',
-        border: selected ? '5px solid var(--gold)' : '2px solid rgba(0,0,0,0.2)',
-        flexShrink: '0', transition: 'border 0.2s',
+        width: '18px', height: '18px', borderRadius: '50%',
+        border: selected ? '5px solid var(--gold)' : '2px solid rgba(201,168,76,0.25)',
+        flexShrink: '0', transition: 'all 0.2s ease',
         background: 'var(--white)',
       }} />
-      <div style={{ color: selected ? 'var(--gold)' : 'rgba(0,0,0,0.4)', flexShrink: '0', display: 'flex' }}>
+      <div style={{ color: selected ? 'var(--gold)' : 'rgba(10,10,10,0.4)', flexShrink: '0', display: 'flex' }}>
         {icon}
       </div>
       <div style={{ flex: '1' }}>
         <p style={{ fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-dark)', marginBottom: '2px' }}>{label}</p>
         <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '300' }}>{sub}</p>
       </div>
-      {selected && <ChevronRight size={16} color="var(--gold)" />}
+      {selected && <ChevronRight size={14} color="var(--gold)" />}
     </label>
   );
 }
@@ -128,6 +130,31 @@ export default function CheckoutPage() {
     if (paymentMethod === 'cod') {
       const generatedId = 'CS-' + Math.floor(100000 + Math.random() * 900000);
       setOrderId(generatedId);
+      
+      const newOrder = {
+        orderId: generatedId,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        phone: formData.phone,
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode,
+        },
+        items: cartItems.map(item => ({
+          productId: item.id || '',
+          title: item.title,
+          quantity: item.quantity,
+          price: item.salePrice || item.price,
+          image: item.image,
+        })),
+        totalAmount: cartTotal,
+        paymentMethod: 'cod',
+        paymentStatus: 'Pending',
+      };
+
+      await dbService.saveOrder(newOrder);
+
       if (typeof window !== 'undefined' && window.fbq) {
         window.fbq('track', 'Purchase', { currency: 'INR', value: cartTotal, num_items: cartItems.length });
       }
@@ -151,7 +178,7 @@ export default function CheckoutPage() {
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, amount: order.amount, currency: order.currency,
-        name: 'C&S Perfumes', description: 'Premium Fragrance Order', image: '/logo.png', order_id: order.id,
+        name: 'C&S Perfumes', description: 'Premium Fragrance Order', image: '/images/logo.png', order_id: order.id,
         handler: async function (response) {
           try {
             const verifyResponse = await fetch('/api/razorpay/verify-payment', {
@@ -160,7 +187,35 @@ export default function CheckoutPage() {
             });
             const verifyData = await verifyResponse.json();
             if (verifyData.status === 'success') {
-              setOrderId('RP-' + order.id.slice(-6).toUpperCase());
+              const orderRef = 'RP-' + order.id.slice(-6).toUpperCase();
+              setOrderId(orderRef);
+
+              const newOrder = {
+                orderId: orderRef,
+                customerName: `${formData.firstName} ${formData.lastName}`,
+                email: formData.email,
+                phone: formData.phone,
+                shippingAddress: {
+                  address: formData.address,
+                  city: formData.city,
+                  postalCode: formData.postalCode,
+                },
+                items: cartItems.map(item => ({
+                  productId: item.id || '',
+                  title: item.title,
+                  quantity: item.quantity,
+                  price: item.salePrice || item.price,
+                  image: item.image,
+                })),
+                totalAmount: cartTotal,
+                paymentMethod: paymentMethod || 'online',
+                paymentStatus: 'Paid',
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+              };
+
+              await dbService.saveOrder(newOrder);
+
               if (typeof window !== 'undefined' && window.fbq) window.fbq('track', 'Purchase', { currency: 'INR', value: cartTotal });
               clearCart(); setIsSuccessOpen(true);
             } else alert('Payment verification failed. Please contact support.');
@@ -190,10 +245,16 @@ export default function CheckoutPage() {
         </Link>
 
         {/* Checkout logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ background: 'var(--cream)', padding: '4px 10px', borderRadius: '3px', display: 'flex' }}>
-            <img src="/logo.png" alt="C&S Perfumes" style={{ height: '28px', width: 'auto' }} />
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img 
+            src="/images/logo.png" 
+            alt="C&S Perfumes" 
+            style={{ 
+              height: '32px', 
+              width: 'auto',
+              filter: 'brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(15deg) brightness(0.95)'
+            }} 
+          />
         </div>
 
         {/* Secure badge */}
@@ -204,7 +265,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* Step Progress */}
-      <div style={{ background: 'var(--white)', borderBottom: '1px solid rgba(0,0,0,0.06)', padding: '0 32px' }}>
+      <div style={{ background: 'var(--white)', borderBottom: '1px solid rgba(201,168,76,0.15)', padding: '0 32px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {STEPS.map((s, i) => (
             <React.Fragment key={s}>
@@ -238,7 +299,7 @@ export default function CheckoutPage() {
                 )}
               </button>
               {i < STEPS.length - 1 && (
-                <div style={{ flex: '1', maxWidth: '80px', height: '1px', background: i < step ? 'var(--gold)' : 'rgba(0,0,0,0.1)', margin: '0 16px', transition: 'background 0.4s' }} />
+                <div style={{ flex: '1', maxWidth: '80px', height: '1px', background: i < step ? 'var(--gold)' : 'rgba(201,168,76,0.15)', margin: '0 16px', transition: 'background 0.4s' }} />
               )}
             </React.Fragment>
           ))}
@@ -253,12 +314,12 @@ export default function CheckoutPage() {
           {/* STEP 0: Delivery */}
           {step === 0 && (
             <motion.form key="delivery" onSubmit={handleDeliveryNext}
-              initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              style={{ background: 'var(--white)', padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              style={{ background: 'var(--white)', padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px', border: '1px solid rgba(201,168,76,0.15)', boxShadow: 'var(--shadow-sm)' }}>
 
               <div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: '400', color: 'var(--text-dark)', marginBottom: '4px' }}>Delivery Information</h2>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '300', color: 'var(--text-dark)', marginBottom: '4px' }}>Delivery Information</h2>
                 <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)' }}>Where should we ship your order?</p>
               </div>
 
@@ -276,11 +337,12 @@ export default function CheckoutPage() {
                 <FormInput label="Postal Pincode" name="postalCode" value={formData.postalCode} onChange={handleInputChange} required />
               </div>
 
-              <FormInput label="Phone Number" type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="+91 XXXXX XXXXX" required />
+              <FormInput label="Phone Number" type="tel" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="98765 43210 (10-digit mobile number)" required />
 
               <motion.button type="submit"
-                style={{ background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '16px 32px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '8px', transition: 'background 0.22s' }}
-                whileHover={{ background: '#1C1C1C' }}
+                style={{ background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '16px 32px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '8px', transition: 'all 0.3s ease' }}
+                onMouseEnter={e => e.target.style.background = 'var(--gold)'}
+                onMouseLeave={e => e.target.style.background = 'var(--noir)'}
                 whileTap={{ scale: 0.98 }}>
                 Continue to Payment
                 <ChevronRight size={16} />
@@ -291,12 +353,12 @@ export default function CheckoutPage() {
           {/* STEP 1: Payment */}
           {step === 1 && (
             <motion.div key="payment"
-              initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              style={{ background: 'var(--white)', padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              style={{ background: 'var(--white)', padding: '40px', display: 'flex', flexDirection: 'column', gap: '20px', border: '1px solid rgba(201,168,76,0.15)', boxShadow: 'var(--shadow-sm)' }}>
 
               <div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: '400', color: 'var(--text-dark)', marginBottom: '4px' }}>Payment Method</h2>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '300', color: 'var(--text-dark)', marginBottom: '4px' }}>Payment Method</h2>
                 <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)' }}>Choose your preferred payment</p>
               </div>
 
@@ -305,9 +367,9 @@ export default function CheckoutPage() {
                   icon={<img src="https://upload.wikimedia.org/wikipedia/commons/e/e1/UPI-Logo-vector.svg" alt="UPI" style={{ width: '28px', filter: paymentMethod === 'upi' ? 'none' : 'grayscale(1)', opacity: paymentMethod === 'upi' ? 1 : 0.4 }} />}
                   selected={paymentMethod === 'upi'} onSelect={() => setPaymentMethod('upi')} />
                 <PaymentCard method="online" label="Cards & Netbanking" sub="Visa, Mastercard, Rupay, Net Banking"
-                  icon={<CreditCard size={22} />} selected={paymentMethod === 'online'} onSelect={() => setPaymentMethod('online')} />
+                  icon={<CreditCard size={20} />} selected={paymentMethod === 'online'} onSelect={() => setPaymentMethod('online')} />
                 <PaymentCard method="cod" label="Cash on Delivery" sub="Pay at your doorstep on arrival"
-                  icon={<Truck size={22} />} selected={paymentMethod === 'cod'} onSelect={() => setPaymentMethod('cod')} />
+                  icon={<Truck size={20} />} selected={paymentMethod === 'cod'} onSelect={() => setPaymentMethod('cod')} />
               </div>
 
               {/* Security note */}
@@ -320,11 +382,15 @@ export default function CheckoutPage() {
 
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button type="button" onClick={() => setStep(0)}
-                  style={{ padding: '15px 24px', border: '1px solid rgba(0,0,0,0.12)', background: 'transparent', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', color: 'var(--text-muted)', transition: 'border-color 0.2s, color 0.2s' }}>
+                  style={{ padding: '15px 24px', border: '1px solid rgba(201,168,76,0.3)', background: 'transparent', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.22s ease' }}
+                  onMouseEnter={e => { e.target.style.borderColor = 'var(--gold)'; e.target.style.color = 'var(--gold)'; }}
+                  onMouseLeave={e => { e.target.style.borderColor = 'rgba(201,168,76,0.3)'; e.target.style.color = 'var(--text-muted)'; }}>
                   Back
                 </button>
                 <motion.button onClick={() => setStep(2)} type="button"
-                  style={{ flex: '1', background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '15px 24px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                  style={{ flex: '1', background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '15px 24px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.3s ease' }}
+                  onMouseEnter={e => e.target.style.background = 'var(--gold)'}
+                  onMouseLeave={e => e.target.style.background = 'var(--noir)'}
                   whileTap={{ scale: 0.98 }}>
                   Review Order <ChevronRight size={16} />
                 </motion.button>
@@ -335,31 +401,31 @@ export default function CheckoutPage() {
           {/* STEP 2: Review & Place Order */}
           {step === 2 && (
             <motion.form key="review" onSubmit={handleSubmit}
-              initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              style={{ background: 'var(--white)', padding: '40px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              style={{ background: 'var(--white)', padding: '40px', display: 'flex', flexDirection: 'column', gap: '24px', border: '1px solid rgba(201,168,76,0.15)', boxShadow: 'var(--shadow-sm)' }}>
 
               <div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: '400', color: 'var(--text-dark)', marginBottom: '4px' }}>Review & Confirm</h2>
+                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '300', color: 'var(--text-dark)', marginBottom: '4px' }}>Review & Confirm</h2>
                 <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)' }}>Everything looks good?</p>
               </div>
 
               {/* Delivery summary */}
-              <div style={{ padding: '18px 20px', border: '1px solid rgba(0,0,0,0.08)', background: 'var(--cream)' }}>
+              <div style={{ padding: '18px 20px', border: '1px solid rgba(201,168,76,0.15)', background: 'rgba(201,168,76,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--text-muted)', fontWeight: '700' }}>Delivery To</span>
-                  <button type="button" onClick={() => setStep(0)} style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                  <button type="button" onClick={() => setStep(0)} style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}>Edit</button>
                 </div>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: 'var(--text-dark)', marginBottom: '2px' }}>{formData.firstName} {formData.lastName}</p>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: '18px', color: 'var(--text-dark)', marginBottom: '2px' }}>{formData.firstName} {formData.lastName}</p>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '300' }}>{formData.address}, {formData.city} — {formData.postalCode}</p>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: '300' }}>{formData.email} · {formData.phone}</p>
               </div>
 
               {/* Payment summary */}
-              <div style={{ padding: '18px 20px', border: '1px solid rgba(0,0,0,0.08)', background: 'var(--cream)' }}>
+              <div style={{ padding: '18px 20px', border: '1px solid rgba(201,168,76,0.15)', background: 'rgba(201,168,76,0.02)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--text-muted)', fontWeight: '700' }}>Payment</span>
-                  <button type="button" onClick={() => setStep(1)} style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', background: 'none', border: 'none', cursor: 'pointer' }}>Edit</button>
+                  <button type="button" onClick={() => setStep(1)} style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: '600' }}>Edit</button>
                 </div>
                 <p style={{ fontFamily: 'var(--font-label)', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-dark)' }}>
                   {paymentMethod === 'upi' ? '🔵 UPI (GPay / PhonePe / Paytm)' : paymentMethod === 'online' ? '💳 Cards & Netbanking' : '🚚 Cash on Delivery'}
@@ -377,11 +443,15 @@ export default function CheckoutPage() {
 
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button type="button" onClick={() => setStep(1)}
-                  style={{ padding: '15px 24px', border: '1px solid rgba(0,0,0,0.12)', background: 'transparent', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', color: 'var(--text-muted)' }}>
+                  style={{ padding: '15px 24px', border: '1px solid rgba(201,168,76,0.3)', background: 'transparent', fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.22s' }}
+                  onMouseEnter={e => { e.target.style.borderColor = 'var(--gold)'; e.target.style.color = 'var(--gold)'; }}
+                  onMouseLeave={e => { e.target.style.borderColor = 'rgba(201,168,76,0.3)'; e.target.style.color = 'var(--text-muted)'; }}>
                   Back
                 </button>
                 <motion.button type="submit" disabled={isProcessing}
-                  style={{ flex: '1', background: isProcessing ? 'var(--graphite)' : 'var(--gold)', color: isProcessing ? 'rgba(255,255,255,0.5)' : 'var(--noir)', border: 'none', padding: '16px 24px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: isProcessing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'background 0.25s' }}
+                  style={{ flex: '1', background: isProcessing ? 'var(--graphite)' : 'var(--gold)', color: isProcessing ? 'rgba(255,255,255,0.5)' : 'var(--noir)', border: 'none', padding: '16px 24px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: isProcessing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: 'all 0.3s ease' }}
+                  onMouseEnter={e => { if (!isProcessing) { e.target.style.background = 'var(--noir)'; e.target.style.color = 'var(--white)'; } }}
+                  onMouseLeave={e => { if (!isProcessing) { e.target.style.background = 'var(--gold)'; e.target.style.color = 'var(--noir)'; } }}
                   whileTap={!isProcessing ? { scale: 0.98 } : {}}>
                   <ShoppingBag size={16} />
                   {isProcessing ? 'Processing...' : paymentMethod === 'cod' ? 'Place COD Order' : 'Pay Securely →'}
@@ -393,7 +463,7 @@ export default function CheckoutPage() {
 
         {/* RIGHT: Order Summary (sticky) */}
         <div style={{ position: 'sticky', top: 'calc(var(--header-height) + var(--announcement-height) + 24px)' }}>
-          <div style={{ background: 'var(--white)', padding: '32px', marginBottom: '16px' }}>
+          <div style={{ background: 'var(--white)', padding: '32px', marginBottom: '16px', border: '1px solid rgba(201,168,76,0.15)', boxShadow: 'var(--shadow-sm)' }}>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: '400', color: 'var(--text-dark)', marginBottom: '24px' }}>Order Summary</h3>
 
             {/* Cart Items */}
@@ -401,7 +471,7 @@ export default function CheckoutPage() {
               {cartItems.map((item) => (
                 <div key={item.id} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                   <div style={{ position: 'relative', flexShrink: '0' }}>
-                    <img src={item.image} alt={item.title} style={{ width: '56px', height: '56px', objectFit: 'cover', background: 'var(--pearl)' }} />
+                    <img src={item.image} alt={item.title} style={{ width: '56px', height: '56px', objectFit: 'cover', background: 'var(--pearl)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '18px 18px 0 0' }} />
                     {/* qty badge */}
                     <span style={{ position: 'absolute', top: '-7px', right: '-7px', width: '19px', height: '19px', background: 'var(--noir)', color: 'var(--white)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700' }}>
                       {item.quantity}
@@ -419,7 +489,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* Totals */}
-            <div style={{ borderTop: '1px solid rgba(0,0,0,0.07)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ borderTop: '1px solid rgba(201,168,76,0.2)', paddingTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {cartSavings > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-label)', fontSize: '11px', letterSpacing: '0.08em' }}>
                   <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase' }}>You Save</span>
@@ -430,7 +500,7 @@ export default function CheckoutPage() {
                 <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase' }}>Shipping</span>
                 <span style={{ color: '#2d9a5f', fontWeight: '600' }}>FREE</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '14px', borderTop: '1px solid rgba(0,0,0,0.07)', marginTop: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '14px', borderTop: '1px solid rgba(201,168,76,0.2)', marginTop: '4px' }}>
                 <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>Total Payable</span>
                 <span style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '400', color: 'var(--text-dark)' }}>₹{cartTotal}</span>
               </div>
@@ -438,7 +508,7 @@ export default function CheckoutPage() {
           </div>
 
           {/* Delivery timeline card */}
-          <div style={{ background: 'var(--charcoal)', padding: '22px 24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+          <div style={{ background: 'var(--charcoal)', padding: '22px 24px', display: 'flex', gap: '14px', alignItems: 'flex-start', border: '1px solid rgba(201,168,76,0.2)', boxShadow: 'var(--shadow-gold)' }}>
             <Package size={18} color="var(--gold)" style={{ flexShrink: '0', marginTop: '2px' }} />
             <div>
               <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--gold)', marginBottom: '4px' }}>Estimated Delivery</p>
@@ -460,7 +530,7 @@ export default function CheckoutPage() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-              style={{ background: 'var(--white)', maxWidth: '480px', width: '100%', padding: '52px 40px', textAlign: 'center' }}>
+              style={{ background: 'var(--white)', maxWidth: '480px', width: '100%', padding: '52px 40px', textAlign: 'center', border: '1px solid var(--gold)', boxShadow: 'var(--shadow-gold)' }}>
 
               {/* Success icon */}
               <motion.div
@@ -473,14 +543,14 @@ export default function CheckoutPage() {
               <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '36px', fontWeight: '300', color: 'var(--text-dark)', marginBottom: '8px' }}>Order Confirmed!</h2>
               <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--gold)', marginBottom: '28px' }}>Thank you for your order</p>
 
-              <div style={{ background: 'var(--cream)', padding: '20px', marginBottom: '32px', textAlign: 'left' }}>
+              <div style={{ background: 'var(--cream)', padding: '20px', marginBottom: '32px', textAlign: 'left', border: '1px solid rgba(201,168,76,0.15)' }}>
                 {[
                   { label: 'Order Reference', value: orderId },
                   { label: 'Delivery Name', value: `${formData.firstName} ${formData.lastName}` },
                   { label: 'Estimated Arrival', value: '3–5 Business Days' },
                   { label: 'Payment', value: paymentMethod === 'online' ? 'Cards/Netbanking' : paymentMethod === 'upi' ? 'UPI' : 'Cash on Delivery' },
                 ].map(({ label, value }) => (
-                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', padding: '8px 0', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
                     <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)' }}>{label}</span>
                     <span style={{ fontFamily: 'var(--font-display)', fontSize: '14px', color: 'var(--text-dark)' }}>{value}</span>
                   </div>
@@ -489,8 +559,9 @@ export default function CheckoutPage() {
 
               <motion.button
                 onClick={() => { setIsSuccessOpen(false); router.push('/'); }}
-                style={{ width: '100%', background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '16px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer' }}
-                whileHover={{ background: 'var(--gold)', color: 'var(--noir)' }}
+                style={{ width: '100%', background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '16px', fontFamily: 'var(--font-label)', fontSize: '11px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.22em', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                onMouseEnter={e => { e.target.style.background = 'var(--gold)'; e.target.style.color = 'var(--noir)'; }}
+                onMouseLeave={e => { e.target.style.background = 'var(--noir)'; e.target.style.color = 'var(--white)'; }}
                 transition={{ duration: 0.2 }}>
                 Continue Shopping
               </motion.button>

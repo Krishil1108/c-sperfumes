@@ -47,7 +47,7 @@ export default function TabbedProducts({ products }) {
                 onClick={() => handleTabChange(tab.key)}
                 style={{
                   position: 'relative',
-                  padding: '16px 40px',
+                  padding: '16px clamp(16px, 4.5vw, 40px)',
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',

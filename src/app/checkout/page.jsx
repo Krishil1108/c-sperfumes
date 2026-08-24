@@ -307,7 +307,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* Main Layout */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '48px 32px 80px', display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px', alignItems: 'start' }} className="checkout-main-grid">
+      <div style={{ maxWidth: '1100px', margin: '0 auto', paddingTop: '48px', paddingBottom: '80px', display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px', alignItems: 'start' }} className="checkout-main-grid responsive-padding-container">
 
         {/* LEFT: Step Content */}
         <AnimatePresence mode="wait">
@@ -325,14 +325,14 @@ export default function CheckoutPage() {
 
               <FormInput label="Email Address" type="email" name="email" value={formData.email} onChange={handleInputChange} placeholder="your@email.com" required />
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
                 <FormInput label="First Name" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
                 <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
               </div>
 
               <FormInput label="Street Address" name="address" value={formData.address} onChange={handleInputChange} placeholder="Building, street, landmark..." required />
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
                 <FormInput label="City" name="city" value={formData.city} onChange={handleInputChange} required />
                 <FormInput label="Postal Pincode" name="postalCode" value={formData.postalCode} onChange={handleInputChange} required />
               </div>

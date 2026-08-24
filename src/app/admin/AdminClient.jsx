@@ -509,7 +509,7 @@ export default function AdminClient() {
                           <button onClick={() => handleRemoveHeroSlide(idx)} style={{ color: '#d93025', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Remove</button>
                         </div>
                         
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                        <div style={{ display: 'grid', gap: '14px' }} className="admin-grid-2col">
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                             <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Campaign Title</label>
                             <input type="text" value={slide.title} onChange={e => handleUpdateHeroSlide(idx, 'title', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
@@ -525,7 +525,7 @@ export default function AdminClient() {
                           <textarea value={slide.subtitle} onChange={e => handleUpdateHeroSlide(idx, 'subtitle', e.target.value)} rows={2} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', resize: 'vertical' }} />
                         </div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+                        <div style={{ display: 'grid', gap: '14px' }} className="admin-grid-2col">
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                             <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Button Text</label>
                             <input type="text" value={slide.buttonText} onChange={e => handleUpdateHeroSlide(idx, 'buttonText', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
@@ -543,7 +543,7 @@ export default function AdminClient() {
                 {/* Section 2: Scent Categories */}
                 <div>
                   <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700', marginBottom: '16px' }}>Scent Categories Showcase</h4>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'grid', gap: '20px' }} className="admin-grid-2col">
                     {settings.scentCategories.map((cat, idx) => (
                       <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '20px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', color: 'var(--text-dark)' }}>{cat.name} Category</span>
@@ -566,7 +566,7 @@ export default function AdminClient() {
                   <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700', marginBottom: '16px' }}>Brand Promises (Why Choose Us)</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     {settings.whyChooseUs.map((promise, idx) => (
-                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '20px', background: 'var(--cream)', display: 'grid', gridTemplateColumns: '200px 1fr', gap: '20px' }}>
+                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '20px', background: 'var(--cream)', gap: '20px' }} className="admin-promise-row">
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Promise Title</label>
                           <input type="text" value={promise.title} onChange={e => handleUpdatePromise(idx, 'title', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', fontWeight: 'bold' }} />
@@ -695,7 +695,7 @@ export default function AdminClient() {
             <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               
               {/* Row 1: Title & Slug */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Title *</label>
                   <input type="text" required value={prodForm.title} onChange={e => {
@@ -711,7 +711,7 @@ export default function AdminClient() {
               </div>
 
               {/* Row 2: Category, Concentration, Gender */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-3col">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Category</label>
                   <select value={prodForm.category} onChange={e => setProdForm(prev => ({ ...prev, category: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', background: 'var(--white)' }}>
@@ -736,7 +736,7 @@ export default function AdminClient() {
               </div>
 
               {/* Row 3: Prices & Discount */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-3col">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Regular Price (₹) *</label>
                   <input type="number" required value={prodForm.price} onChange={e => {
@@ -768,7 +768,7 @@ export default function AdminClient() {
               </div>
 
               {/* Scent Notes & Brand */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Scent Accords (comma-separated)</label>
                   <input type="text" placeholder="Rose, Jasmine, Saffron" value={prodForm.notes} onChange={e => setProdForm(prev => ({ ...prev, notes: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
@@ -780,7 +780,7 @@ export default function AdminClient() {
               </div>
 
               {/* Image Paths */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Primary Image URL *</label>
                   <input type="text" required placeholder="/images/perfume_elegant_...png" value={prodForm.image} onChange={e => setProdForm(prev => ({ ...prev, image: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
@@ -792,7 +792,7 @@ export default function AdminClient() {
               </div>
 
               {/* Hotspot Coordinates (for Shop The Look mapping) */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', alignItems: 'center' }}>
+              <div style={{ display: 'grid', gap: '16px', alignItems: 'center' }} className="admin-grid-4col">
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Hotspot X (%)</label>
                   <input type="number" min="0" max="100" value={prodForm.hotspotX} onChange={e => setProdForm(prev => ({ ...prev, hotspotX: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />

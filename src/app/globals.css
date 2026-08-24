@@ -1189,3 +1189,90 @@ img { max-width: 100%; height: auto; display: block; }
   gap: 6px;
   margin-bottom: 24px;
 }
+
+/* ===================== RESPONSIVENESS AND SCALE CORRECTIONS ===================== */
+
+@media (max-width: 900px) {
+  .hero-section {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 64px 0 !important;
+    overflow: visible !important;
+  }
+  .hero-title {
+    font-size: clamp(28px, 6vw, 42px) !important;
+    margin-bottom: 14px !important;
+  }
+  .hero-desc {
+    font-size: 14px !important;
+    margin-bottom: 24px !important;
+  }
+}
+
+/* Responsive Padding Container */
+.responsive-padding-container {
+  padding: 0 32px 80px;
+}
+@media (max-width: 768px) {
+  .responsive-padding-container {
+    padding: 0 20px 48px !important;
+  }
+}
+@media (max-width: 480px) {
+  .responsive-padding-container {
+    padding: 0 16px 32px !important;
+  }
+}
+
+/* Responsive Product Grids */
+.products-grid-responsive {
+  display: grid;
+  gap: 20px;
+}
+@media (max-width: 900px) {
+  .products-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 480px) {
+  .products-grid-responsive {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+}
+
+/* Responsive Admin Forms Grids */
+.admin-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.admin-grid-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.admin-grid-4col {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .admin-grid-2col, .admin-grid-3col, .admin-grid-4col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.admin-promise-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .admin-promise-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+

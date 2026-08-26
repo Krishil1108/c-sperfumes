@@ -77,7 +77,7 @@ export default function ProductDetailView({ product }) {
   return (
     <div style={{ background: 'var(--cream)', minHeight: '100vh' }}>
       {/* Breadcrumb */}
-      <div className="container" style={{ padding: '18px 32px' }}>
+      <div className="container responsive-padding-container" style={{ paddingTop: '18px', paddingBottom: '18px' }}>
         <nav style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)', display: 'flex', gap: '8px', alignItems: 'center' }}>
           <Link href="/" style={{ color: 'var(--text-muted)', transition: 'color 0.2s' }}>Home</Link>
           <span style={{ opacity: '0.4' }}>›</span>
@@ -88,7 +88,7 @@ export default function ProductDetailView({ product }) {
       </div>
 
       {/* Product Hero */}
-      <div className="container" style={{ padding: '0 32px 80px' }}>
+      <div className="container responsive-padding-container" style={{ paddingTop: '0', paddingBottom: '80px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '72px', alignItems: 'start' }} className="detail-main-grid">
 
           {/* Left: Image Gallery */}
@@ -361,7 +361,7 @@ export default function ProductDetailView({ product }) {
             )}
 
             <form onSubmit={handleReviewSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+              <div style={{ display: 'grid', gap: '14px' }} className="admin-grid-2col">
                 <input 
                   type="text" 
                   value={reviewerName} 

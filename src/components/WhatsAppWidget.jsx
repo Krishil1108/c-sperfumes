@@ -37,12 +37,12 @@ export default function WhatsAppWidget({ settings }) {
   };
 
   return (
-    <div className="whatsapp-widget-container">
+    <div className="whatsapp-widget">
       {/* Floating Chat Box */}
       {isOpen && (
-        <div className="whatsapp-chat-box">
+        <div className="whatsapp-popup">
           {/* Header */}
-          <div className="whatsapp-header">
+          <div className="whatsapp-popup-header">
             <div className="whatsapp-header-info">
               <div className="whatsapp-avatar">
                 <span>IL</span>
@@ -59,9 +59,9 @@ export default function WhatsAppWidget({ settings }) {
           </div>
 
           {/* Body */}
-          <div className="whatsapp-body">
+          <div className="whatsapp-popup-body">
             <div className="whatsapp-chat-bubble">
-              <p className="whatsapp-welcome-text">{waWelcome}</p>
+              <p className="whatsapp-popup-text">{waWelcome}</p>
               <span className="whatsapp-chat-time">Just now</span>
             </div>
 
@@ -82,15 +82,15 @@ export default function WhatsAppWidget({ settings }) {
           </div>
 
           {/* Footer / Input */}
-          <form className="whatsapp-footer" onSubmit={handleSendCustomMsg}>
+          <form className="whatsapp-popup-footer" onSubmit={handleSendCustomMsg}>
             <input 
               type="text" 
               placeholder="Type your message..."
               value={customMsg}
               onChange={(e) => setCustomMsg(e.target.value)}
-              className="whatsapp-input"
+              className="whatsapp-popup-input"
             />
-            <button type="submit" className="whatsapp-send-btn" aria-label="Send WhatsApp Message">
+            <button type="submit" className="whatsapp-popup-send" aria-label="Send WhatsApp Message">
               <Send size={16} />
             </button>
           </form>
@@ -99,7 +99,7 @@ export default function WhatsAppWidget({ settings }) {
 
       {/* Floating Toggle Button */}
       <button 
-        className={`whatsapp-toggle-btn ${isOpen ? 'active' : ''}`}
+        className={`whatsapp-btn ${isOpen ? 'active' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Chat on WhatsApp"
       >

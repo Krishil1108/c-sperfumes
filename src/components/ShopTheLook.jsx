@@ -156,11 +156,11 @@ export default function ShopTheLook({ products, settings }) {
                     ) : (
                       <button 
                         className="btn-add-cart" 
-                        style={{ backgroundColor: 'rgba(255,255,255,0.1)', cursor: 'not-allowed', color: 'rgba(255,255,255,0.3)', border: 'none', borderRadius: '50%', width: '44px', height: '44px' }}
+                        style={{ backgroundColor: 'rgba(255,255,255,0.1)', cursor: 'not-allowed', color: 'rgba(255,255,255,0.3)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         disabled
                         aria-label={`${activeProduct.title} Sold Out`}
                       >
-                        <X size={16} />
+                        <ShoppingBag size={16} style={{ opacity: 0.4 }} />
                       </button>
                     )}
                   </div>

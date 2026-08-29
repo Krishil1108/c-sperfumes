@@ -191,10 +191,10 @@ export default function TabbedProducts({ products }) {
                       ) : (
                         <button
                           className="btn-add-cart"
-                          style={{ background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', cursor: 'not-allowed', color: 'var(--text-muted)', width: '42px', height: '42px' }}
+                          style={{ background: 'rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)', cursor: 'not-allowed', color: 'var(--text-muted)', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           disabled
                         >
-                          <X size={15} />
+                          <ShoppingBag size={15} style={{ opacity: 0.4 }} />
                         </button>
                       )}
                     </div>

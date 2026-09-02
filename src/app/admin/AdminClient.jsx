@@ -5,10 +5,50 @@ import { dbService } from '../../lib/db';
 import { 
   Lock, LogOut, Package, Settings, FileText, Plus, Trash2, Edit3, Save, X, Search, 
   FileSpreadsheet, Upload, Download, HelpCircle, CheckCircle, AlertCircle, Copy, 
-  LayoutGrid, List, Filter, ArrowUpDown, RefreshCw, Sparkles, TrendingUp, 
-  DollarSign, Star, Check, AlertTriangle, Eye, ShieldCheck
+  LayoutGrid, List, Filter, ArrowUpDown, RefreshCw, Sparkles, 
+  DollarSign, AlertTriangle, Eye, RotateCcw
 } from 'lucide-react';
 import Link from 'next/link';
+
+// Default mock site settings
+const DEFAULT_SITE_SETTINGS = {
+  logo: '/images/logo.png',
+  heroSlides: [
+    {
+      title: "Floral Bloom Extrait",
+      subtitle: "A soft, romantic whisper of Damask Rose, Moroccan Jasmine, and white musk — crafted for absolute daily elegance.",
+      buttonText: "Shop Floral Notes",
+      link: "/shop?category=Floral",
+      image: "/images/perfume_elegant_1784660079140.png"
+    },
+    {
+      title: "Night Fever Oud",
+      subtitle: "Intense black cardamom, rich smoked agarwood, and warm leather. Designed for mysterious, late-night projection.",
+      buttonText: "Shop Woody Notes",
+      link: "/shop?category=Woody",
+      image: "/images/perfume_sleek_1784660046118.png"
+    },
+    {
+      title: "Saffron Royale",
+      subtitle: "Crushed saffron threads, amber resins, and sweet cedar wood. A royal scent that leaves a gold-dust trace.",
+      buttonText: "Shop Oriental",
+      link: "/shop?category=Oriental",
+      image: "/images/perfume_gold_1784661624207.png"
+    }
+  ],
+  scentCategories: [
+    { name: "Woody", description: "Warm cedar, agarwood & vetiver bases", image: "/images/perfume_sleek_1784660046118.png" },
+    { name: "Floral", description: "Fresh jasmine, tuberose & rose blends", image: "/images/perfume_elegant_1784660079140.png" },
+    { name: "Citrus", description: "Zesty bergamot, lemon & neroli", image: "/images/perfume_modern_1784660067627.png" },
+    { name: "Oriental", description: "Sweet vanilla, spices & amber notes", image: "/images/perfume_gold_1784661624207.png" }
+  ],
+  whyChooseUs: [
+    { title: "100% Organic", description: "Our fragrances are formulated using purely natural, organic plant extracts and essential oil concentrates." },
+    { title: "No Phthalates", description: "Free of synthetic parabens, chemical binders, and toxic petroleum derivatives for pure breathability." },
+    { title: "Sartorial Gifting", description: "Each order is packaged inside our signature gold-embossed champagne cards and custom velvet sleeves." }
+  ],
+  shopTheLookImage: "/images/perfume_vintage_1784660057925.png"
+};
 
 // Sample Template Data for Excel/CSV Import
 const SAMPLE_CSV_ROWS = [
@@ -82,7 +122,7 @@ export default function AdminClient() {
   const [activeTab, setActiveTab] = useState('products'); // 'products' | 'settings' | 'orders'
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState(DEFAULT_SITE_SETTINGS);
   const [isLoading, setIsLoading] = useState(false);
 
   // View Mode: 'card' (default) or 'list'
@@ -159,7 +199,7 @@ export default function AdminClient() {
       const settingsData = await dbService.getSiteSettings();
       setProducts(prodList || []);
       setOrders(orderList || []);
-      setSettings(settingsData);
+      setSettings(settingsData || DEFAULT_SITE_SETTINGS);
     } catch (err) {
       console.error("Failed to load data in admin console:", err);
       showToast("Error loading catalog data.", "error");
@@ -351,43 +391,38 @@ export default function AdminClient() {
       category: prodForm.category,
       concentration: prodForm.concentration,
       gender: prodForm.gender,
-      notes: formattedNotes,
       price: parseFloat(prodForm.price) || 0,
-      salePrice: parseFloat(prodForm.salePrice) || parseFloat(prodForm.price) || 0,
-      discount: parseInt(prodForm.discount || 0),
-      rating: parseFloat(prodForm.rating || 5.0),
-      reviewsCount: parseInt(prodForm.reviewsCount || 0),
-      image: prodForm.image || formattedImages[0] || '/images/perfume_elegant_1784660079140.png',
-      images: formattedImages.length > 0 ? formattedImages : [prodForm.image || '/images/perfume_elegant_1784660079140.png'],
+      salePrice: parseFloat(prodForm.salePrice) || 0,
+      discount: parseInt(prodForm.discount) || 0,
+      rating: parseFloat(prodForm.rating) || 4.8,
+      reviewsCount: parseInt(prodForm.reviewsCount) || 100,
+      image: prodForm.image || '/images/perfume_elegant_1784660079140.png',
+      images: formattedImages.length > 0 ? formattedImages : [prodForm.image],
+      notes: formattedNotes,
       inStock: prodForm.inStock,
       isBestseller: prodForm.isBestseller,
       isNewArrival: prodForm.isNewArrival,
       hotspot: {
-        x: parseFloat(prodForm.hotspotX || 50),
-        y: parseFloat(prodForm.hotspotY || 50)
+        x: parseFloat(prodForm.hotspotX) || 50,
+        y: parseFloat(prodForm.hotspotY) || 50
       }
     };
 
-    if (editingProduct?.id) {
-      productPayload.id = editingProduct.id;
-      productPayload._id = editingProduct._id;
-    }
-
     try {
       await dbService.saveProduct(productPayload);
+      showToast(editingProduct ? 'Perfume updated successfully' : 'New perfume added to catalog');
       setIsProductModalOpen(false);
-      showToast(editingProduct ? "Perfume updated successfully!" : "New perfume created!");
       loadData();
     } catch (err) {
       showToast("Failed to save perfume: " + err.message, "error");
     }
   };
 
-  const handleDeleteProduct = async (prodId, prodTitle) => {
-    if (confirm(`Are you sure you want to delete "${prodTitle || 'this perfume'}"? This action cannot be undone.`)) {
+  const handleDeleteProduct = async (id, title) => {
+    if (confirm(`Are you sure you want to delete "${title || 'this perfume'}"?`)) {
       try {
-        await dbService.deleteProduct(prodId);
-        showToast("Perfume removed from catalog.");
+        await dbService.deleteProduct(id);
+        showToast("Perfume deleted successfully");
         loadData();
       } catch (err) {
         showToast("Failed to delete perfume: " + err.message, "error");
@@ -395,7 +430,93 @@ export default function AdminClient() {
     }
   };
 
-  // EXCEL / CSV EXPORT
+  // EDITORIAL SETTINGS ACTIONS
+  const handleSaveSettings = async () => {
+    try {
+      await dbService.saveSiteSettings(settings);
+      showToast("Editorial settings updated successfully!");
+    } catch (err) {
+      showToast("Error updating settings: " + err.message, "error");
+    }
+  };
+
+  const handleRestoreDefaultSettings = async () => {
+    if (confirm("Restore all editorial settings (slides, categories, promises) to factory defaults?")) {
+      try {
+        await dbService.saveSiteSettings(DEFAULT_SITE_SETTINGS);
+        setSettings(DEFAULT_SITE_SETTINGS);
+        showToast("Editorial settings restored to default!");
+      } catch (err) {
+        showToast("Error restoring settings: " + err.message, "error");
+      }
+    }
+  };
+
+  const handleUpdateHeroSlide = (index, field, value) => {
+    const updated = [...(settings?.heroSlides || DEFAULT_SITE_SETTINGS.heroSlides)];
+    updated[index] = { ...updated[index], [field]: value };
+    setSettings({ ...settings, heroSlides: updated });
+  };
+
+  const handleAddHeroSlide = () => {
+    const updated = [...(settings?.heroSlides || DEFAULT_SITE_SETTINGS.heroSlides), {
+      title: "New Campaign Edition",
+      subtitle: "Sensory brilliance crafted with rare botanicals.",
+      buttonText: "Explore Collection",
+      link: "/shop",
+      image: "/images/perfume_gold_1784661624207.png"
+    }];
+    setSettings({ ...settings, heroSlides: updated });
+    showToast("Added new campaign slide");
+  };
+
+  const handleRemoveHeroSlide = (index) => {
+    const updated = (settings?.heroSlides || []).filter((_, i) => i !== index);
+    setSettings({ ...settings, heroSlides: updated });
+    showToast("Slide removed");
+  };
+
+  const handleUpdateCategory = (index, field, value) => {
+    const updated = [...(settings?.scentCategories || DEFAULT_SITE_SETTINGS.scentCategories)];
+    updated[index] = { ...updated[index], [field]: value };
+    setSettings({ ...settings, scentCategories: updated });
+  };
+
+  const handleUpdatePromise = (index, field, value) => {
+    const updated = [...(settings?.whyChooseUs || DEFAULT_SITE_SETTINGS.whyChooseUs)];
+    updated[index] = { ...updated[index], [field]: value };
+    setSettings({ ...settings, whyChooseUs: updated });
+  };
+
+  // ORDERS ACTIONS
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await dbService.updateOrderStatus(orderId, newStatus);
+      showToast(`Order status changed to ${newStatus}`);
+      loadData();
+    } catch (err) {
+      showToast("Error updating order: " + err.message, "error");
+    }
+  };
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter(o => {
+      if (orderStatusFilter !== 'all' && (o.paymentStatus || 'Pending') !== orderStatusFilter) {
+        return false;
+      }
+      if (orderSearch.trim()) {
+        const q = orderSearch.toLowerCase();
+        const matchesId = o.orderId?.toLowerCase().includes(q);
+        const matchesName = o.customerName?.toLowerCase().includes(q);
+        const matchesEmail = o.email?.toLowerCase().includes(q);
+        const matchesPhone = o.phone?.toLowerCase().includes(q);
+        return matchesId || matchesName || matchesEmail || matchesPhone;
+      }
+      return true;
+    });
+  }, [orders, orderSearch, orderStatusFilter]);
+
+  // EXCEL / CSV EXPORT UTILITIES
   const exportProductsToCSV = (onlyFiltered = false) => {
     const listToExport = onlyFiltered ? filteredProducts : products;
     if (listToExport.length === 0) {
@@ -404,99 +525,125 @@ export default function AdminClient() {
     }
 
     const headers = [
-      'Title', 'Slug', 'Brand', 'Category', 'Concentration', 'Gender',
-      'Price', 'Sale Price', 'Discount %', 'Scent Notes', 'Rating', 'Reviews Count',
-      'In Stock', 'Is Bestseller', 'Is New Arrival', 'Image URL', 'Description'
+      "Title", "Slug", "Brand", "Category", "Concentration", "Gender",
+      "Regular Price", "Sale Price", "Discount %", "Scent Notes",
+      "In Stock", "Is Bestseller", "Is New Arrival", "Rating", "Reviews Count",
+      "Primary Image URL", "Description"
     ];
-
-    const escapeCell = (val) => {
-      if (val === null || val === undefined) return '""';
-      const str = String(val).replace(/"/g, '""');
-      return `"${str}"`;
-    };
 
     const rows = listToExport.map(p => [
-      escapeCell(p.title),
-      escapeCell(p.slug),
-      escapeCell(p.brand || 'C&S Perfumes'),
-      escapeCell(p.category || 'Floral'),
-      escapeCell(p.concentration || 'Extrait De Parfum'),
-      escapeCell(p.gender || 'Unisex'),
-      escapeCell(p.price || ''),
-      escapeCell(p.salePrice || ''),
-      escapeCell(p.discount || '0'),
-      escapeCell(Array.isArray(p.notes) ? p.notes.join(', ') : (p.notes || '')),
-      escapeCell(p.rating || '4.8'),
-      escapeCell(p.reviewsCount || '100'),
-      escapeCell(p.inStock !== false ? 'TRUE' : 'FALSE'),
-      escapeCell(p.isBestseller ? 'TRUE' : 'FALSE'),
-      escapeCell(p.isNewArrival ? 'TRUE' : 'FALSE'),
-      escapeCell(p.image || ''),
-      escapeCell(p.description || '')
+      `"${(p.title || '').replace(/"/g, '""')}"`,
+      `"${(p.slug || '').replace(/"/g, '""')}"`,
+      `"${(p.brand || 'C&S Perfumes').replace(/"/g, '""')}"`,
+      `"${(p.category || 'Floral').replace(/"/g, '""')}"`,
+      `"${(p.concentration || 'Extrait De Parfum').replace(/"/g, '""')}"`,
+      `"${(p.gender || 'Unisex').replace(/"/g, '""')}"`,
+      p.price || 0,
+      p.salePrice || 0,
+      p.discount || 0,
+      `"${(Array.isArray(p.notes) ? p.notes.join(', ') : (p.notes || '')).replace(/"/g, '""')}"`,
+      p.inStock !== false ? "TRUE" : "FALSE",
+      p.isBestseller ? "TRUE" : "FALSE",
+      p.isNewArrival ? "TRUE" : "FALSE",
+      p.rating || 4.8,
+      p.reviewsCount || 100,
+      `"${(p.image || '').replace(/"/g, '""')}"`,
+      `"${(p.description || '').replace(/"/g, '""')}"`
     ]);
 
-    // Include UTF-8 BOM for flawless opening in Microsoft Excel and Numbers
-    const csvString = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `cns_perfumes_${onlyFiltered ? 'filtered_' : 'catalog_'}${new Date().toISOString().slice(0,10)}.csv`;
+    link.setAttribute('href', url);
+    link.setAttribute('download', `cns_perfumes_catalog_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
     link.click();
-    showToast(`Exported ${listToExport.length} perfumes to Excel/CSV.`);
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${listToExport.length} perfumes to CSV!`);
   };
 
-  // DOWNLOAD SAMPLE TEMPLATE
+  const exportOrdersToCSV = () => {
+    if (orders.length === 0) {
+      showToast("No orders available to export.", "error");
+      return;
+    }
+
+    const headers = ["Order ID", "Date", "Customer Name", "Email", "Phone", "Items", "Total (INR)", "Payment Method", "Status"];
+    const rows = orders.map(o => [
+      `"${(o.orderId || '').replace(/"/g, '""')}"`,
+      `"${new Date(o._createdAt || Date.now()).toISOString().split('T')[0]}"`,
+      `"${(o.customerName || '').replace(/"/g, '""')}"`,
+      `"${(o.email || '').replace(/"/g, '""')}"`,
+      `"${(o.phone || '').replace(/"/g, '""')}"`,
+      `"${(o.items?.map(it => `${it.title} (${it.quantity}x)`).join('; ') || '').replace(/"/g, '""')}"`,
+      o.totalAmount || 0,
+      `"${(o.paymentMethod || 'online').replace(/"/g, '""')}"`,
+      `"${(o.paymentStatus || 'Pending').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `cns_client_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${orders.length} orders to CSV!`);
+  };
+
   const handleDownloadSampleTemplate = () => {
     const headers = [
-      'Title', 'Slug', 'Brand', 'Category', 'Concentration', 'Gender',
-      'Price', 'Sale Price', 'Discount %', 'Scent Notes', 'Rating', 'Reviews Count',
-      'In Stock', 'Is Bestseller', 'Is New Arrival', 'Image URL', 'Description'
+      "Title", "Slug", "Brand", "Category", "Concentration", "Gender",
+      "Regular Price", "Sale Price", "Discount %", "Scent Notes",
+      "In Stock", "Is Bestseller", "Is New Arrival", "Rating", "Reviews Count",
+      "Primary Image URL", "Description"
     ];
 
-    const escapeCell = (val) => {
-      if (val === null || val === undefined) return '""';
-      const str = String(val).replace(/"/g, '""');
-      return `"${str}"`;
-    };
-
     const rows = SAMPLE_CSV_ROWS.map(p => [
-      escapeCell(p.title),
-      escapeCell(p.slug),
-      escapeCell(p.brand),
-      escapeCell(p.category),
-      escapeCell(p.concentration),
-      escapeCell(p.gender),
-      escapeCell(p.price),
-      escapeCell(p.salePrice),
-      escapeCell(p.discount),
-      escapeCell(p.notes),
-      escapeCell(p.rating),
-      escapeCell(p.reviewsCount),
-      escapeCell(p.inStock),
-      escapeCell(p.isBestseller),
-      escapeCell(p.isNewArrival),
-      escapeCell(p.image),
-      escapeCell(p.description)
+      `"${p.title}"`,
+      `"${p.slug}"`,
+      `"${p.brand}"`,
+      `"${p.category}"`,
+      `"${p.concentration}"`,
+      `"${p.gender}"`,
+      p.price,
+      p.salePrice,
+      p.discount,
+      `"${p.notes}"`,
+      p.inStock.toUpperCase(),
+      p.isBestseller.toUpperCase(),
+      p.isNewArrival.toUpperCase(),
+      p.rating,
+      p.reviewsCount,
+      `"${p.image}"`,
+      `"${p.description}"`
     ]);
 
-    const csvString = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `cns_perfumes_import_template.csv`;
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'cns_perfumes_import_template.csv');
+    document.body.appendChild(link);
     link.click();
-    showToast("Template downloaded! Open in Excel or Google Sheets.");
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast("Downloaded sample CSV import template!");
   };
 
-  // ROBUST CSV PARSER
+  // CSV Parser supporting multi-line quotes and escaped quotes
   const parseCSV = (text) => {
+    const cleanText = text.replace(/^\uFEFF/, '');
     const lines = [];
     let currentRow = [];
     let currentCell = '';
     let insideQuotes = false;
-
-    // Clean BOM if present
-    const cleanText = text.replace(/^\uFEFF/, '');
 
     for (let i = 0; i < cleanText.length; i++) {
       const char = cleanText[i];
@@ -680,27 +827,28 @@ export default function AdminClient() {
     }
   };
 
+  // LOGIN SCREEN
   if (!isAuthenticated) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: 'var(--cream)', padding: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: 'var(--cream)', padding: '16px' }}>
         <div style={{ 
           maxWidth: '420px', 
           width: '100%', 
-          padding: '52px 40px', 
+          padding: '40px 24px', 
           background: 'var(--charcoal)', 
           border: '1px solid var(--gold)', 
           boxShadow: 'var(--shadow-gold)',
           textAlign: 'center' 
         }}>
           
-          <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)', display: 'flex', alignItems: 'center', justify: 'center', margin: '0 auto 20px', color: 'var(--gold)' }}>
+          <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--gold)' }}>
             <Lock size={22} />
           </div>
 
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '32px', fontWeight: '300', color: 'var(--white)', marginBottom: '8px' }}>Admin Studio</h2>
-          <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--gold)', marginBottom: '32px' }}>Website Control Center</p>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '28px', fontWeight: '300', color: 'var(--white)', marginBottom: '6px' }}>Admin Studio</h2>
+          <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.22em', color: 'var(--gold)', marginBottom: '28px' }}>Website Control Center</p>
           
-          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <input 
               type="text" 
               placeholder="Username (admin)" 
@@ -709,16 +857,15 @@ export default function AdminClient() {
               onFocus={() => setFocusedInput('username')}
               onBlur={() => setFocusedInput('')}
               style={{ 
-                padding: '14px 16px', 
+                padding: '13px 16px', 
                 width: '100%', 
-                border: focusedInput === 'username' ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.1)', 
-                background: 'rgba(255,255,255,0.05)', 
+                border: focusedInput === 'username' ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.15)', 
+                background: 'rgba(255,255,255,0.06)', 
                 outline: 'none', 
                 color: 'var(--white)',
                 fontFamily: 'var(--font-body)',
                 fontSize: '14px',
                 transition: 'all 0.22s ease',
-                borderRadius: '0',
                 boxShadow: focusedInput === 'username' ? '0 0 0 3px rgba(201,168,76,0.1)' : 'none'
               }}
               required
@@ -731,24 +878,23 @@ export default function AdminClient() {
               onFocus={() => setFocusedInput('password')}
               onBlur={() => setFocusedInput('')}
               style={{ 
-                padding: '14px 16px', 
+                padding: '13px 16px', 
                 width: '100%', 
-                border: focusedInput === 'password' ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.1)', 
-                background: 'rgba(255,255,255,0.05)', 
+                border: focusedInput === 'password' ? '1px solid var(--gold)' : '1px solid rgba(255,255,255,0.15)', 
+                background: 'rgba(255,255,255,0.06)', 
                 outline: 'none', 
                 color: 'var(--white)',
                 fontFamily: 'var(--font-body)',
                 fontSize: '14px',
                 transition: 'all 0.22s ease',
-                borderRadius: '0',
                 boxShadow: focusedInput === 'password' ? '0 0 0 3px rgba(201,168,76,0.1)' : 'none'
               }}
               required
             />
-            {loginError && <p style={{ color: 'var(--gold-light)', fontSize: '11px', fontFamily: 'var(--font-label)', letterSpacing: '0.05em', textTransform: 'uppercase', margin: '4px 0 8px', textAlign: 'left' }}>⚠️ {loginError}</p>}
+            {loginError && <p style={{ color: 'var(--gold-light)', fontSize: '11px', fontFamily: 'var(--font-label)', letterSpacing: '0.05em', textTransform: 'uppercase', margin: '4px 0', textAlign: 'left' }}>⚠️ {loginError}</p>}
             <button type="submit" 
               style={{ 
-                padding: '15px 20px', 
+                padding: '14px 20px', 
                 background: 'var(--gold)', 
                 color: 'var(--noir)', 
                 border: 'none', 
@@ -760,7 +906,7 @@ export default function AdminClient() {
                 textTransform: 'uppercase',
                 letterSpacing: '0.22em',
                 transition: 'all 0.3s ease',
-                marginTop: '8px'
+                marginTop: '6px'
               }}
               onMouseEnter={e => e.target.style.background = 'var(--gold-light)'}
               onMouseLeave={e => e.target.style.background = 'var(--gold)'}>
@@ -779,21 +925,22 @@ export default function AdminClient() {
       {toast && (
         <div style={{
           position: 'fixed',
-          top: '24px',
-          right: '24px',
+          top: '20px',
+          right: '20px',
           zIndex: 10000,
           background: toast.type === 'error' ? '#8a1c14' : 'var(--noir)',
           color: 'var(--white)',
-          padding: '14px 20px',
+          padding: '12px 18px',
           border: `1px solid ${toast.type === 'error' ? '#d93025' : 'var(--gold)'}`,
           boxShadow: 'var(--shadow-lg)',
           display: 'flex',
           alignItems: 'center',
-          gap: '12px',
+          gap: '10px',
           fontFamily: 'var(--font-label)',
           fontSize: '11px',
-          letterSpacing: '0.1em',
-          textTransform: 'uppercase'
+          letterSpacing: '0.08em',
+          textTransform: 'uppercase',
+          maxWidth: '90vw'
         }}>
           {toast.type === 'error' ? <AlertCircle size={16} color="#ff6b6b" /> : <CheckCircle size={16} color="var(--gold)" />}
           <span>{toast.message}</span>
@@ -801,20 +948,20 @@ export default function AdminClient() {
       )}
 
       {/* Admin header */}
-      <header style={{ background: 'var(--noir)', borderBottom: '1px solid rgba(201,168,76,0.15)', padding: '16px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <span style={{ background: 'var(--cream)', padding: '4px 10px', display: 'flex', borderRadius: '3px' }}>
-            <img src="/images/logo.png" alt="C&S" style={{ height: '24px', width: 'auto', filter: 'brightness(0)' }} />
+      <header className="admin-header">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ background: 'var(--cream)', padding: '4px 8px', display: 'flex', borderRadius: '3px' }}>
+            <img src="/images/logo.png" alt="C&S" style={{ height: '22px', width: 'auto', filter: 'brightness(0)' }} />
           </span>
-          <span style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', color: 'var(--gold)' }}>Studio Manager</span>
+          <span style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)' }}>Studio Manager</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <Link href="/" target="_blank" style={{ color: 'rgba(255,255,255,0.7)', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}>
-            <Eye size={13} /> View Live Store
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <Link href="/" target="_blank" style={{ color: 'rgba(255,255,255,0.75)', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: '5px', textDecoration: 'none' }}>
+            <Eye size={13} /> <span className="hide-on-xs">View Store</span>
           </Link>
-          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.6)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', transition: 'color 0.2s' }}
+          <button onClick={handleLogout} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.65)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', transition: 'color 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}>
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.65)'}>
             <LogOut size={13} /> Sign Out
           </button>
         </div>
@@ -830,84 +977,85 @@ export default function AdminClient() {
       />
 
       {/* Main Container */}
-      <div style={{ maxWidth: '1360px', width: '100%', margin: '32px auto', padding: '0 24px 80px', flex: '1', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <div className="admin-container">
         
         {/* Executive KPI Stats Overview */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <div className="admin-kpi-row">
           
-          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '6px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)' }}>
-              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Total Fragrances</span>
-              <Package size={15} color="var(--gold)" />
+              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Fragrances</span>
+              <Package size={14} color="var(--gold)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '28px', color: 'var(--text-dark)', fontWeight: '400' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', color: 'var(--text-dark)', fontWeight: '400' }}>
               {stats.totalProducts}
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              <strong style={{ color: '#1e8e3e' }}>{stats.inStockCount} In Stock</strong> • <span style={{ color: '#d93025' }}>{stats.outOfStockCount} Sold Out</span>
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+              <strong style={{ color: '#1e8e3e' }}>{stats.inStockCount} In Stock</strong> • <span style={{ color: '#d93025' }}>{stats.outOfStockCount} Sold</span>
             </span>
           </div>
 
-          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '6px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)' }}>
-              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Featured Badges</span>
-              <Sparkles size={15} color="var(--gold)" />
+              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Featured</span>
+              <Sparkles size={14} color="var(--gold)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '28px', color: 'var(--text-dark)', fontWeight: '400' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', color: 'var(--text-dark)', fontWeight: '400' }}>
               {stats.bestsellersCount + stats.newArrivalsCount}
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              {stats.bestsellersCount} Bestsellers • {stats.newArrivalsCount} New Arrivals
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+              {stats.bestsellersCount} Bestsellers • {stats.newArrivalsCount} New
             </span>
           </div>
 
-          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '6px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)' }}>
-              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Client Orders</span>
-              <FileText size={15} color="var(--gold)" />
+              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Orders</span>
+              <FileText size={14} color="var(--gold)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '28px', color: 'var(--text-dark)', fontWeight: '400' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', color: 'var(--text-dark)', fontWeight: '400' }}>
               {stats.totalOrders}
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Recorded Transactions
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+              Recorded Orders
             </span>
           </div>
 
-          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: '6px', boxShadow: 'var(--shadow-sm)' }}>
+          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.2)', padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: '4px', boxShadow: 'var(--shadow-sm)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)' }}>
-              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.15em' }}>Gross Sales Value</span>
-              <DollarSign size={15} color="var(--gold)" />
+              <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Gross Sales</span>
+              <DollarSign size={14} color="var(--gold)" />
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '28px', color: 'var(--gold)', fontWeight: '500' }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '24px', color: 'var(--gold)', fontWeight: '500' }}>
               ₹{stats.totalRevenue.toLocaleString()}
             </div>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
-              Combined Store Value
+            <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+              Total Store Value
             </span>
           </div>
 
         </div>
 
         {/* Tab selector */}
-        <div style={{ display: 'flex', borderBottom: '1px solid rgba(201,168,76,0.2)', gap: '4px' }}>
+        <div className="admin-tab-bar">
           {[
             { id: 'products', label: `Perfumes (${products.length})`, icon: <Package size={14} /> },
             { id: 'settings', label: 'Editorial Settings', icon: <Settings size={14} /> },
-            { id: 'orders', label: `Client Orders (${orders.length})`, icon: <FileText size={14} /> }
+            { id: 'orders', label: `Orders (${orders.length})`, icon: <FileText size={14} /> }
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '14px 24px', background: activeTab === tab.id ? 'var(--white)' : 'transparent',
+                padding: '12px 18px', background: activeTab === tab.id ? 'var(--white)' : 'transparent',
                 border: '1px solid transparent',
                 borderBottom: 'none',
                 borderColor: activeTab === tab.id ? 'rgba(201,168,76,0.2) rgba(201,168,76,0.2) transparent' : 'transparent',
                 fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700',
-                textTransform: 'uppercase', letterSpacing: '0.15em',
+                textTransform: 'uppercase', letterSpacing: '0.12em',
                 color: activeTab === tab.id ? 'var(--gold)' : 'var(--text-muted)',
                 cursor: 'pointer', transition: 'all 0.22s ease',
-                position: 'relative', top: '1px'
+                position: 'relative', top: '1px',
+                flexShrink: 0
               }}>
               {tab.icon}
               {tab.label}
@@ -917,27 +1065,27 @@ export default function AdminClient() {
 
         {/* LOADING SHIMMER */}
         {isLoading ? (
-          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.15)', padding: '64px 0', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '300' }}>
+          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.15)', padding: '50px 0', textAlign: 'center', color: 'var(--text-muted)', fontFamily: 'var(--font-display)', fontSize: '18px', fontWeight: '300' }}>
             Syncing database details...
           </div>
         ) : (
-          <div style={{ background: 'var(--white)', border: '1px solid rgba(201,168,76,0.15)', padding: '32px', boxShadow: 'var(--shadow-sm)' }}>
+          <div className="admin-panel-box">
             
             {/* ========================================================
                 TAB 1: PRODUCTS MANAGER (CARD VIEW + LIST VIEW + IMPORT/EXPORT)
                 ======================================================== */}
             {activeTab === 'products' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 
                 {/* Top Action Bar: Search, Import/Export, Guide & Create */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                   
                   {/* Left: Search input */}
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(201,168,76,0.2)', background: 'var(--cream)', padding: '10px 16px', minWidth: '300px', flex: '1 1 300px' }}>
-                    <Search size={15} color="var(--text-muted)" style={{ marginRight: '10px' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(201,168,76,0.2)', background: 'var(--cream)', padding: '9px 14px', flex: '1 1 260px' }}>
+                    <Search size={14} color="var(--text-muted)" style={{ marginRight: '8px', flexShrink: 0 }} />
                     <input 
                       type="text" 
-                      placeholder="Search title, brand, category, notes..." 
+                      placeholder="Search fragrance name, brand, notes..." 
                       value={prodSearch} 
                       onChange={e => setProdSearch(e.target.value)}
                       style={{ border: 'none', background: 'transparent', outline: 'none', fontFamily: 'var(--font-body)', fontSize: '13px', color: 'var(--text-dark)', width: '100%' }} 
@@ -950,7 +1098,7 @@ export default function AdminClient() {
                   </div>
 
                   {/* Right Action Buttons */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     
                     {/* View Switcher: Card View vs List View */}
                     <div style={{ display: 'flex', border: '1px solid rgba(201,168,76,0.3)', background: 'var(--cream)' }}>
@@ -958,26 +1106,26 @@ export default function AdminClient() {
                         onClick={() => handleSetViewMode('card')} 
                         title="Card View (Default)"
                         style={{ 
-                          padding: '9px 13px', 
+                          padding: '8px 11px', 
                           border: 'none', 
                           background: viewMode === 'card' ? 'var(--noir)' : 'transparent', 
                           color: viewMode === 'card' ? 'var(--gold)' : 'var(--text-muted)', 
                           cursor: 'pointer', 
                           display: 'flex', 
                           alignItems: 'center',
-                          gap: '6px',
+                          gap: '5px',
                           fontFamily: 'var(--font-label)',
-                          fontSize: '10px',
+                          fontSize: '9px',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.1em'
+                          letterSpacing: '0.08em'
                         }}>
-                        <LayoutGrid size={14} /> Cards
+                        <LayoutGrid size={13} /> Cards
                       </button>
                       <button 
                         onClick={() => handleSetViewMode('list')} 
                         title="List/Table View"
                         style={{ 
-                          padding: '9px 13px', 
+                          padding: '8px 11px', 
                           border: 'none', 
                           borderLeft: '1px solid rgba(201,168,76,0.3)',
                           background: viewMode === 'list' ? 'var(--noir)' : 'transparent', 
@@ -985,89 +1133,89 @@ export default function AdminClient() {
                           cursor: 'pointer', 
                           display: 'flex', 
                           alignItems: 'center',
-                          gap: '6px',
+                          gap: '5px',
                           fontFamily: 'var(--font-label)',
-                          fontSize: '10px',
+                          fontSize: '9px',
                           textTransform: 'uppercase',
-                          letterSpacing: '0.1em'
+                          letterSpacing: '0.08em'
                         }}>
-                        <List size={14} /> Table
+                        <List size={13} /> Table
                       </button>
                     </div>
 
-                    {/* Import Guide & Template Button */}
+                    {/* Import Guide */}
                     <button 
                       onClick={() => setIsGuideModalOpen(true)}
                       style={{ 
                         background: 'transparent', 
                         border: '1px solid rgba(201,168,76,0.35)', 
                         color: 'var(--text-dark)', 
-                        padding: '10px 16px', 
+                        padding: '8px 12px', 
                         fontFamily: 'var(--font-label)', 
-                        fontSize: '10px', 
+                        fontSize: '9px', 
                         fontWeight: '700', 
                         textTransform: 'uppercase', 
-                        letterSpacing: '0.1em', 
+                        letterSpacing: '0.08em', 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '6px', 
+                        gap: '5px', 
                         cursor: 'pointer',
                         transition: 'all 0.2s'
                       }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)'; e.currentTarget.style.color = 'var(--text-dark)'; }}
                     >
-                      <HelpCircle size={14} color="var(--gold)" /> Import Guide
+                      <HelpCircle size={13} color="var(--gold)" /> Guide
                     </button>
 
-                    {/* Import Excel/CSV Button */}
+                    {/* Import Excel */}
                     <button 
                       onClick={() => fileInputRef.current?.click()}
                       style={{ 
                         background: 'transparent', 
                         border: '1px solid rgba(201,168,76,0.35)', 
                         color: 'var(--text-dark)', 
-                        padding: '10px 16px', 
+                        padding: '8px 12px', 
                         fontFamily: 'var(--font-label)', 
-                        fontSize: '10px', 
+                        fontSize: '9px', 
                         fontWeight: '700', 
                         textTransform: 'uppercase', 
-                        letterSpacing: '0.1em', 
+                        letterSpacing: '0.08em', 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '6px', 
+                        gap: '5px', 
                         cursor: 'pointer',
                         transition: 'all 0.2s'
                       }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)'; e.currentTarget.style.color = 'var(--text-dark)'; }}
                     >
-                      <Upload size={14} color="var(--gold)" /> Import Excel
+                      <Upload size={13} color="var(--gold)" /> Import
                     </button>
 
-                    {/* Export Excel/CSV Button */}
+                    {/* Export CSV */}
                     <button 
                       onClick={() => exportProductsToCSV(hasActiveFilters)}
                       style={{ 
                         background: 'transparent', 
                         border: '1px solid rgba(201,168,76,0.35)', 
                         color: 'var(--text-dark)', 
-                        padding: '10px 16px', 
+                        padding: '8px 12px', 
                         fontFamily: 'var(--font-label)', 
-                        fontSize: '10px', 
+                        fontSize: '9px', 
                         fontWeight: '700', 
                         textTransform: 'uppercase', 
-                        letterSpacing: '0.1em', 
+                        letterSpacing: '0.08em', 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '6px', 
+                        gap: '5px', 
                         cursor: 'pointer',
                         transition: 'all 0.2s'
                       }}
                       onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
                       onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.35)'; e.currentTarget.style.color = 'var(--text-dark)'; }}
                     >
-                      <Download size={14} color="var(--gold)" /> Export CSV
+                      <Download size={13} color="var(--gold)" /> Export
                     </button>
 
                     {/* Add New Scent Button */}
@@ -1077,22 +1225,22 @@ export default function AdminClient() {
                         background: 'var(--gold)', 
                         color: 'var(--noir)', 
                         border: 'none', 
-                        padding: '10px 20px', 
+                        padding: '9px 16px', 
                         fontFamily: 'var(--font-label)', 
-                        fontSize: '10px', 
+                        fontSize: '9px', 
                         fontWeight: '700', 
                         textTransform: 'uppercase', 
-                        letterSpacing: '0.15em', 
+                        letterSpacing: '0.12em', 
                         display: 'flex', 
                         alignItems: 'center', 
-                        gap: '8px', 
+                        gap: '6px', 
                         cursor: 'pointer', 
                         transition: 'all 0.22s' 
                       }}
                       onMouseEnter={e => e.currentTarget.style.background = 'var(--gold-light)'}
                       onMouseLeave={e => e.currentTarget.style.background = 'var(--gold)'}
                     >
-                      <Plus size={14} /> Add Scent
+                      <Plus size={13} /> Add Scent
                     </button>
 
                   </div>
@@ -1100,19 +1248,19 @@ export default function AdminClient() {
                 </div>
 
                 {/* Filter & Sort Controls Bar */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px', background: 'var(--cream)', border: '1px solid rgba(201,168,76,0.15)', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'var(--cream)', border: '1px solid rgba(201,168,76,0.15)', flexWrap: 'wrap', gap: '10px' }}>
                   
                   {/* Filter Dropdowns */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontWeight: '600' }}>
-                      <Filter size={12} color="var(--gold)" /> Filter By:
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', flex: '1 1 300px' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontWeight: '600' }}>
+                      <Filter size={11} color="var(--gold)" /> Filter:
                     </span>
 
                     {/* Category Filter */}
                     <select 
                       value={selectedCategory} 
                       onChange={e => setSelectedCategory(e.target.value)}
-                      style={{ padding: '6px 10px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '12px', outline: 'none', cursor: 'pointer' }}
+                      style={{ padding: '6px 8px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '11px', outline: 'none', cursor: 'pointer', flex: '1 1 auto' }}
                     >
                       <option value="all">All Categories</option>
                       {categoriesList.map(c => <option key={c} value={c}>{c}</option>)}
@@ -1122,7 +1270,7 @@ export default function AdminClient() {
                     <select 
                       value={selectedGender} 
                       onChange={e => setSelectedGender(e.target.value)}
-                      style={{ padding: '6px 10px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '12px', outline: 'none', cursor: 'pointer' }}
+                      style={{ padding: '6px 8px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '11px', outline: 'none', cursor: 'pointer', flex: '1 1 auto' }}
                     >
                       <option value="all">All Genders</option>
                       <option value="Unisex">Unisex</option>
@@ -1134,18 +1282,18 @@ export default function AdminClient() {
                     <select 
                       value={selectedStock} 
                       onChange={e => setSelectedStock(e.target.value)}
-                      style={{ padding: '6px 10px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '12px', outline: 'none', cursor: 'pointer' }}
+                      style={{ padding: '6px 8px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '11px', outline: 'none', cursor: 'pointer', flex: '1 1 auto' }}
                     >
-                      <option value="all">All Stock Status</option>
-                      <option value="instock">In Stock Only</option>
-                      <option value="soldout">Sold Out Only</option>
+                      <option value="all">All Stock</option>
+                      <option value="instock">In Stock</option>
+                      <option value="soldout">Sold Out</option>
                     </select>
 
                     {/* Badge Filter */}
                     <select 
                       value={selectedBadge} 
                       onChange={e => setSelectedBadge(e.target.value)}
-                      style={{ padding: '6px 10px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '12px', outline: 'none', cursor: 'pointer' }}
+                      style={{ padding: '6px 8px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '11px', outline: 'none', cursor: 'pointer', flex: '1 1 auto' }}
                     >
                       <option value="all">All Badges</option>
                       <option value="bestseller">Bestsellers</option>
@@ -1156,7 +1304,7 @@ export default function AdminClient() {
                     {hasActiveFilters && (
                       <button 
                         onClick={handleResetFilters}
-                        style={{ padding: '6px 10px', background: 'none', border: '1px solid #d93025', color: '#d93025', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        style={{ padding: '5px 8px', background: 'none', border: '1px solid #d93025', color: '#d93025', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.06em', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
                       >
                         <RefreshCw size={10} /> Reset
                       </button>
@@ -1164,14 +1312,14 @@ export default function AdminClient() {
                   </div>
 
                   {/* Sort By Dropdown */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontWeight: '600' }}>
-                      <ArrowUpDown size={12} color="var(--gold)" /> Sort:
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '3px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', fontWeight: '600' }}>
+                      <ArrowUpDown size={11} color="var(--gold)" /> Sort:
                     </span>
                     <select 
                       value={sortBy} 
                       onChange={e => setSortBy(e.target.value)}
-                      style={{ padding: '6px 10px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '12px', outline: 'none', cursor: 'pointer' }}
+                      style={{ padding: '6px 8px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--white)', fontSize: '11px', outline: 'none', cursor: 'pointer' }}
                     >
                       <option value="newest">New Arrivals First</option>
                       <option value="bestsellers">Bestsellers First</option>
@@ -1188,9 +1336,9 @@ export default function AdminClient() {
                 </div>
 
                 {/* Results Count Summary */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-muted)', fontSize: '11px' }}>
                   <span>Showing <strong>{filteredProducts.length}</strong> of {products.length} fragrances</span>
-                  {hasActiveFilters && <span style={{ color: 'var(--gold)', fontSize: '11px' }}>Filtered Results Active</span>}
+                  {hasActiveFilters && <span style={{ color: 'var(--gold)', fontSize: '10px' }}>Filters Active</span>}
                 </div>
 
                 {/* ========================================================
@@ -1199,13 +1347,13 @@ export default function AdminClient() {
                 {viewMode === 'card' && (
                   <div>
                     {filteredProducts.length === 0 ? (
-                      <div style={{ textAlign: 'center', padding: '60px 20px', background: 'var(--cream)', border: '1px solid rgba(201,168,76,0.15)' }}>
-                        <p style={{ fontFamily: 'var(--font-display)', fontSize: '22px', color: 'var(--text-dark)', marginBottom: '8px' }}>No Fragrances Match Criteria</p>
-                        <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '20px' }}>Try loosening your filters or keyword search query.</p>
-                        <button onClick={handleResetFilters} className="btn-primary" style={{ display: 'inline-flex' }}>Reset All Filters</button>
+                      <div style={{ textAlign: 'center', padding: '50px 20px', background: 'var(--cream)', border: '1px solid rgba(201,168,76,0.15)' }}>
+                        <p style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: 'var(--text-dark)', marginBottom: '6px' }}>No Fragrances Match Criteria</p>
+                        <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginBottom: '16px' }}>Try loosening your filters or search query.</p>
+                        <button onClick={handleResetFilters} className="btn-primary" style={{ display: 'inline-flex' }}>Reset Filters</button>
                       </div>
                     ) : (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
                         {filteredProducts.map((p, idx) => (
                           <div 
                             key={p.id || idx}
@@ -1221,46 +1369,47 @@ export default function AdminClient() {
                             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.boxShadow = 'var(--shadow-gold-soft)'; }}
                             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,0.2)'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)'; }}
                           >
-                            {/* Product Card Image Frame with Arch Curve */}
+                            {/* Product Card Image Frame */}
                             <div style={{ 
                               position: 'relative', 
-                              aspectRatio: '1', 
+                              aspectRatio: '1.05', 
                               background: 'radial-gradient(circle, var(--cream) 0%, var(--pearl) 100%)', 
                               borderBottom: '1px solid rgba(201,168,76,0.15)',
                               overflow: 'hidden',
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'center'
+                              justifyContent: 'center',
+                              padding: '12px'
                             }}>
                               <img 
                                 src={p.image || '/images/perfume_elegant_1784660079140.png'} 
                                 alt={p.title} 
-                                style={{ width: '80%', height: '80%', objectFit: 'contain', transition: 'transform 0.4s ease' }}
+                                style={{ width: '85%', height: '85%', objectFit: 'contain', transition: 'transform 0.4s ease' }}
                               />
 
                               {/* Badges Overlay */}
-                              <div style={{ position: 'absolute', top: '12px', left: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                              <div style={{ position: 'absolute', top: '8px', left: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 {p.isBestseller && (
-                                  <span style={{ background: 'var(--gold)', color: 'var(--noir)', padding: '3px 8px', fontSize: '9px', fontFamily: 'var(--font-label)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                  <span style={{ background: 'var(--gold)', color: 'var(--noir)', padding: '2px 6px', fontSize: '8px', fontFamily: 'var(--font-label)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                                     ★ Bestseller
                                   </span>
                                 )}
                                 {p.isNewArrival && (
-                                  <span style={{ background: 'var(--noir)', color: 'var(--white)', padding: '3px 8px', fontSize: '9px', fontFamily: 'var(--font-label)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                  <span style={{ background: 'var(--noir)', color: 'var(--white)', padding: '2px 6px', fontSize: '8px', fontFamily: 'var(--font-label)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                                     ✨ New
                                   </span>
                                 )}
                                 {p.discount > 0 && p.inStock !== false && (
-                                  <span style={{ background: '#d93025', color: 'var(--white)', padding: '3px 8px', fontSize: '9px', fontFamily: 'var(--font-label)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                                  <span style={{ background: '#d93025', color: 'var(--white)', padding: '2px 6px', fontSize: '8px', fontFamily: 'var(--font-label)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                                     {p.discount}% OFF
                                   </span>
                                 )}
                               </div>
 
                               {/* Stock status badge */}
-                              <div style={{ position: 'absolute', top: '12px', right: '12px' }}>
+                              <div style={{ position: 'absolute', top: '8px', right: '8px' }}>
                                 <span style={{
-                                  padding: '3px 8px', fontSize: '9px', fontFamily: 'var(--font-label)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase',
+                                  padding: '2px 6px', fontSize: '8px', fontFamily: 'var(--font-label)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase',
                                   background: p.inStock !== false ? 'rgba(45,154,95,0.9)' : 'rgba(217,48,37,0.9)',
                                   color: 'var(--white)',
                                   borderRadius: '2px'
@@ -1271,44 +1420,44 @@ export default function AdminClient() {
                             </div>
 
                             {/* Card Content Details */}
-                            <div style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', flex: '1', justifyContent: 'space-between', gap: '14px' }}>
+                            <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', flex: '1', justifyContent: 'space-between', gap: '10px' }}>
                               
                               <div>
                                 {/* Category & Gender Tags */}
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                                  <span style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--gold)', fontWeight: '600' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                  <span style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--gold)', fontWeight: '600' }}>
                                     {p.category || 'Floral'} • {p.gender || 'Unisex'}
                                   </span>
-                                  <span style={{ fontSize: '10px', color: 'var(--text-muted)', fontFamily: 'var(--font-label)' }}>
+                                  <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontFamily: 'var(--font-label)' }}>
                                     {p.concentration || 'Extrait'}
                                   </span>
                                 </div>
 
                                 {/* Title */}
-                                <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '17px', color: 'var(--text-dark)', fontWeight: '400', margin: '0 0 6px 0', lineHeight: '1.3' }}>
+                                <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', color: 'var(--text-dark)', fontWeight: '400', margin: '0 0 4px 0', lineHeight: '1.3' }}>
                                   {p.title}
                                 </h4>
 
                                 {/* Scent notes */}
-                                <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '0 0 12px 0', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '0 0 8px 0', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                   {Array.isArray(p.notes) ? p.notes.join(' · ') : (p.notes || 'Luxury accords')}
                                 </p>
 
                                 {/* Price Box */}
-                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
                                   {p.price > p.salePrice && (
-                                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
+                                    <span style={{ fontSize: '11px', color: 'var(--text-muted)', textDecoration: 'line-through' }}>
                                       ₹{p.price}
                                     </span>
                                   )}
-                                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '20px', color: 'var(--text-dark)', fontWeight: '500' }}>
+                                  <span style={{ fontFamily: 'var(--font-display)', fontSize: '18px', color: 'var(--text-dark)', fontWeight: '500' }}>
                                     ₹{p.salePrice}
                                   </span>
                                 </div>
                               </div>
 
                               {/* Action Footer */}
-                              <div style={{ borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div style={{ borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 
                                 {/* Quick stock toggle */}
                                 <button 
@@ -1320,48 +1469,48 @@ export default function AdminClient() {
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px',
+                                    gap: '4px',
                                     fontFamily: 'var(--font-label)',
                                     fontSize: '9px',
                                     textTransform: 'uppercase',
-                                    letterSpacing: '0.08em',
+                                    letterSpacing: '0.06em',
                                     color: p.inStock !== false ? '#1e8e3e' : '#d93025'
                                   }}
                                 >
-                                  {p.inStock !== false ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
+                                  {p.inStock !== false ? <CheckCircle size={13} /> : <AlertTriangle size={13} />}
                                   {p.inStock !== false ? 'In Stock' : 'Sold Out'}
                                 </button>
 
                                 {/* Action Buttons */}
-                                <div style={{ display: 'flex', gap: '6px' }}>
+                                <div style={{ display: 'flex', gap: '4px' }}>
                                   <button 
                                     onClick={() => handleDuplicateProduct(p)} 
                                     title="Duplicate / Clone"
-                                    style={{ padding: '6px 8px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--cream)', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.2s' }}
+                                    style={{ padding: '6px 7px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--cream)', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.2s' }}
                                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
                                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                                   >
-                                    <Copy size={13} />
+                                    <Copy size={12} />
                                   </button>
 
                                   <button 
                                     onClick={() => handleOpenEditProduct(p)} 
                                     title="Edit Perfume"
-                                    style={{ padding: '6px 8px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--cream)', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.2s' }}
+                                    style={{ padding: '6px 7px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--cream)', cursor: 'pointer', color: 'var(--text-muted)', transition: 'all 0.2s' }}
                                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.color = 'var(--gold)'; }}
                                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                                   >
-                                    <Edit3 size={13} />
+                                    <Edit3 size={12} />
                                   </button>
 
                                   <button 
                                     onClick={() => handleDeleteProduct(p.id, p.title)} 
                                     title="Delete Perfume"
-                                    style={{ padding: '6px 8px', border: '1px solid rgba(217,48,37,0.2)', background: 'rgba(217,48,37,0.05)', cursor: 'pointer', color: '#d93025', transition: 'all 0.2s' }}
+                                    style={{ padding: '6px 7px', border: '1px solid rgba(217,48,37,0.2)', background: 'rgba(217,48,37,0.05)', cursor: 'pointer', color: '#d93025', transition: 'all 0.2s' }}
                                     onMouseEnter={e => { e.currentTarget.style.background = '#d93025'; e.currentTarget.style.color = '#fff'; }}
                                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(217,48,37,0.05)'; e.currentTarget.style.color = '#d93025'; }}
                                   >
-                                    <Trash2 size={13} />
+                                    <Trash2 size={12} />
                                   </button>
                                 </div>
 
@@ -1379,24 +1528,24 @@ export default function AdminClient() {
                     VIEW 2: LIST / TABLE VIEW
                     ======================================================== */}
                 {viewMode === 'list' && (
-                  <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                  <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)', WebkitOverflowScrolling: 'touch' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '600px' }}>
                       <thead>
                         <tr style={{ borderBottom: '2px solid var(--gold)', background: 'var(--charcoal)' }}>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Image</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Title & Notes</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Category</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Gender</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Price</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Sale Price</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Stock</th>
-                          <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)', textAlign: 'right' }}>Actions</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Image</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Title & Notes</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Category</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Gender</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Price</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Sale Price</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Stock</th>
+                          <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)', textAlign: 'right' }}>Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {filteredProducts.length === 0 ? (
                           <tr>
-                            <td colSpan="8" style={{ padding: '40px 16px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                            <td colSpan="8" style={{ padding: '36px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>
                               No fragrances match criteria.
                             </td>
                           </tr>
@@ -1405,24 +1554,24 @@ export default function AdminClient() {
                             <tr key={p.id || idx} style={{ borderBottom: '1px solid rgba(201,168,76,0.15)', transition: 'background 0.2s' }}
                               onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(201,168,76,0.02)'}
                               onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                              <td style={{ padding: '12px 16px' }}>
-                                <img src={p.image || '/images/perfume_elegant_1784660079140.png'} alt="" style={{ width: '44px', height: '44px', objectFit: 'cover', background: 'var(--pearl)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '6px' }} />
+                              <td style={{ padding: '10px 14px' }}>
+                                <img src={p.image || '/images/perfume_elegant_1784660079140.png'} alt="" style={{ width: '40px', height: '40px', objectFit: 'cover', background: 'var(--pearl)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '4px' }} />
                               </td>
-                              <td style={{ padding: '12px 16px' }}>
-                                <div style={{ fontWeight: '600', color: 'var(--text-dark)', fontSize: '14px' }}>{p.title}</div>
-                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                              <td style={{ padding: '10px 14px' }}>
+                                <div style={{ fontWeight: '600', color: 'var(--text-dark)', fontSize: '13px' }}>{p.title}</div>
+                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
                                   {Array.isArray(p.notes) ? p.notes.join(' · ') : (p.notes || '')}
                                 </div>
                               </td>
-                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-muted)' }}>{p.category || 'Floral'}</td>
-                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-muted)' }}>{p.gender || 'Unisex'}</td>
-                              <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--text-muted)' }}>₹{p.price}</td>
-                              <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: 'bold', color: 'var(--gold)' }}>₹{p.salePrice}</td>
-                              <td style={{ padding: '12px 16px' }}>
+                              <td style={{ padding: '10px 14px', fontSize: '12px', color: 'var(--text-muted)' }}>{p.category || 'Floral'}</td>
+                              <td style={{ padding: '10px 14px', fontSize: '12px', color: 'var(--text-muted)' }}>{p.gender || 'Unisex'}</td>
+                              <td style={{ padding: '10px 14px', fontSize: '12px', color: 'var(--text-muted)' }}>₹{p.price}</td>
+                              <td style={{ padding: '10px 14px', fontSize: '13px', fontWeight: 'bold', color: 'var(--gold)' }}>₹{p.salePrice}</td>
+                              <td style={{ padding: '10px 14px' }}>
                                 <button 
                                   onClick={() => handleToggleStock(p)}
                                   style={{
-                                    padding: '4px 10px', fontSize: '9px', fontFamily: 'var(--font-label)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase',
+                                    padding: '3px 8px', fontSize: '8px', fontFamily: 'var(--font-label)', fontWeight: '700', letterSpacing: '0.05em', textTransform: 'uppercase',
                                     background: p.inStock !== false ? 'rgba(45,154,95,0.08)' : 'rgba(217,48,37,0.08)',
                                     color: p.inStock !== false ? '#1e8e3e' : '#d93025',
                                     border: p.inStock !== false ? '1px solid rgba(45,154,95,0.2)' : '1px solid rgba(217,48,37,0.2)',
@@ -1433,11 +1582,11 @@ export default function AdminClient() {
                                   {p.inStock !== false ? 'In Stock' : 'Sold Out'}
                                 </button>
                               </td>
-                              <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                                  <button onClick={() => handleDuplicateProduct(p)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Duplicate"><Copy size={15} /></button>
-                                  <button onClick={() => handleOpenEditProduct(p)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Edit"><Edit3 size={15} /></button>
-                                  <button onClick={() => handleDeleteProduct(p.id, p.title)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d93025' }} title="Delete"><Trash2 size={15} /></button>
+                              <td style={{ padding: '10px 14px', textAlign: 'right' }}>
+                                <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                  <button onClick={() => handleDuplicateProduct(p)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Duplicate"><Copy size={13} /></button>
+                                  <button onClick={() => handleOpenEditProduct(p)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }} title="Edit"><Edit3 size={13} /></button>
+                                  <button onClick={() => handleDeleteProduct(p.id, p.title)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#d93025' }} title="Delete"><Trash2 size={13} /></button>
                                 </div>
                               </td>
                             </tr>
@@ -1452,61 +1601,70 @@ export default function AdminClient() {
             )}
 
             {/* ========================================================
-                TAB 2: SITE EDITORIAL SETTINGS
+                TAB 2: SITE EDITORIAL SETTINGS (GUARANTEED POPULATED)
                 ======================================================== */}
-            {activeTab === 'settings' && settings && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '14px' }}>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '300', color: 'var(--text-dark)' }}>Editorial Settings</h3>
-                  <button onClick={handleSaveSettings}
-                    style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '12px 28px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.3s ease' }}
-                    onMouseEnter={e => e.target.style.background = 'var(--gold-light)'}
-                    onMouseLeave={e => e.target.style.background = 'var(--gold)'}>
-                    <Save size={14} /> Save Page Settings
-                  </button>
+            {activeTab === 'settings' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div>
+                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>Editorial Settings</h3>
+                    <p style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted)', margin: '3px 0 0' }}>Manage Homepage Slides, Categories & Promises</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={handleRestoreDefaultSettings}
+                      style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.2)', color: 'var(--text-dark)', padding: '9px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                      <RotateCcw size={12} /> Reset Defaults
+                    </button>
+                    <button onClick={handleSaveSettings}
+                      style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '9px 20px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: 'all 0.3s ease' }}
+                      onMouseEnter={e => e.target.style.background = 'var(--gold-light)'}
+                      onMouseLeave={e => e.target.style.background = 'var(--gold)'}>
+                      <Save size={13} /> Save Page Settings
+                    </button>
+                  </div>
                 </div>
 
                 {/* Section 1: Hero Slider */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                    <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700' }}>Hero Carousel Campaign Slides</h4>
-                    <button onClick={handleAddHeroSlide} style={{ border: '1px solid var(--gold)', background: 'none', cursor: 'pointer', padding: '6px 12px', fontFamily: 'var(--font-label)', fontSize: '9px', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                    <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--gold)', fontWeight: '700' }}>Hero Carousel Campaign Slides</h4>
+                    <button onClick={handleAddHeroSlide} style={{ border: '1px solid var(--gold)', background: 'none', cursor: 'pointer', padding: '5px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <Plus size={10} /> Add Slide
                     </button>
                   </div>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {settings.heroSlides.map((slide, idx) => (
-                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '24px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {(settings?.heroSlides || DEFAULT_SITE_SETTINGS.heroSlides).map((slide, idx) => (
+                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '18px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', color: 'var(--text-muted)' }}>Slide #{idx + 1}</span>
-                          <button onClick={() => handleRemoveHeroSlide(idx)} style={{ color: '#d93025', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Remove</button>
+                          <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', color: 'var(--text-muted)' }}>Campaign Slide #{idx + 1}</span>
+                          <button onClick={() => handleRemoveHeroSlide(idx)} style={{ color: '#d93025', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Remove</button>
                         </div>
                         
-                        <div style={{ display: 'grid', gap: '14px' }} className="admin-grid-2col">
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Campaign Title</label>
-                            <input type="text" value={slide.title} onChange={e => handleUpdateHeroSlide(idx, 'title', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                        <div className="admin-grid-2col">
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Campaign Title</label>
+                            <input type="text" value={slide.title || ''} onChange={e => handleUpdateHeroSlide(idx, 'title', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Image Path/URL</label>
-                            <input type="text" value={slide.image} onChange={e => handleUpdateHeroSlide(idx, 'image', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Image Path/URL</label>
+                            <input type="text" value={slide.image || ''} onChange={e => handleUpdateHeroSlide(idx, 'image', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                           </div>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Campaign Subtitle</label>
-                          <textarea value={slide.subtitle} onChange={e => handleUpdateHeroSlide(idx, 'subtitle', e.target.value)} rows={2} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', resize: 'vertical' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Campaign Subtitle</label>
+                          <textarea value={slide.subtitle || ''} onChange={e => handleUpdateHeroSlide(idx, 'subtitle', e.target.value)} rows={2} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', resize: 'vertical' }} />
                         </div>
 
-                        <div style={{ display: 'grid', gap: '14px' }} className="admin-grid-2col">
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Button Text</label>
-                            <input type="text" value={slide.buttonText} onChange={e => handleUpdateHeroSlide(idx, 'buttonText', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                        <div className="admin-grid-2col">
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Button Text</label>
+                            <input type="text" value={slide.buttonText || ''} onChange={e => handleUpdateHeroSlide(idx, 'buttonText', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                           </div>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                            <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Button Link Destination</label>
-                            <input type="text" value={slide.link} onChange={e => handleUpdateHeroSlide(idx, 'link', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Button Destination Link</label>
+                            <input type="text" value={slide.link || ''} onChange={e => handleUpdateHeroSlide(idx, 'link', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                           </div>
                         </div>
                       </div>
@@ -1516,19 +1674,19 @@ export default function AdminClient() {
 
                 {/* Section 2: Scent Categories */}
                 <div>
-                  <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700', marginBottom: '16px' }}>Scent Categories Showcase</h4>
-                  <div style={{ display: 'grid', gap: '20px' }} className="admin-grid-2col">
-                    {settings.scentCategories.map((cat, idx) => (
-                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '20px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', color: 'var(--text-dark)' }}>{cat.name} Category</span>
+                  <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--gold)', fontWeight: '700', marginBottom: '14px' }}>Scent Categories Showcase</h4>
+                  <div className="admin-grid-2col">
+                    {(settings?.scentCategories || DEFAULT_SITE_SETTINGS.scentCategories).map((cat, idx) => (
+                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '16px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', color: 'var(--text-dark)' }}>{cat.name} Category</span>
                         
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Short Description</label>
-                          <input type="text" value={cat.description} onChange={e => handleUpdateCategory(idx, 'description', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Short Description</label>
+                          <input type="text" value={cat.description || ''} onChange={e => handleUpdateCategory(idx, 'description', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Image URL</label>
-                          <input type="text" value={cat.image} onChange={e => handleUpdateCategory(idx, 'image', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Image URL</label>
+                          <input type="text" value={cat.image || ''} onChange={e => handleUpdateCategory(idx, 'image', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                         </div>
                       </div>
                     ))}
@@ -1537,17 +1695,17 @@ export default function AdminClient() {
 
                 {/* Section 3: Brand Promises */}
                 <div>
-                  <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700', marginBottom: '16px' }}>Brand Promises (Why Choose Us)</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    {settings.whyChooseUs.map((promise, idx) => (
-                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '20px', background: 'var(--cream)', gap: '20px' }} className="admin-promise-row">
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Promise Title</label>
-                          <input type="text" value={promise.title} onChange={e => handleUpdatePromise(idx, 'title', e.target.value)} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', fontWeight: 'bold' }} />
+                  <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--gold)', fontWeight: '700', marginBottom: '14px' }}>Brand Promises (Why Choose Us)</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {(settings?.whyChooseUs || DEFAULT_SITE_SETTINGS.whyChooseUs).map((promise, idx) => (
+                      <div key={idx} style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '16px', background: 'var(--cream)', gap: '16px' }} className="admin-promise-row">
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Promise Title</label>
+                          <input type="text" value={promise.title || ''} onChange={e => handleUpdatePromise(idx, 'title', e.target.value)} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', fontWeight: 'bold' }} />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                          <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Description Statement</label>
-                          <textarea value={promise.description} onChange={e => handleUpdatePromise(idx, 'description', e.target.value)} rows={2} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', resize: 'vertical' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Description Statement</label>
+                          <textarea value={promise.description || ''} onChange={e => handleUpdatePromise(idx, 'description', e.target.value)} rows={2} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none', resize: 'vertical' }} />
                         </div>
                       </div>
                     ))}
@@ -1556,10 +1714,10 @@ export default function AdminClient() {
 
                 {/* Section 4: Shop The Look image */}
                 <div>
-                  <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700', marginBottom: '16px' }}>Shop The Look Backdrop</h4>
-                  <div style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '20px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Image Path</label>
-                    <input type="text" value={settings.shopTheLookImage} onChange={e => setSettings({ ...settings, shopTheLookImage: e.target.value })} style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
+                  <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--gold)', fontWeight: '700', marginBottom: '14px' }}>Shop The Look Backdrop</h4>
+                  <div style={{ border: '1px solid rgba(201,168,76,0.15)', padding: '16px', background: 'var(--cream)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Image Path</label>
+                    <input type="text" value={settings?.shopTheLookImage || DEFAULT_SITE_SETTINGS.shopTheLookImage} onChange={e => setSettings({ ...settings, shopTheLookImage: e.target.value })} style={{ padding: '9px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--white)', outline: 'none' }} />
                   </div>
                 </div>
               </div>
@@ -1569,12 +1727,12 @@ export default function AdminClient() {
                 TAB 3: ORDERS REGISTRY
                 ======================================================== */}
             {activeTab === 'orders' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                   
                   {/* Order Search */}
-                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(201,168,76,0.2)', background: 'var(--cream)', padding: '10px 16px', minWidth: '300px', flex: '1 1 300px' }}>
-                    <Search size={14} color="var(--text-muted)" style={{ marginRight: '10px' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', border: '1px solid rgba(201,168,76,0.2)', background: 'var(--cream)', padding: '9px 14px', flex: '1 1 260px' }}>
+                    <Search size={14} color="var(--text-muted)" style={{ marginRight: '8px', flexShrink: 0 }} />
                     <input 
                       type="text" 
                       placeholder="Search customer, order id, phone, email..." 
@@ -1590,13 +1748,13 @@ export default function AdminClient() {
                   </div>
 
                   {/* Status filter & export */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <select 
                       value={orderStatusFilter} 
                       onChange={e => setOrderStatusFilter(e.target.value)}
-                      style={{ padding: '10px 14px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--cream)', fontSize: '12px', outline: 'none', cursor: 'pointer' }}
+                      style={{ padding: '8px 10px', border: '1px solid rgba(201,168,76,0.25)', background: 'var(--cream)', fontSize: '11px', outline: 'none', cursor: 'pointer' }}
                     >
-                      <option value="all">All Order Statuses</option>
+                      <option value="all">All Statuses</option>
                       <option value="Pending">Pending</option>
                       <option value="Paid">Paid</option>
                       <option value="Shipped">Shipped</option>
@@ -1604,60 +1762,60 @@ export default function AdminClient() {
                     </select>
 
                     <button onClick={exportOrdersToCSV}
-                      style={{ border: '1px solid var(--gold)', background: 'none', color: 'var(--gold)', padding: '10px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.22s' }}
+                      style={{ border: '1px solid var(--gold)', background: 'none', color: 'var(--gold)', padding: '8px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.1em', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: 'all 0.22s' }}
                       onMouseEnter={e => { e.currentTarget.style.background = 'var(--gold)'; e.currentTarget.style.color = 'var(--noir)'; }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'var(--gold)'; }}
                     >
-                      <FileSpreadsheet size={14} /> Export Orders
+                      <FileSpreadsheet size={13} /> Export CSV
                     </button>
                   </div>
 
                 </div>
 
                 {/* Orders Table */}
-                <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)', WebkitOverflowScrolling: 'touch' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '640px' }}>
                     <thead>
                       <tr style={{ borderBottom: '2px solid var(--gold)', background: 'var(--charcoal)' }}>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Order ID</th>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Date</th>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Customer</th>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Items Ordered</th>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Total</th>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Method</th>
-                        <th style={{ padding: '14px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--white)' }}>Status</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Order ID</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Date</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Customer</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Items Ordered</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Total</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Method</th>
+                        <th style={{ padding: '12px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--white)' }}>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredOrders.length === 0 ? (
                         <tr>
-                          <td colSpan="7" style={{ padding: '40px 16px', textAlign: 'center', color: 'var(--text-muted)' }}>No orders match search parameters.</td>
+                          <td colSpan="7" style={{ padding: '36px 14px', textAlign: 'center', color: 'var(--text-muted)' }}>No orders match search parameters.</td>
                         </tr>
                       ) : (
                         filteredOrders.map((o, idx) => (
                           <tr key={o._id || idx} style={{ borderBottom: '1px solid rgba(201,168,76,0.15)', transition: 'background 0.2s' }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(201,168,76,0.02)'}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}>
-                            <td style={{ padding: '14px 16px', fontWeight: 'bold', fontSize: '13px' }}>{o.orderId}</td>
-                            <td style={{ padding: '14px 16px', fontSize: '13px', color: 'var(--text-muted)' }}>{new Date(o._createdAt).toLocaleDateString()}</td>
-                            <td style={{ padding: '14px 16px' }}>
-                              <p style={{ fontWeight: '600', margin: '0 0 2px' }}>{o.customerName}</p>
-                              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0' }}>{o.phone} • {o.email}</p>
+                            <td style={{ padding: '12px 14px', fontWeight: 'bold', fontSize: '12px' }}>{o.orderId}</td>
+                            <td style={{ padding: '12px 14px', fontSize: '12px', color: 'var(--text-muted)' }}>{new Date(o._createdAt || Date.now()).toLocaleDateString()}</td>
+                            <td style={{ padding: '12px 14px' }}>
+                              <p style={{ fontWeight: '600', margin: '0 0 2px', fontSize: '12px' }}>{o.customerName}</p>
+                              <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '0' }}>{o.phone} • {o.email}</p>
                             </td>
-                            <td style={{ padding: '14px 16px', fontSize: '13px' }}>
+                            <td style={{ padding: '12px 14px', fontSize: '12px' }}>
                               {o.items?.map((it, i) => (
                                 <div key={i} style={{ color: 'var(--text-muted)' }}>
                                   {it.title} ({it.quantity}x)
                                 </div>
                               ))}
                             </td>
-                            <td style={{ padding: '14px 16px', fontWeight: '600', color: 'var(--text-dark)' }}>₹{o.totalAmount}</td>
-                            <td style={{ padding: '14px 16px', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{o.paymentMethod || 'online'}</td>
-                            <td style={{ padding: '14px 16px' }}>
+                            <td style={{ padding: '12px 14px', fontWeight: '600', color: 'var(--text-dark)' }}>₹{o.totalAmount}</td>
+                            <td style={{ padding: '12px 14px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{o.paymentMethod || 'online'}</td>
+                            <td style={{ padding: '12px 14px' }}>
                               <select value={o.paymentStatus || 'Pending'} onChange={e => handleUpdateOrderStatus(o._id, e.target.value)}
                                 style={{
-                                  padding: '5px 10px',
-                                  fontSize: '11px',
+                                  padding: '4px 8px',
+                                  fontSize: '10px',
                                   fontFamily: 'var(--font-label)',
                                   fontWeight: '700',
                                   textTransform: 'uppercase',
@@ -1689,138 +1847,80 @@ export default function AdminClient() {
           MODAL 1: EXCEL IMPORT GUIDE & SAMPLE TEMPLATE DOWNLOAD
           ======================================================== */}
       {isGuideModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
-          <div style={{ background: 'var(--white)', border: '1px solid var(--gold)', width: '100%', maxWidth: '840px', maxHeight: '90vh', overflowY: 'auto', padding: '36px', boxShadow: 'var(--shadow-gold)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+          <div className="admin-modal-card">
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '16px', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FileSpreadsheet size={22} color="var(--gold)" />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '14px', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileSpreadsheet size={20} color="var(--gold)" />
                 <div>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>
+                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>
                     Excel & CSV Import Guide
                   </h3>
-                  <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
-                    Specifications & Format Rules
+                  <p style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
+                    Specifications & Column Formats
                   </p>
                 </div>
               </div>
-              <button onClick={() => setIsGuideModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
+              <button onClick={() => setIsGuideModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={18} /></button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
               
               {/* Download Template Banner */}
-              <div style={{ background: 'var(--cream)', border: '1px solid rgba(201,168,76,0.3)', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
+              <div style={{ background: 'var(--cream)', border: '1px solid rgba(201,168,76,0.3)', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
                 <div>
-                  <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '18px', margin: '0 0 4px', color: 'var(--text-dark)' }}>Ready-to-Use Excel Template</h4>
-                  <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0 }}>Download our sample CSV spreadsheet pre-populated with example fragrances.</p>
+                  <h4 style={{ fontFamily: 'var(--font-display)', fontSize: '16px', margin: '0 0 2px', color: 'var(--text-dark)' }}>Sample CSV Template</h4>
+                  <p style={{ fontSize: '11px', color: 'var(--text-muted)', margin: 0 }}>Download pre-formatted spreadsheet template with example perfumes.</p>
                 </div>
                 <button 
                   onClick={handleDownloadSampleTemplate}
-                  style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '10px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                  style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '9px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                 >
-                  <Download size={14} /> Download Sample Template (.csv)
+                  <Download size={13} /> Download Template (.csv)
                 </button>
               </div>
 
               {/* Mandatory Fields Table */}
               <div>
-                <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: '#d93025', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <AlertCircle size={14} /> Mandatory Columns (Required)
+                <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.12em', color: '#d93025', fontWeight: '700', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <AlertCircle size={13} /> Required Columns
                 </h4>
                 <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left', minWidth: '400px' }}>
                     <thead>
                       <tr style={{ background: 'var(--charcoal)', color: 'var(--white)' }}>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Column Header</th>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Type</th>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Example</th>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Guidelines</th>
+                        <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Header</th>
+                        <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Type</th>
+                        <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Example</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Title</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Text</td>
-                        <td style={{ padding: '10px 14px', fontStyle: 'italic' }}>Oud & Gold Extrait</td>
-                        <td style={{ padding: '10px 14px' }}>The full product name shown on product cards and checkout.</td>
+                        <td style={{ padding: '8px 10px', fontWeight: '600' }}>Title</td>
+                        <td style={{ padding: '8px 10px', color: 'var(--text-muted)' }}>Text</td>
+                        <td style={{ padding: '8px 10px', fontStyle: 'italic' }}>Oud & Gold Extrait</td>
                       </tr>
                       <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Price / Sale Price</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Number</td>
-                        <td style={{ padding: '10px 14px', fontStyle: 'italic' }}>4500</td>
-                        <td style={{ padding: '10px 14px' }}>Numbers only (no currency symbols). Sale price is the final price.</td>
+                        <td style={{ padding: '8px 10px', fontWeight: '600' }}>Price / Sale Price</td>
+                        <td style={{ padding: '8px 10px', color: 'var(--text-muted)' }}>Number</td>
+                        <td style={{ padding: '8px 10px', fontStyle: 'italic' }}>4500</td>
                       </tr>
                       <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Category</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Text</td>
-                        <td style={{ padding: '10px 14px', fontStyle: 'italic' }}>Woody, Floral, Citrus, Oriental</td>
-                        <td style={{ padding: '10px 14px' }}>Used for homepage family grouping and catalog filters.</td>
+                        <td style={{ padding: '8px 10px', fontWeight: '600' }}>Category</td>
+                        <td style={{ padding: '8px 10px', color: 'var(--text-muted)' }}>Text</td>
+                        <td style={{ padding: '8px 10px', fontStyle: 'italic' }}>Woody, Floral, Citrus, Oriental</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
 
-              {/* Optional Fields Table */}
-              <div>
-                <h4 style={{ fontFamily: 'var(--font-label)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.18em', color: 'var(--gold)', fontWeight: '700', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle size={14} /> Optional Columns & Formatting
-                </h4>
-                <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
-                    <thead>
-                      <tr style={{ background: 'var(--charcoal)', color: 'var(--white)' }}>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Column Header</th>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Accepted Formats</th>
-                        <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Default if Empty</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Scent Notes</td>
-                        <td style={{ padding: '10px 14px' }}>Comma-separated e.g. <span style={{ fontStyle: 'italic' }}>Rose, Amber, Musk</span></td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Auto-populated luxury note</td>
-                      </tr>
-                      <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Gender</td>
-                        <td style={{ padding: '10px 14px' }}>Unisex, Men, Women</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Unisex</td>
-                      </tr>
-                      <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Concentration</td>
-                        <td style={{ padding: '10px 14px' }}>Extrait De Parfum, Eau De Parfum</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Extrait De Parfum</td>
-                      </tr>
-                      <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>In Stock</td>
-                        <td style={{ padding: '10px 14px' }}>TRUE / FALSE or YES / NO</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>TRUE</td>
-                      </tr>
-                      <tr style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>Image URL</td>
-                        <td style={{ padding: '10px 14px' }}>Full HTTPS link or local path e.g. <span style={{ fontStyle: 'italic' }}>/images/perfume_...png</span></td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>Default bottle image</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Best practices list */}
-              <div style={{ background: 'var(--cream)', padding: '16px 20px', borderLeft: '3px solid var(--gold)', fontSize: '12px', color: 'var(--text-dark)', lineHeight: '1.6' }}>
-                <strong>Important Tips:</strong>
-                <ul style={{ margin: '6px 0 0 0', paddingLeft: '20px' }}>
-                  <li>Always save spreadsheet as <strong>CSV (Comma Delimited)</strong> or <strong>CSV UTF-8</strong>.</li>
-                  <li>Do not include currency symbols like <code>₹</code> or <code>$</code> in the Price column.</li>
-                  <li>If updating existing fragrances, you can include the original <code>Slug</code> to update rather than duplicate.</li>
-                </ul>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '16px' }}>
+              {/* Close Button */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '12px' }}>
                 <button 
                   onClick={() => setIsGuideModalOpen(false)}
-                  style={{ background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '10px 24px', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer' }}
+                  style={{ background: 'var(--noir)', color: 'var(--white)', border: 'none', padding: '9px 20px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer' }}
                 >
                   Close Guide
                 </button>
@@ -1836,75 +1936,69 @@ export default function AdminClient() {
           MODAL 2: EXCEL IMPORT PREVIEW & CONFIRMATION
           ======================================================== */}
       {isImportModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
-          <div style={{ background: 'var(--white)', border: '1px solid var(--gold)', width: '100%', maxWidth: '960px', maxHeight: '90vh', overflowY: 'auto', padding: '36px', boxShadow: 'var(--shadow-gold)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
+          <div className="admin-modal-card">
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '16px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '14px', marginBottom: '16px' }}>
               <div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '24px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>
-                  Import Preview & Verification
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '20px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>
+                  Import Verification
                 </h3>
-                <p style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)', margin: '4px 0 0 0' }}>
+                <p style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-muted)', margin: '3px 0 0 0' }}>
                   {importData.length} valid fragrances ready to import
                 </p>
               </div>
-              <button onClick={() => setIsImportModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
+              <button onClick={() => setIsImportModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={18} /></button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               
-              {/* Warnings/Errors if any */}
+              {/* Warnings/Errors */}
               {importErrors.length > 0 && (
-                <div style={{ background: 'rgba(217,48,37,0.06)', border: '1px solid rgba(217,48,37,0.2)', padding: '12px 16px', fontSize: '12px', color: '#d93025' }}>
+                <div style={{ background: 'rgba(217,48,37,0.06)', border: '1px solid rgba(217,48,37,0.2)', padding: '10px 14px', fontSize: '11px', color: '#d93025' }}>
                   <strong>{importErrors.length} Warnings / Skipped Rows:</strong>
-                  <ul style={{ margin: '4px 0 0', paddingLeft: '20px' }}>
+                  <ul style={{ margin: '4px 0 0', paddingLeft: '16px' }}>
                     {importErrors.map((err, i) => <li key={i}>{err}</li>)}
                   </ul>
                 </div>
               )}
 
               {/* Import Mode Selection */}
-              <div style={{ background: 'var(--cream)', padding: '16px 20px', border: '1px solid rgba(201,168,76,0.2)', display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <span style={{ fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>Import Mode:</span>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }}>
+              <div style={{ background: 'var(--cream)', padding: '12px 14px', border: '1px solid rgba(201,168,76,0.2)', display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <span style={{ fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '700' }}>Mode:</span>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
                   <input type="radio" name="importMode" checked={importMode === 'append'} onChange={() => setImportMode('append')} />
-                  <strong>Append & Update</strong> (Keep existing catalog, update matches)
+                  <span><strong>Append</strong> (Keep existing catalog)</span>
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontSize: '12px' }}>
                   <input type="radio" name="importMode" checked={importMode === 'overwrite'} onChange={() => setImportMode('overwrite')} />
-                  <strong style={{ color: '#d93025' }}>Clean Overwrite</strong> (Replace all current products)
+                  <span style={{ color: '#d93025' }}><strong>Overwrite</strong> (Replace all)</span>
                 </label>
               </div>
 
               {/* Data Preview Table */}
-              <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)', maxHeight: '360px', overflowY: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px', textAlign: 'left' }}>
+              <div style={{ overflowX: 'auto', border: '1px solid rgba(201,168,76,0.15)', maxHeight: '300px', overflowY: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px', textAlign: 'left', minWidth: '500px' }}>
                   <thead style={{ position: 'sticky', top: 0, background: 'var(--charcoal)', color: 'var(--white)', zIndex: 2 }}>
                     <tr>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Title</th>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Category</th>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Gender</th>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Regular Price</th>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Sale Price</th>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Stock</th>
-                      <th style={{ padding: '10px 14px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Notes</th>
+                      <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Title</th>
+                      <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Category</th>
+                      <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Price</th>
+                      <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Sale Price</th>
+                      <th style={{ padding: '8px 10px', fontFamily: 'var(--font-label)', fontSize: '8px', textTransform: 'uppercase' }}>Stock</th>
                     </tr>
                   </thead>
                   <tbody>
                     {importData.map((item, i) => (
                       <tr key={i} style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                        <td style={{ padding: '10px 14px', fontWeight: '600' }}>{item.title}</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>{item.category}</td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)' }}>{item.gender}</td>
-                        <td style={{ padding: '10px 14px' }}>₹{item.price}</td>
-                        <td style={{ padding: '10px 14px', fontWeight: 'bold', color: 'var(--gold)' }}>₹{item.salePrice}</td>
-                        <td style={{ padding: '10px 14px' }}>
-                          <span style={{ color: item.inStock ? '#1e8e3e' : '#d93025', fontWeight: '600', fontSize: '10px' }}>
+                        <td style={{ padding: '8px 10px', fontWeight: '600' }}>{item.title}</td>
+                        <td style={{ padding: '8px 10px', color: 'var(--text-muted)' }}>{item.category}</td>
+                        <td style={{ padding: '8px 10px' }}>₹{item.price}</td>
+                        <td style={{ padding: '8px 10px', fontWeight: 'bold', color: 'var(--gold)' }}>₹{item.salePrice}</td>
+                        <td style={{ padding: '8px 10px' }}>
+                          <span style={{ color: item.inStock ? '#1e8e3e' : '#d93025', fontWeight: '600', fontSize: '9px' }}>
                             {item.inStock ? 'IN STOCK' : 'SOLD OUT'}
                           </span>
-                        </td>
-                        <td style={{ padding: '10px 14px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                          {Array.isArray(item.notes) ? item.notes.join(', ') : item.notes}
                         </td>
                       </tr>
                     ))}
@@ -1913,18 +2007,18 @@ export default function AdminClient() {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '14px' }}>
                 <button 
                   onClick={() => setIsImportModalOpen(false)}
-                  style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.15)', padding: '10px 20px', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', cursor: 'pointer' }}
+                  style={{ background: 'transparent', border: '1px solid rgba(0,0,0,0.15)', padding: '9px 16px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em', cursor: 'pointer' }}
                 >
                   Cancel
                 </button>
                 <button 
                   onClick={handleConfirmImport}
-                  style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '10px 24px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', padding: '9px 20px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <Upload size={14} /> Commit & Import ({importData.length})
+                  <Upload size={13} /> Commit Import ({importData.length})
                 </button>
               </div>
 
@@ -1938,52 +2032,52 @@ export default function AdminClient() {
           MODAL 3: PRODUCT EDITOR DIALOG MODAL
           ======================================================== */}
       {isProductModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', zIndex: 999, backdropFilter: 'blur(4px)' }}>
-          <div style={{ background: 'var(--white)', border: '1px solid var(--gold)', width: '100%', maxWidth: '780px', maxHeight: '90vh', overflowY: 'auto', padding: '40px', boxShadow: 'var(--shadow-gold)' }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px', zIndex: 999, backdropFilter: 'blur(4px)' }}>
+          <div className="admin-modal-card" style={{ maxWidth: '760px' }}>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '14px', marginBottom: '24px' }}>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '26px', fontWeight: '300', color: 'var(--text-dark)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)', paddingBottom: '12px', marginBottom: '20px' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: '300', color: 'var(--text-dark)', margin: 0 }}>
                 {editingProduct ? 'Edit Perfume' : 'Create New Perfume'}
               </h3>
-              <button onClick={() => setIsProductModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
+              <button onClick={() => setIsProductModalOpen(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={18} /></button>
             </div>
 
-            <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            <form onSubmit={handleSaveProduct} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               
               {/* Row 1: Title & Slug */}
-              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Title *</label>
+              <div className="admin-grid-2col">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Title *</label>
                   <input type="text" required value={prodForm.title} onChange={e => {
                     const val = e.target.value;
                     const generatedSlug = val.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
                     setProdForm(prev => ({ ...prev, title: val, slug: generatedSlug }));
-                  }} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                  }} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>URL Slug (Auto-generated) *</label>
-                  <input type="text" required value={prodForm.slug} onChange={e => setProdForm(prev => ({ ...prev, slug: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>URL Slug *</label>
+                  <input type="text" required value={prodForm.slug} onChange={e => setProdForm(prev => ({ ...prev, slug: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
               </div>
 
               {/* Row 2: Category, Concentration, Gender */}
-              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-3col">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Category</label>
-                  <select value={prodForm.category} onChange={e => setProdForm(prev => ({ ...prev, category: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', background: 'var(--white)' }}>
+              <div className="admin-grid-3col">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Category</label>
+                  <select value={prodForm.category} onChange={e => setProdForm(prev => ({ ...prev, category: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', background: 'var(--white)' }}>
                     <option value="Woody">Woody</option>
                     <option value="Floral">Floral</option>
                     <option value="Citrus">Citrus</option>
                     <option value="Oriental">Oriental</option>
                   </select>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Concentration</label>
-                  <input type="text" value={prodForm.concentration} onChange={e => setProdForm(prev => ({ ...prev, concentration: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Concentration</label>
+                  <input type="text" value={prodForm.concentration} onChange={e => setProdForm(prev => ({ ...prev, concentration: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Gender</label>
-                  <select value={prodForm.gender} onChange={e => setProdForm(prev => ({ ...prev, gender: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', background: 'var(--white)' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Gender</label>
+                  <select value={prodForm.gender} onChange={e => setProdForm(prev => ({ ...prev, gender: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', background: 'var(--white)' }}>
                     <option value="Unisex">Unisex</option>
                     <option value="Men">Men</option>
                     <option value="Women">Women</option>
@@ -1992,105 +2086,105 @@ export default function AdminClient() {
               </div>
 
               {/* Row 3: Prices & Discount */}
-              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-3col">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Regular Price (₹) *</label>
+              <div className="admin-grid-3col">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Regular Price (₹) *</label>
                   <input type="number" required value={prodForm.price} onChange={e => {
                     const priceVal = parseFloat(e.target.value || 0);
                     const saleVal = parseFloat(prodForm.salePrice || 0);
                     const disc = priceVal > 0 ? Math.round(((priceVal - saleVal) / priceVal) * 100) : 0;
                     setProdForm(prev => ({ ...prev, price: e.target.value, discount: Math.max(0, disc).toString() }));
-                  }} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                  }} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Sale Price (₹) *</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Sale Price (₹) *</label>
                   <input type="number" required value={prodForm.salePrice} onChange={e => {
                     const saleVal = parseFloat(e.target.value || 0);
                     const priceVal = parseFloat(prodForm.price || 0);
                     const disc = priceVal > 0 ? Math.round(((priceVal - saleVal) / priceVal) * 100) : 0;
                     setProdForm(prev => ({ ...prev, salePrice: e.target.value, discount: Math.max(0, disc).toString() }));
-                  }} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                  }} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Discount (%)</label>
-                  <input type="number" value={prodForm.discount} readOnly style={{ padding: '11px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--cream)', outline: 'none', cursor: 'not-allowed' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Discount (%)</label>
+                  <input type="number" value={prodForm.discount} readOnly style={{ padding: '10px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--cream)', outline: 'none', cursor: 'not-allowed' }} />
                 </div>
               </div>
 
               {/* Description */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Description *</label>
-                <textarea required value={prodForm.description} onChange={e => setProdForm(prev => ({ ...prev, description: e.target.value }))} rows={3} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', resize: 'vertical' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Description *</label>
+                <textarea required value={prodForm.description} onChange={e => setProdForm(prev => ({ ...prev, description: e.target.value }))} rows={3} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none', resize: 'vertical' }} />
               </div>
 
               {/* Scent Notes & Brand */}
-              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Scent Accords (comma-separated)</label>
-                  <input type="text" placeholder="Rose, Jasmine, Saffron" value={prodForm.notes} onChange={e => setProdForm(prev => ({ ...prev, notes: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+              <div className="admin-grid-2col">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Scent Accords (comma-separated)</label>
+                  <input type="text" placeholder="Rose, Jasmine, Saffron" value={prodForm.notes} onChange={e => setProdForm(prev => ({ ...prev, notes: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Brand Name</label>
-                  <input type="text" value={prodForm.brand} onChange={e => setProdForm(prev => ({ ...prev, brand: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Brand Name</label>
+                  <input type="text" value={prodForm.brand} onChange={e => setProdForm(prev => ({ ...prev, brand: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
               </div>
 
               {/* Image Paths */}
-              <div style={{ display: 'grid', gap: '16px' }} className="admin-grid-2col">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Primary Image URL *</label>
-                  <input type="text" required placeholder="/images/perfume_elegant_...png" value={prodForm.image} onChange={e => setProdForm(prev => ({ ...prev, image: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+              <div className="admin-grid-2col">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Primary Image URL *</label>
+                  <input type="text" required placeholder="/images/perfume_elegant_...png" value={prodForm.image} onChange={e => setProdForm(prev => ({ ...prev, image: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Gallery Image URLs (comma-separated)</label>
-                  <input type="text" placeholder="URL1, URL2..." value={prodForm.images} onChange={e => setProdForm(prev => ({ ...prev, images: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>Gallery URLs (comma-separated)</label>
+                  <input type="text" placeholder="URL1, URL2..." value={prodForm.images} onChange={e => setProdForm(prev => ({ ...prev, images: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
               </div>
 
-              {/* Hotspot Coordinates (for Shop The Look mapping) */}
-              <div style={{ display: 'grid', gap: '16px', alignItems: 'center' }} className="admin-grid-4col">
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Hotspot X (%)</label>
-                  <input type="number" min="0" max="100" value={prodForm.hotspotX} onChange={e => setProdForm(prev => ({ ...prev, hotspotX: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+              {/* Hotspot Coordinates & Rating */}
+              <div className="admin-grid-4col">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Hotspot X (%)</label>
+                  <input type="number" min="0" max="100" value={prodForm.hotspotX} onChange={e => setProdForm(prev => ({ ...prev, hotspotX: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Hotspot Y (%)</label>
-                  <input type="number" min="0" max="100" value={prodForm.hotspotY} onChange={e => setProdForm(prev => ({ ...prev, hotspotY: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Hotspot Y (%)</label>
+                  <input type="number" min="0" max="100" value={prodForm.hotspotY} onChange={e => setProdForm(prev => ({ ...prev, hotspotY: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Rating</label>
-                  <input type="number" step="0.1" min="1" max="5" value={prodForm.rating} onChange={e => setProdForm(prev => ({ ...prev, rating: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Rating</label>
+                  <input type="number" step="0.1" min="1" max="5" value={prodForm.rating} onChange={e => setProdForm(prev => ({ ...prev, rating: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <label style={{ fontSize: '10px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>Reviews Count</label>
-                  <input type="number" min="0" value={prodForm.reviewsCount} onChange={e => setProdForm(prev => ({ ...prev, reviewsCount: e.target.value }))} style={{ padding: '11px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '9px', fontFamily: 'var(--font-label)', textTransform: 'uppercase', color: 'var(--text-muted)' }}>Reviews</label>
+                  <input type="number" min="0" value={prodForm.reviewsCount} onChange={e => setProdForm(prev => ({ ...prev, reviewsCount: e.target.value }))} style={{ padding: '10px', border: '1px solid rgba(201,168,76,0.2)', outline: 'none' }} />
                 </div>
               </div>
 
               {/* Checkboxes: inStock, Bestseller, New Arrival */}
-              <div style={{ display: 'flex', gap: '28px', marginTop: '10px', background: 'var(--cream)', padding: '16px 20px', border: '1px solid rgba(201,168,76,0.15)', flexWrap: 'wrap' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <input type="checkbox" checked={prodForm.inStock} onChange={e => setProdForm(prev => ({ ...prev, inStock: e.target.checked }))} style={{ width: '16px', height: '16px', accentColor: 'var(--gold)' }} />
+              <div style={{ display: 'flex', gap: '20px', marginTop: '6px', background: 'var(--cream)', padding: '12px 16px', border: '1px solid rgba(201,168,76,0.15)', flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <input type="checkbox" checked={prodForm.inStock} onChange={e => setProdForm(prev => ({ ...prev, inStock: e.target.checked }))} style={{ width: '15px', height: '15px', accentColor: 'var(--gold)' }} />
                   In Stock
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <input type="checkbox" checked={prodForm.isBestseller} onChange={e => setProdForm(prev => ({ ...prev, isBestseller: e.target.checked }))} style={{ width: '16px', height: '16px', accentColor: 'var(--gold)' }} />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <input type="checkbox" checked={prodForm.isBestseller} onChange={e => setProdForm(prev => ({ ...prev, isBestseller: e.target.checked }))} style={{ width: '15px', height: '15px', accentColor: 'var(--gold)' }} />
                   Bestseller Card
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  <input type="checkbox" checked={prodForm.isNewArrival} onChange={e => setProdForm(prev => ({ ...prev, isNewArrival: e.target.checked }))} style={{ width: '16px', height: '16px', accentColor: 'var(--gold)' }} />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  <input type="checkbox" checked={prodForm.isNewArrival} onChange={e => setProdForm(prev => ({ ...prev, isNewArrival: e.target.checked }))} style={{ width: '15px', height: '15px', accentColor: 'var(--gold)' }} />
                   New Arrival
                 </label>
               </div>
 
               {/* Form Buttons */}
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '20px', marginTop: '10px' }}>
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', borderTop: '1px solid rgba(201,168,76,0.15)', paddingTop: '16px', marginTop: '6px' }}>
                 <button type="button" onClick={() => setIsProductModalOpen(false)}
-                  style={{ border: '1px solid rgba(0,0,0,0.15)', background: 'transparent', cursor: 'pointer', padding: '12px 24px', fontFamily: 'var(--font-label)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)' }}>
+                  style={{ border: '1px solid rgba(0,0,0,0.15)', background: 'transparent', cursor: 'pointer', padding: '10px 20px', fontFamily: 'var(--font-label)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
                   Cancel
                 </button>
                 <button type="submit"
-                  style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', cursor: 'pointer', padding: '12px 28px', fontFamily: 'var(--font-label)', fontSize: '10px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
+                  style={{ background: 'var(--gold)', color: 'var(--noir)', border: 'none', cursor: 'pointer', padding: '10px 24px', fontFamily: 'var(--font-label)', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.12em' }}>
                   {editingProduct ? 'Save Changes' : 'Create Perfume'}
                 </button>
               </div>

@@ -195,11 +195,23 @@ export const dbService = {
 
   // SITE SETTINGS
   async getSiteSettings() {
+    let settings = defaultSiteSettings;
     if (db) {
       try {
         const docRef = doc(db, 'siteSettings', 'global');
         const snap = await getDoc(docRef);
-        if (snap.exists()) return snap.data();
+        if (snap.exists()) {
+          const data = snap.data();
+          return {
+            ...defaultSiteSettings,
+            ...data,
+            heroSlides: (Array.isArray(data.heroSlides) && data.heroSlides.length > 0) ? data.heroSlides : defaultSiteSettings.heroSlides,
+            scentCategories: (Array.isArray(data.scentCategories) && data.scentCategories.length > 0) ? data.scentCategories : defaultSiteSettings.scentCategories,
+            whyChooseUs: (Array.isArray(data.whyChooseUs) && data.whyChooseUs.length > 0) ? data.whyChooseUs : defaultSiteSettings.whyChooseUs,
+            shopTheLookImage: data.shopTheLookImage || defaultSiteSettings.shopTheLookImage,
+            logo: data.logo || defaultSiteSettings.logo,
+          };
+        }
         
         // Seed if not exists
         await setDoc(docRef, defaultSiteSettings);
@@ -208,20 +220,33 @@ export const dbService = {
         console.error("Firestore error in getSiteSettings, using local fallback:", err);
       }
     }
-    return getLocalData('cns_site_settings', defaultSiteSettings);
+    const local = getLocalData('cns_site_settings', defaultSiteSettings);
+    return {
+      ...defaultSiteSettings,
+      ...(local || {}),
+      heroSlides: (Array.isArray(local?.heroSlides) && local.heroSlides.length > 0) ? local.heroSlides : defaultSiteSettings.heroSlides,
+      scentCategories: (Array.isArray(local?.scentCategories) && local.scentCategories.length > 0) ? local.scentCategories : defaultSiteSettings.scentCategories,
+      whyChooseUs: (Array.isArray(local?.whyChooseUs) && local.whyChooseUs.length > 0) ? local.whyChooseUs : defaultSiteSettings.whyChooseUs,
+      shopTheLookImage: local?.shopTheLookImage || defaultSiteSettings.shopTheLookImage,
+      logo: local?.logo || defaultSiteSettings.logo,
+    };
   },
 
   async saveSiteSettings(settings) {
+    const payload = {
+      ...defaultSiteSettings,
+      ...(settings || {})
+    };
     if (db) {
       try {
-        await setDoc(doc(db, 'siteSettings', 'global'), settings);
-        return settings;
+        await setDoc(doc(db, 'siteSettings', 'global'), payload);
+        return payload;
       } catch (err) {
         console.error("Firestore error in saveSiteSettings:", err);
       }
     }
-    setLocalData('cns_site_settings', settings);
-    return settings;
+    setLocalData('cns_site_settings', payload);
+    return payload;
   },
 
   // ORDERS

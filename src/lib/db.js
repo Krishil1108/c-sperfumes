@@ -162,6 +162,37 @@ export const dbService = {
     return true;
   },
 
+  async bulkSaveProducts(newProductsList, overwrite = false) {
+    const normalizedList = newProductsList.map(prod => {
+      const docId = prod.id || prod._id || prod.slug || ('p-' + Math.floor(Math.random() * 10000000));
+      return { ...prod, id: docId, _id: docId };
+    });
+
+    if (db) {
+      try {
+        for (const prod of normalizedList) {
+          await setDoc(doc(db, 'products', prod.id), prod);
+        }
+      } catch (err) {
+        console.error("Firestore error in bulkSaveProducts:", err);
+      }
+    }
+
+    let updatedList = [];
+    if (overwrite) {
+      updatedList = [...normalizedList];
+    } else {
+      const current = getLocalData('cns_products', mockProducts);
+      const map = new Map();
+      current.forEach(p => map.set(p.id || p.slug, p));
+      normalizedList.forEach(p => map.set(p.id || p.slug, p));
+      updatedList = Array.from(map.values());
+    }
+
+    setLocalData('cns_products', updatedList);
+    return updatedList;
+  },
+
   // SITE SETTINGS
   async getSiteSettings() {
     if (db) {
